@@ -10,7 +10,7 @@ const [orders, setOrders] = useState([
     date: '2026-04-08',
     items: 3,
     total: 149.99,
-    status: 'pending',
+    status: 'cancelled',
 },
 {
     id: 'ORD-002',
@@ -126,7 +126,7 @@ return (
             <div className="search-group">
                 <input
                 type="text"
-                placeholder="🔍 Search order ID or customer..."
+                placeholder="Search order ID or customer..."
                 className="search-input"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -139,6 +139,8 @@ return (
                     <option value="processing">Processing</option>
                     <option value="shipped">Shipped</option>
                     <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+
                 </select>
             </div>
         </div>
@@ -193,10 +195,10 @@ return (
 
                     <div className="order-actions">
                     <button className="action-btn btn-view">
-                        👁️ View Details
+                        View Details
                     </button>
-                    <button 
-                        className="action-btn btn-update" 
+                    <button
+                        className="action-btn btn-update"
                         onClick={() => handleUpdateStatus(order.id)}
                     >
                         ✎ Update Status
@@ -232,6 +234,9 @@ return (
                 </label>
                 <label>
                     <input type="radio" name="status" value="delivered" /> Delivered
+                </label>
+                <label>
+                    <input type="radio" name="status" value="cancelled" /> Cancelled
                 </label>
                 </div>
 

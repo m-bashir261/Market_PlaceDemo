@@ -247,6 +247,11 @@ background-color: #d1e7dd;
 color: #0f5132;
 }
 
+.badge-cancelled {
+background-color: #e7afb2;
+color: #c7314d;
+}
+
 .order-amount {
 font-size: 20px;
 font-weight: 700;
