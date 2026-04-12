@@ -158,20 +158,6 @@ function ProductDetail() {
             >
               {orderCreated ? '✓ Order Confirmed' : 'Place Order'}
             </button>
- 
- 
-            {/* ── Order Success Box ── */}
-            {orderCreated && (
-              <div className="order-success-box">
-                <h2>&#10003; Added to Cart</h2>
-                <p>Your order has been created and sent to the seller.</p>
-                <div className="success-details">
-                  <span>Product: <strong>{product.name}</strong></span>
-                  <span>Qty: <strong>{quantity}</strong></span>
-                  <span>Total: <strong>${totalPrice.toFixed(2)}</strong></span>
-                </div>
-              </div>
-            )}
           </div>
         </section>
  
