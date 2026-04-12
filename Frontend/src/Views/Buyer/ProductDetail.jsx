@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './ProductDetail.css';
 
 const sampleProducts = [
@@ -78,7 +78,7 @@ function ProductDetail() {
         <nav className="header-nav">
           <a href="/" className="nav-link">Home</a>
           <a href="/catalog" className="nav-link">Catalog</a>
-          <a href="/orders" className="nav-link">My Orders</a>
+          <Link to="/buyer/orders" className="nav-link">My Orders</Link>
         </nav>
         <div className="header-user">
           <div className="avatar">B</div>

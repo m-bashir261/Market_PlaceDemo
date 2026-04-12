@@ -1,0 +1,357 @@
+/* ── Page ── */
+.order-history-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #83a8e4 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* ── Navbar (same as ProductDetail) ── */
+.product-detail-header-bar {
+  background-color: #23496e;
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.header-logo-icon {
+  font-size: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 6px 10px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-logo-label {
+  color: #ecf0f1;
+  letter-spacing: 0.5px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.nav-link {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.nav-link:hover {
+  opacity: 1;
+}
+
+.active-nav-link {
+  opacity: 1;
+  border-bottom: 2px solid #5092e7;
+  padding-bottom: 2px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.header-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ecf0f1;
+}
+
+/* ── Page Body ── */
+.page-body {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 80px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Page Header ── */
+.oh-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.oh-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.oh-subtitle {
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.oh-count-badge {
+  background-color: #5092e7;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Filter Tabs ── */
+.oh-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.oh-filter-btn {
+  padding: 8px 18px;
+  border: 2px solid #ecf0f1;
+  border-radius: 20px;
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7f8c8d;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.oh-filter-btn:hover {
+  border-color: #5092e7;
+  color: #5092e7;
+}
+
+.oh-filter-btn.active {
+  background-color: #5092e7;
+  border-color: #5092e7;
+  color: white;
+}
+
+/* ── Main Card (same style as orders-card) ── */
+.oh-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.oh-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #ecf0f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.oh-card-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.oh-order-count {
+  background-color: #5092e7;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── Orders List ── */
+.oh-orders-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.oh-order-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.oh-order-item:last-child {
+  border-bottom: none;
+}
+
+.oh-order-item:hover {
+  background: #fafbfc;
+}
+
+/* ── Product Image (like reference) ── */
+.oh-product-image {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+
+.oh-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Order Info ── */
+.oh-order-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.oh-product-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3e50;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oh-seller {
+  font-size: 13px;
+  color: #5092e7;
+  font-weight: 500;
+}
+
+.oh-meta {
+  font-size: 12px;
+  color: #95a5a6;
+}
+
+/* ── Status (like reference image) ── */
+.order-status-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.status-bar-track {
+  width: 80px;
+  height: 4px;
+  background: #ecf0f1;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.status-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.status-label {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* ── Empty State ── */
+.oh-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  gap: 8px;
+  color: #95a5a6;
+}
+
+.oh-empty-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.oh-empty p {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.oh-empty small {
+  font-size: 13px;
+  color: #95a5a6;
+}
+
+.oh-shop-btn {
+  margin-top: 12px;
+  padding: 10px 24px;
+  background-color: #5092e7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.oh-shop-btn:hover {
+  background-color: #3a7bc8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .header-nav { display: none; }
+  .oh-order-item { padding: 14px 16px; gap: 12px; }
+  .oh-product-image { width: 58px; height: 58px; }
+  .oh-title { font-size: 22px; }
+}
+
+@media (max-width: 480px) {
+  .oh-order-item { flex-wrap: wrap; }
+  .order-status-wrapper { align-items: flex-start; width: 100%; flex-direction: row; align-items: center; }
+  .status-bar-track { flex: 1; }
+}
