@@ -1,0 +1,8 @@
+# Root-level dockerignore
+.git
+.gitignore
+.idea
+.vscode
+.env
+*.md
+node_modules
