@@ -1,25 +1,17 @@
-# ---- Frontend Dockerfile (multi-stage) ----
-
-# Stage 1: Build the React app
-FROM node:22-alpine AS build
+# ---- Frontend Development Dockerfile ----
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+# Install dependencies (done separately for Docker layer caching)
+COPY package.json package-lock.json* ./
+RUN npm install
 
+# Source code is mounted as a volume in compose.yaml —
+# this COPY is only a fallback if volumes are not used.
 COPY . .
-RUN npm run build
 
-# Stage 2: Serve with nginx
-FROM nginx:alpine
+EXPOSE 3000
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy built assets from build stage
-COPY --from=build /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# React dev server with hot-reload
+CMD ["npm", "start"]

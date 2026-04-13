@@ -7,9 +7,10 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    env_file: .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-root}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-example}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh --quiet
       interval: 10s
@@ -23,11 +24,13 @@ services:
       context: ./Backend
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./Backend:/app          # Mount source for live editing
+      - backend-deps:/app/node_modules  # Preserve container node_modules
+    env_file: .env
     environment:
-      PORT: 5000
-      MONGO_URI: mongodb://${MONGO_USERNAME:-root}:${MONGO_PASSWORD:-example}@mongo:27017/marketplace?authSource=admin
-      NODE_ENV: ${NODE_ENV:-development}
+      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/marketplace?authSource=admin
     depends_on:
       mongo:
         condition: service_healthy
@@ -38,9 +41,18 @@ services:
       context: ./Frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3000:3000"
+    volumes:
+      - ./Frontend:/app          # Mount source for hot-reload
+      - frontend-deps:/app/node_modules  # Preserve container node_modules
+    environment:
+      WATCHPACK_POLLING: "true"  # Enables hot-reload inside Docker on all OSes
+      CHOKIDAR_USEPOLLING: "true"
+      WDS_SOCKET_PORT: 3000
     depends_on:
       - backend
 
 volumes:
   mongo-data:
+  backend-deps:
+  frontend-deps:
