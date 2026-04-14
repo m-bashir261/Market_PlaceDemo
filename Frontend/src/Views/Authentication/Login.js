@@ -31,8 +31,8 @@ const Login = () => {
             <div style={styles.loginCard}>
                 <h2 style={styles.text}>Welcome Back</h2>
                 <form onSubmit={handleLogin} style={styles.form}>
-                    <input type="text" placeholder="Username" onChange={e => setUsername(e.target.value)} style={styles.input} />
-                    <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} style={styles.input} />
+                    <input type="text" placeholder="Username" onChange={e => setUsername(e.target.value)} style={styles.input} required/>
+                    <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} style={styles.input} required/>
                     <button type="submit" style={styles.button}>Login</button>
                 </form>
                 <p style={{marginTop: '15px'}}>Don't have an account? <a href="/signup">Sign up</a></p>
