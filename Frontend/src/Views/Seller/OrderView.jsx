@@ -1,6 +1,8 @@
 // OrderView.jsx
 import React, { useState, useMemo } from 'react';
-import './OrderView.css';
+import './Seller.css';
+import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'; 
 
 export default function OrderView() {
 const [orders, setOrders] = useState([
@@ -53,6 +55,7 @@ const [orders, setOrders] = useState([
     status: 'delivered',
 },
 ]);
+const navigate = useNavigate()
 const [selectedOrderId, setSelectedOrderId] = useState(null);
 const [searchTerm, setSearchTerm] = useState('');
 const [statusFilter, setStatusFilter] = useState('');
@@ -107,6 +110,11 @@ return (
         <div className="seller-badge">
             <span className="badge-icon">👤</span>
             <span className="seller-label">Seller Dashboard, Welcome John!</span>
+        </div>
+        <div className="New-Listing-Button">
+            <Link to="/seller/listings/create" className="create-listing-btn">
+             Create New Listing
+            </Link>
         </div>
         <div className="seller-info">
             <span className="seller-name">YourStore</span>
