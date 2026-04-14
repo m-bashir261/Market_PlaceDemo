@@ -6,6 +6,11 @@ const listingSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
+    category_id: {
+        type: mongoose.Schema.Types.ObjectId, //foreign key relationship
+        required: true,
+        ref: 'Category'
+    },
     title: {
         type: String,
         required: true
@@ -26,6 +31,10 @@ const listingSchema = new mongoose.Schema({
         type: [String], //array of strings
         default: []
     },
-}, {timestammps: true});
+    is_active: {
+        type: Boolean,
+        default: true
+    }
+}, {timestamps: true});
 
 module.exports = mongoose.model('Listing', listingSchema);
