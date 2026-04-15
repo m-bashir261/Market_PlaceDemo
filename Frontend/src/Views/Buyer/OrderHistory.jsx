@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './OrderHistory.css';
 
@@ -75,11 +75,32 @@ function getBarWidth(status) {
 function OrderHistory() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('All');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const filters = ['All', 'Pending', 'Shipped', 'Delivered', 'Cancelled'];
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/orders');
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data);
+        } else {
+          console.error("Failed to fetch orders");
+        }
+      } catch (error) {
+        console.error("Error connecting to backend:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
   const filtered = filter === 'All'
-    ? sampleOrders
-    : sampleOrders.filter(o => o.status === filter);
+    ? orders
+    : orders.filter(o => o.status === filter);
 
   return (
     <div className="order-history-page">
@@ -109,7 +130,7 @@ function OrderHistory() {
             <h1 className="oh-title">My Orders</h1>
             <p className="oh-subtitle">Track and manage all your purchases</p>
           </div>
-          <div className="oh-count-badge">{filtered.length} of {sampleOrders.length} orders</div>
+          <div className="oh-count-badge">{filtered.length} of {orders.length} orders</div>
         </div>
 
         {/* ── Filter Tabs ── */}
@@ -132,7 +153,11 @@ function OrderHistory() {
             <span className="oh-order-count">{filtered.length} orders</span>
           </div>
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="oh-empty">
+              <p>Loading orders...</p>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="oh-empty">
               <div className="oh-empty-icon">&#128230;</div>
               <p>No orders found</p>
@@ -143,30 +168,36 @@ function OrderHistory() {
             </div>
           ) : (
             <div className="oh-orders-list">
-              {filtered.map(order => (
-                <div key={order.id} className="oh-order-item">
+              {filtered.map(order => {
+                // Determine the product name and fallback image since the backend populated product might be null if 
+                // the MongoDB listing ID was a dummy or missing.
+                const pName = order.product?.name || 'Unknown Product';
+                const pImage = order.product?.image || 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=120&q=80';
+                
+                return (
+                  <div key={order._id} className="oh-order-item">
 
-                  {/* Product Image */}
-                  <div className="oh-product-image">
-                    <img src={order.productImage} alt={order.productName} />
+                    {/* Product Image */}
+                    <div className="oh-product-image">
+                      <img src={pImage} alt={pName} />
+                    </div>
+
+                    {/* Order Info */}
+                    <div className="oh-order-info">
+                      <p className="oh-product-name">{pName}</p>
+                      <p className="oh-meta">
+                        EGP {order.totalPrice?.toFixed(2)}
+                        &nbsp;·&nbsp; Qty: {order.quantity}
+                        &nbsp;·&nbsp; {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {/* Status */}
+                    <StatusBadge status={order.status || 'Pending'} />
+
                   </div>
-
-                  {/* Order Info */}
-                  <div className="oh-order-info">
-                    <p className="oh-product-name">{order.productName}</p>
-                    <p className="oh-seller">@{order.seller}</p>
-                    <p className="oh-meta">
-                      EGP {(order.price * order.quantity).toFixed(2)}
-                      &nbsp;·&nbsp; Qty: {order.quantity}
-                      &nbsp;·&nbsp; {order.date}
-                    </p>
-                  </div>
-
-                  {/* Status */}
-                  <StatusBadge status={order.status} />
-
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

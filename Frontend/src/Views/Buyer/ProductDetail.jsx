@@ -62,8 +62,28 @@ function ProductDetail() {
     setQuantity(value);
   };
  
-  const handlePlaceOrder = () => {
-    setOrderCreated(true);
+  const handlePlaceOrder = async () => {
+    try {
+      // Note: We use a 24-character dummy ID because the backend Order model expects a MongoDB ObjectId for the product
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          listing_id: '69dec095add6545caaa8a124', 
+        }),
+      });
+
+      if (response.ok) {
+        setOrderCreated(true);
+      } else {
+        const errData = await response.json();
+        console.error('Failed to place order:', errData.message);
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+    }
   };
  
   return (

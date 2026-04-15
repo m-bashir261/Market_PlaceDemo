@@ -13,7 +13,6 @@ function AppRoutes() {
             <Routes>
                 <Route path="/buyer/orders" element={<OrderHistory />} />
                 <Route path="/buyer/product/:id" element={<ProductDetail />} />
-                <Route path="/orders" element={<OrderView />} />
             </Routes>
         </Router>
     );
