@@ -15,11 +15,11 @@ function requireAuth(req, res, next) {
 router.post('/', requireAuth, async (req, res) => {
     try {
 // Inside your route file
-const { title, description, price, delivery_days, image_urls, category_id } = req.body;
-        const seller_id = req.session.seller_id;
+const { title, description, price, delivery_days, image_url, category_id } = req.body;
+        const seller_id = req.session.seller_id; // so it can come from the session not the form
 
         const newListing = new Listing({
-            seller_id: req.session.seller_id, // so it can come from the session not the form
+            seller_id, 
             title,
             description,
             price,
