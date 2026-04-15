@@ -23,4 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 .env
 /implementation plan.md
+.idea
+.vscode
 Backend/node_modules/
