@@ -11,7 +11,11 @@ const product = new mongoose.Schema({
     countInStock: {type: Number, required: true, default: 0},
     numSold: {type: Number, required: true, default: 0},
     deliveryEstimate: {type: String},
-    category: {type: String, required: true},
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "ProductCategory"
+    },
 
     sellerID:{
         type: mongoose.Schema.Types.ObjectId,
