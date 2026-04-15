@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import OrderView from "./Views/Seller/OrderView";
 import ProductDetail from './Views/Buyer/ProductDetail';
 import OrderHistory from './Views/Buyer/OrderHistory';
 

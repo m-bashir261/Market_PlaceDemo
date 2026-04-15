@@ -5,9 +5,13 @@ import './ProductDetail.css';
 const sampleProducts = [
   {
     id: '1',
+    listing_id: '69dec095add6545caaa8a124',
     name: 'Modern Desk Lamp',
     price: 49.99,
     seller: 'Luna Lighting',
+    sellerRating: 4.7,
+    sellerSales: 120,
+    deliveryTime: '2-4 days',
     description:
       'A warm LED desk lamp with adjustable brightness, ideal for home offices and reading corners.',
     image: 'https://m.media-amazon.com/images/I/71Jh2BN+QPL.jpg',
@@ -16,9 +20,13 @@ const sampleProducts = [
   },
   {
     id: '2',
+    listing_id: '69dec095add6545caaa8a125',
     name: 'Wireless Headphones',
     price: 89.99,
     seller: 'SoundWave',
+    sellerRating: 4.5,
+    sellerSales: 84,
+    deliveryTime: '3-5 days',
     description:
       'High-quality wireless headphones with active noise cancellation and 24-hour battery life.',
     image: 'https://image-cdn.ubuy.com/topvision-noise-cancelling-headphones/400_400_100/696c8c1a48e3557eb800de7f.jpg',
@@ -64,14 +72,13 @@ function ProductDetail() {
  
   const handlePlaceOrder = async () => {
     try {
-      // Note: We use a 24-character dummy ID because the backend Order model expects a MongoDB ObjectId for the product
       const response = await fetch('http://localhost:5000/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          listing_id: '69dec095add6545caaa8a124', 
+          listing_id: product.listing_id,
         }),
       });
 
