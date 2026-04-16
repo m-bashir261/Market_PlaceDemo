@@ -1,23 +1,4 @@
 services:
-  # ---- MongoDB ----
-  mongo:
-    image: mongo:7
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-    env_file: .env
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
   # ---- Express Backend ----
   backend:
     build:
@@ -30,10 +11,7 @@ services:
       - backend-deps:/app/node_modules  # Preserve container node_modules
     env_file: .env
     environment:
-      MONGO_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/marketplace?authSource=admin
-    depends_on:
-      mongo:
-        condition: service_healthy
+      MONGO_URI: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wfwwjwa.mongodb.net/marketplace?appName=Cluster0
 
   # ---- React Frontend ----
   frontend:
@@ -53,6 +31,5 @@ services:
       - backend
 
 volumes:
-  mongo-data:
   backend-deps:
   frontend-deps:
