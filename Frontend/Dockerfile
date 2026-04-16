@@ -14,4 +14,4 @@ COPY . .
 EXPOSE 3000
 
 # React dev server with hot-reload
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npm install && npm start"]

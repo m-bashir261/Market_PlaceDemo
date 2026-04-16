@@ -11,7 +11,8 @@ services:
       - backend-deps:/app/node_modules  # Preserve container node_modules
     env_file: .env
     environment:
-      MONGO_URI: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wfwwjwa.mongodb.net/marketplace?appName=Cluster0
+      MONGO_URI: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wfwwjwa.mongodb.net/marketplaceDB?appName=Cluster0
+      MONGODB_URI: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wfwwjwa.mongodb.net/marketplaceDB?appName=Cluster0
 
   # ---- React Frontend ----
   frontend:

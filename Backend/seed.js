@@ -15,16 +15,16 @@ const seedCategories = [
 ];
 
 const seedProductsRaw = [
-    { name: "Wireless Headphones", description: "High quality noise-canceling wireless headphones.", price: 99.99, brand: "SoundWave", countInStock: 50, _catObj: "Electronics" },
-    { name: "Gaming Mouse", description: "Ergonomic gaming mouse with customizable RGB lighting.", price: 49.99, brand: "ClickPro", countInStock: 120, _catObj: "Electronics" },
-    { name: "4K Monitor", description: "Stunning 4K resolution display with 144Hz refresh rate.", price: 299.99, brand: "Vision", countInStock: 30, _catObj: "Electronics" },
-    { name: "Smartphone", description: "Latest generation smartphone with excellent camera.", price: 799.99, brand: "Techy", countInStock: 100, _catObj: "Electronics" },
-    { name: "Running Shoes", description: "Comfortable and lightweight running shoes.", price: 79.99, brand: "Stride", countInStock: 80, _catObj: "Fashion" },
-    { name: "Leather Jacket", description: "Premium quality leather jacket for all seasons.", price: 149.99, brand: "StyleCo", countInStock: 25, _catObj: "Fashion" },
-    { name: "Sunglasses", description: "Stylish polarized sunglasses.", price: 39.99, brand: "Sunny", countInStock: 60, _catObj: "Fashion" },
-    { name: "Office Chair", description: "Ergonomic office chair with lumbar support.", price: 129.99, brand: "ComfortSit", countInStock: 40, _catObj: "Home & Garden" },
-    { name: "Coffee Table", description: "Minimalist wooden coffee table.", price: 89.99, brand: "WoodWorks", countInStock: 20, _catObj: "Home & Garden" },
-    { name: "Yoga Mat", description: "Non-slip yoga mat made with eco-friendly materials.", price: 24.99, brand: "Zen", countInStock: 150, _catObj: "Sports" },
+    { name: "Wireless Headphones", description: "High quality noise-canceling wireless headphones.", price: 99.99, brand: "SoundWave", countInStock: 50, _catObj: "Electronics", rating: 4.5 },
+    { name: "Gaming Mouse", description: "Ergonomic gaming mouse with customizable RGB lighting.", price: 49.99, brand: "ClickPro", countInStock: 120, _catObj: "Electronics" ,rating: 3.5},
+    { name: "4K Monitor", description: "Stunning 4K resolution display with 144Hz refresh rate.", price: 299.99, brand: "Vision", countInStock: 30, _catObj: "Electronics",rating: 2.5 },
+    { name: "Smartphone", description: "Latest generation smartphone with excellent camera.", price: 799.99, brand: "Techy", countInStock: 100, _catObj: "Electronics",rating: 5 },
+    { name: "Running Shoes", description: "Comfortable and lightweight running shoes.", price: 79.99, brand: "Stride", countInStock: 80, _catObj: "Fashion" ,rating: 0.5},
+    { name: "Leather Jacket", description: "Premium quality leather jacket for all seasons.", price: 149.99, brand: "StyleCo", countInStock: 25, _catObj: "Fashion" ,rating:3},
+    { name: "Sunglasses", description: "Stylish polarized sunglasses.", price: 39.99, brand: "Sunny", countInStock: 60, _catObj: "Fashion" ,rating: 4.5},
+    { name: "Office Chair", description: "Ergonomic office chair with lumbar support.", price: 129.99, brand: "ComfortSit", countInStock: 40, _catObj: "Home & Garden" ,rating: 2},
+    { name: "Coffee Table", description: "Minimalist wooden coffee table.", price: 89.99, brand: "WoodWorks", countInStock: 20, _catObj: "Home & Garden" ,rating: 1.5},
+    { name: "Yoga Mat", description: "Non-slip yoga mat made with eco-friendly materials.", price: 24.99, brand: "Zen", countInStock: 150, _catObj: "Sports" ,rating: 1},
     { name: "Dumbbell Set", description: "Adjustable dumbbell set for home workouts.", price: 59.99, brand: "IronFit", countInStock: 45, _catObj: "Sports" }
 ];
 
@@ -36,8 +36,8 @@ const seedDB = async () => {
         const categoryCount = await ProductCategory.countDocuments();
         const productCount = await Product.countDocuments();
 
-        if (categoryCount === 0 || productCount === 0) {
-            console.log('Missing categories or products. Clearing and reseeding initial data...');
+        if (true) {
+            console.log('Clearing and reseeding database forcefully...');
             
             await ProductCategory.deleteMany({});
             await Product.deleteMany({});
