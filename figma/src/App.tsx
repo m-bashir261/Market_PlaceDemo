@@ -218,7 +218,7 @@ export default function App() {
                     <span className="text-white font-bold">L</span>
                   </div>
                   <h3 className="font-bold bg-gradient-to-r from-violet-500 to-blue-500 bg-clip-text text-transparent">
-                    LocalKart
+                    Kemet
                   </h3>
                 </div>
                 <p className="text-sm text-muted-foreground">

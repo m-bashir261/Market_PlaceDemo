@@ -12,6 +12,7 @@ import Footer from '../../Components/Footer';
 // Actually, let's fix api.js next to make sure.
 
 import fetchProducts from '../../services/api';
+import { useLocation } from 'react-router-dom';
 // We will manually fetch categories until we are sure api.js exports it.
 // Wait, I will use api.js export format.
 
@@ -20,8 +21,11 @@ const ProductCatalog = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const location = useLocation();
+  const initialCategory = location.state?.category || 'ALL';
+
   const [filters, setFilters] = useState({
-    category: 'ALL',
+    category: initialCategory,
     priceRange: 'ALL',
     minRating: 0
   });

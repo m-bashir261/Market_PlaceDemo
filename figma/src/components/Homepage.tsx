@@ -409,7 +409,7 @@ export const Homepage: React.FC<HomepageProps> = ({
           <Card className="glass-card border-0 bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-blue-500/10">
             <CardContent className="p-8 lg:p-12 text-center">
               <h3 className="text-2xl lg:text-3xl font-bold mb-4">
-                Stay Updated with LocalKart
+                Stay Updated with Kemet
               </h3>
               <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                 Get exclusive deals, new shop alerts, and be the first to know about exciting offers in your area.

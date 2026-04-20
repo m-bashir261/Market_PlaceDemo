@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  LocalKart
+                  Kemet
                 </h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">Shop Local, Live Better</p>
               </div>
