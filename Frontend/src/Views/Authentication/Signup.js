@@ -32,7 +32,7 @@ const Signup = () => {
                     </select>
                     <button type="submit" style={styles.button}>Sign Up</button>
                 </form>
-                <p style={{marginTop: '15px'}}>Already have an account? <a href="/login">Login</a></p>
+                <p style={{marginTop: '15px', color: '#666'}}>Already have an account? <a href="/login">Login</a></p>
             </div>
         </div>
     );
