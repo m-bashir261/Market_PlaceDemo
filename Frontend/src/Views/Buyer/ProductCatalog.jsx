@@ -4,14 +4,8 @@ import ProductCard from './ProductCard';
 import { PackageSearch, Filter, SlidersHorizontal, Star } from 'lucide-react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-// Assuming fetchProducts is default properly exported and fetchCategories is named export
-// Let's modify the imports to match api.js correctly. api.js exports fetchProducts as default
-// but does not export fetchCategories as named if it was not written like `export { fetchCategories }`
-// Actually, let's fix api.js next to make sure.
 
-import fetchProducts from '../../services/products';
-// We will manually fetch categories until we are sure api.js exports it.
-// Wait, I will use api.js export format.
+import { getProducts, getCategories } from '../../services/products';
 
 const ProductCatalog = () => {
   const [products, setProducts] = useState([]);
@@ -43,8 +37,7 @@ const ProductCatalog = () => {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products/categories");
-        const cats = await response.json();
+        const cats = await getCategories();
         if (Array.isArray(cats)) {
           setCategories(cats);
         } else {
@@ -62,7 +55,7 @@ const ProductCatalog = () => {
     const loadProducts = async () => {
       setLoading(true);
       try {
-        const data = await fetchProducts({
+        const data = await getProducts({
           page,
           category: filters.category,
           limit: 12,
