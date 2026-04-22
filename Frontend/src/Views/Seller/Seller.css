@@ -737,3 +737,21 @@ textarea.search-input {
         display: block;
     }
 }
+
+.seller-hub-link {
+    text-decoration: none; /* Removes the underline */
+    color: inherit;        /* Keeps the text white/original color */
+    display: flex;
+    align-items: center;
+    transition: opacity 0.2s ease;
+}
+
+.seller-hub-link:hover {
+    opacity: 0.8;          /* Gives a slight fade effect on hover so it feels clickable */
+    cursor: pointer;
+}
+
+/* If the "SELLER HUB" text specifically turns blue, force it white: */
+.seller-hub-link .seller-label {
+    color: white;
+}

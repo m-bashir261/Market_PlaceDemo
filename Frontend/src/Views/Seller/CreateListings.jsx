@@ -1,3 +1,4 @@
+import { Link   }  from 'react-router-dom';
 import { useState } from 'react'
 import './Seller.css';
 
@@ -59,10 +60,12 @@ export default function CreateListing() {
     <div className="seller-dashboard">
       {/* Reusing header style */}
       <header className="seller-header">
+      <Link to="/seller/orders" className="seller-hub-link">
         <div className="seller-badge">
           <span className="badge-icon">📦</span>
           <span className="seller-label">SELLER HUB</span>
         </div>
+      </Link>
       </header>
 
       <main className="dashboard-content">
