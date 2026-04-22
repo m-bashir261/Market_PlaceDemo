@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
 
         // 3. Create Token (This is the user's "ID Badge")
         const token = jwt.sign(
-            { id: user._id, role: user.role }, 
+            { id: user._id, role: user.role==='seller' ? 1 : 0 }, // Include role in token payload 1: seller, 0: buyer
             process.env.JWT_SECRET || 'secretkey', 
             { expiresIn: '1h' }
         );
