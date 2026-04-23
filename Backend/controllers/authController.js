@@ -7,24 +7,39 @@ exports.register = async (req, res) => {
         const { firstName, lastName, username, password, role } = req.body;
 
         // 1. Check if user already exists
-        let user = await User.findOne({ username });
+        let user = await User.findOne({ username: username.toLowerCase() });
         if (user) return res.status(400).json({ message: "User already exists" });
 
-        // 2. Hash the password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // 3. Create and save user
+        // 2. Create and save user
+        // (If you want to use hashing, uncomment the bcrypt lines from your snippet)
         user = new User({
             firstName,
             lastName,
             username: username.toLowerCase(),
-            password/*: hashedPassword*/,
+            password: password, // Store password
             role
         });
 
         await user.save();
-        res.status(201).json({ message: "User registered successfully" });
+
+        // 3. Generate Token immediately after saving (Auto-Login)
+        const token = jwt.sign(
+            { id: user._id, role: user.role === 'seller' ? 1 : 0 },
+            process.env.JWT_SECRET || 'secretkey',
+            { expiresIn: '1h' }
+        );
+
+        // 4. Send back the token and user data to the frontend
+        res.status(201).json({ 
+            message: "User registered and logged in successfully",
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                role: user.role
+            }
+        });
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
