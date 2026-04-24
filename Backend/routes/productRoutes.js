@@ -7,7 +7,7 @@ const Listing = require('../models/Listing');
 router.get('/', async (req, res) => {
     try {
         // 1. Parse inputs
-        const { category, minRating, priceRange } = req.query;
+        const { category, minRating, priceRange, search } = req.query;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 12;
         const skip = (page - 1) * limit;
@@ -19,13 +19,26 @@ router.get('/', async (req, res) => {
             query.category_id = category; 
         }
 
-        // 2. Price range filter
+        // 2. Minimum Rating Filter
+        if (minRating && parseFloat(minRating) > 0) {
+            query.rating = { $gte: parseFloat(minRating) };
+        }
+
+        // 3. Price range filter
         if (priceRange && priceRange !== "ALL") {
             const [minPrice, maxPrice] = priceRange.split("-").map(Number);
             query.price = { $gte: minPrice, $lte: maxPrice };
         }
 
-        // 3. Execute Query on the Listing model
+        // 4. Search filter
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        // 5. Execute Query on the Listing model
         const listings = await Listing.find(query)
             .populate('category_id', 'name')
             .skip(skip)
@@ -33,7 +46,7 @@ router.get('/', async (req, res) => {
             .sort({ created_at: -1 }) // Show newest first
             .lean();
 
-        // 4. Format for the frontend
+        // 6. Format for the frontend
         const formattedListings = listings.map(listing => ({
             ...listing,
             // Convert the populated object into a simple string for the UI

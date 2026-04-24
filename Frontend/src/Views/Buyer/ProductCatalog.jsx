@@ -15,7 +15,8 @@ const ProductCatalog = () => {
   const [filters, setFilters] = useState({
     category: 'ALL',
     priceRange: 'ALL',
-    minRating: 0
+    minRating: 0,
+    search: ''
   });
 
   const [localPrice, setLocalPrice] = useState([0, 2000]);
@@ -60,7 +61,8 @@ const ProductCatalog = () => {
           category: filters.category,
           limit: 12,
           priceRange: filters.priceRange,
-          minRating: filters.minRating
+          minRating: filters.minRating,
+          search: filters.search
         });
 
         if (Array.isArray(data)) {
@@ -77,7 +79,7 @@ const ProductCatalog = () => {
     };
 
     loadProducts();
-  }, [filters.category, filters.priceRange, filters.minRating, page]);
+  }, [filters.category, filters.priceRange, filters.minRating, filters.search, page]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -92,7 +94,15 @@ const ProductCatalog = () => {
             <p>Discover our premium selection of high quality items</p>
           </div>
         </header>
-
+        <div className="search-bar-container">
+          <input 
+            type="text" 
+            placeholder="Search listings by name or description..." 
+            className="search-input"
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+          />
+        </div>
         <div className="catalog-content">
           <aside className="filters-sidebar">
             <div className="filter-group">
