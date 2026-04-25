@@ -26,7 +26,22 @@ const useCategories = () => {
       fetchCategories();
     }, []);
     return { categories, loading, error }
-  }
+}
+
+const uploadToCloudinary = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    { method: 'POST', body: formData }
+  )
+
+  const data = await response.json()
+  if (!response.ok) throw new Error(data.error?.message || 'Image upload failed')
+  return data.secure_url
+}
 
 export default function CreateListing() {
   const [formData, setFormData] = useState({  //formData is an object holding everything in the form 
@@ -35,11 +50,12 @@ export default function CreateListing() {
     price: '',
     delivery_days: '',
     category_id: '',
-    image_url: '',   // we'll take a comma-separated string and split it later
     stock: ''
   })
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false) // success is a boolean that flips to true to track if listing creation was successful
+  const [imageFiles, setImageFiles] = useState([])
+  const [uploading, setUploading] = useState(false)
   const { categories, loading, error: categoryError } = useCategories() // this custom hook fetches the list of categories from the backend and manages loading and error states for that request.
 
   // handleChange is a generic function that updates a component's state in real-time as a user types or selects a value in a form element
@@ -48,12 +64,37 @@ export default function CreateListing() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   } // this function takes the existing formData object, spreads its properties into a new object, and then updates the specific property that corresponds to the name of the input field that triggered the event with its current value. This allows for dynamic handling of multiple form fields without needing separate state variables or handlers for each one.
 
+  const handleFileDrop = (e) => {
+  e.preventDefault()
+  const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
+  setImageFiles(prev => [...prev, ...dropped])
+}
+
+const handleFileSelect = (e) => {
+  const selected = Array.from(e.target.files)
+  setImageFiles(prev => [...prev, ...selected])
+}
+
+const removeFile = (index) => {
+  setImageFiles(prev => prev.filter((_, i) => i !== index))
+}
+
+
   const handleSubmit = async (e) => {
     e.preventDefault() // when the create listing button is clicked, this stops the browser from reloading the page (the default behavior for forms).
     setError(null)
 
+    if (imageFiles.length === 0) {
+  setError('Please add at least one image.')
+  return }
+
     // We need to convert price and delivery_days to numbers, and split image_urls into an array before sending to the backend
     try {  // this block attempts to execute the code that creates the listing. If any error occurs during this process (like a network error or a server error), it will be caught by the catch block below, allowing us to handle it gracefully instead of crashing the application.
+      setUploading(true)
+      
+      const imageUrls = await Promise.all(imageFiles.map(uploadToCloudinary))
+      setUploading(false)
+
       const response = await fetch('http://localhost:5000/api/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, 
@@ -62,7 +103,7 @@ export default function CreateListing() {
           ...formData,
           price: Number(formData.price),
           delivery_days: Number(formData.delivery_days),
-          image_url: formData.image_url.split(',').map(url => url.trim()),
+          image_url: imageUrls,
           countInStock: Number(formData.stock)
         })
       })
@@ -77,6 +118,9 @@ export default function CreateListing() {
       setSuccess(true)
 
     } catch (err) {
+
+      setUploading(false)
+      
       setError('Could not connect to server')
     }
   }
@@ -114,9 +158,9 @@ export default function CreateListing() {
               price: '',
               delivery_days: '',
               category_id: '',
-              image_url: '',
               stock: ''
             });
+            setImageFiles([]);
           }}
         >
           Create Another
@@ -155,17 +199,27 @@ export default function CreateListing() {
           <form onSubmit={handleSubmit} className="listing-form">
             {error && <div className="error-message">{error}</div>}
 
-            <div className="form-group">
-              <label>Title</label>
-              <input 
-                className="search-input" 
-                name="title" 
-                placeholder="e.g. Headset, Sewing Machine, etc."
-                value={formData.title} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
+           <div className="form-group">
+             <label>Images</label>
+               <div className="drop-zone"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleFileDrop}>
+                  <p>Drag & drop images here</p>
+                  <p className="drop-zone-or">or</p>
+                    <input type="file" accept="image/*" multiple onChange={handleFileSelect} />
+                </div>
+
+     {imageFiles.length > 0 && (
+    <div className="image-preview-grid">
+      {imageFiles.map((file, i) => (
+        <div key={i} className="image-preview-item">
+          <img src={URL.createObjectURL(file)} alt={file.name} className="image-preview-thumb" />
+          <button type="button" onClick={() => removeFile(i)} className="image-preview-remove">×</button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
             <div className="form-group">
               <label>Description</label>
@@ -244,7 +298,9 @@ export default function CreateListing() {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="btn-save">Publish Listing</button>
+              <button type="submit" className="btn-save" disabled={uploading}>
+                    {uploading ? 'Uploading images...' : 'Publish Listing'}
+              </button>            
             </div>
           </form>
         </div>
