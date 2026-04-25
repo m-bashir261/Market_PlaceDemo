@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
 import ProductCard from './ProductCard';
-import fetchProducts from '../../services/api';
+import { getProducts } from '../../services/products';
 import './Home.css';
 import './ProductCatalog.css';
 
@@ -63,7 +63,7 @@ const Home = () => {
     useEffect(() => {
         const getTopProducts = async () => {
             try {
-                const data = await fetchProducts({ limit: 20 });
+                const data = await getProducts({ limit: 20 });
                 if (Array.isArray(data)) {
                     const sorted = [...data].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 6);
                     setTopProducts(sorted);
