@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../models/Product');
-const ProductCategories = require('../models/ProductCategory');
 const Listing = require('../models/Listing');
+const ProductCategories = require('../models/ProductCategory');
 
 router.get('/', async (req, res) => {
     try {
@@ -52,7 +51,9 @@ router.get('/', async (req, res) => {
             // Convert the populated object into a simple string for the UI
             category_name: listing.category_id ? listing.category_id.name : 'Uncategorized',
             // Ensure category_id remains an ID string if the frontend needs it
-            category_id: listing.category_id ? listing.category_id._id : null
+            category_id: listing.category_id ? listing.category_id._id : null,
+            // Map image_urls array to image_url string
+            image_url: listing.image_urls && listing.image_urls.length > 0 ? listing.image_urls[0] : "https://i.ibb.co/000000/default-image.jpg"
         }));
 
         res.status(200).json(formattedListings);

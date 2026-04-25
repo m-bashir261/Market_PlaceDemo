@@ -33,6 +33,10 @@ const listingSchema = new mongoose.Schema({
             default: "https://i.ibb.co/000000/default-image.jpg",
             },
         ],
+        countInStock: {
+            type: Number,
+            default: 0,
+        },
         is_active: {
             type: Boolean,
             default: true,

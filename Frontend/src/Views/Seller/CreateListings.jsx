@@ -35,7 +35,8 @@ export default function CreateListing() {
     price: '',
     delivery_days: '',
     category_id: '',
-    image_url: ''   // we'll take a comma-separated string and split it later
+    image_url: '',   // we'll take a comma-separated string and split it later
+    stock: ''
   })
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false) // success is a boolean that flips to true to track if listing creation was successful
@@ -61,7 +62,8 @@ export default function CreateListing() {
           ...formData,
           price: Number(formData.price),
           delivery_days: Number(formData.delivery_days),
-          image_url: formData.image_url.split(',').map(url => url.trim())
+          image_url: formData.image_url.split(',').map(url => url.trim()),
+          countInStock: Number(formData.stock)
         })
       })
 
@@ -112,7 +114,8 @@ export default function CreateListing() {
               price: '',
               delivery_days: '',
               category_id: '',
-              image_url: ''
+              image_url: '',
+              stock: ''
             });
           }}
         >
@@ -201,6 +204,18 @@ export default function CreateListing() {
                   required 
                 />
               </div>
+            </div>
+
+            <div className="form-group">
+              <label>Stock Count</label>
+              <input 
+                className="search-input" 
+                name="stock" 
+                type="number" 
+                value={formData.stock} 
+                onChange={handleChange} 
+                required 
+              />
             </div>
 
             <div className="form-group">

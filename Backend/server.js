@@ -25,7 +25,14 @@ app.use(session({
 
 
 
-mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+if (!mongoUri) {
+  console.error('❌ Missing MongoDB connection URI. Set MONGODB_URI or MONGO_URI in your .env file.');
+  process.exit(1);
+}
+
+mongoose.connect(mongoUri)
   .then(() => console.log(`MongoDB connected ✅`))
   .catch(err => console.log("❌ Error connecting to MongoDB:", err));
 

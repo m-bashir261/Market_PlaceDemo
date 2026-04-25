@@ -21,12 +21,10 @@ const ProductCard = ({ listing }) => {
             <span className="currency">$</span>
             <span className="price">{listing.price.toFixed(2)}</span>
           </div>
-          {listing.countInStock > 10 ? (
-            <span className="stock-status in-stock">In Stock</span>
-          ) : listing.countInStock > 0 ? (
-            <span className="stock-status low-stock">Low Stock</span>
+          {listing.countInStock > 0 ? (
+            <span className="stock-status in-stock">{listing.countInStock} in stock</span>
           ) : (
-            <span className="stock-status out-of-stock">Out of Stock</span>
+            <span className="stock-status out-of-stock">Out of stock</span>
           )}
         </div>
       </div>
