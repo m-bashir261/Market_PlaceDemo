@@ -72,4 +72,29 @@ router.get('/categories', async (req, res) => {
     }
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const listing = await Listing.findById(req.params.id)
+            .populate('category_id', 'name')
+            .populate('seller_id', 'name') // If you want seller info
+            .lean();
+
+        if (!listing) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        const formattedListing = {
+            ...listing,
+            category_name: listing.category_id ? listing.category_id.name : 'Uncategorized',
+            category_id: listing.category_id ? listing.category_id._id : null,
+            image_url: listing.image_urls && listing.image_urls.length > 0 ? listing.image_urls[0] : "https://i.ibb.co/000000/default-image.jpg"
+        };
+
+        res.status(200).json(formattedListing);
+    } catch (error) {
+        console.error("Single Listing Fetch Error:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 module.exports = router;
