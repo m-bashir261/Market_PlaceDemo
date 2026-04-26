@@ -1,41 +1,10 @@
-import { useMemo, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import './ProductDetail.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
+import { getProductById } from '../../services/products';
 
-const sampleProducts = [
-  {
-    id: '1',
-    listing_id: '69dec095add6545caaa8a124',
-    name: 'Modern Desk Lamp',
-    price: 49.99,
-    seller: 'Luna Lighting',
-    sellerRating: 4.7,
-    sellerSales: 120,
-    deliveryTime: '2-4 days',
-    description:
-      'A warm LED desk lamp with adjustable brightness, ideal for home offices and reading corners.',
-    image: 'https://m.media-amazon.com/images/I/71Jh2BN+QPL.jpg',
-    category: 'Home Decorations',
-    stock: 12,
-  },
-  {
-    id: '2',
-    listing_id: '69dec095add6545caaa8a125',
-    name: 'Wireless Headphones',
-    price: 89.99,
-    seller: 'SoundWave',
-    sellerRating: 4.5,
-    sellerSales: 84,
-    deliveryTime: '3-5 days',
-    description:
-      'High-quality wireless headphones with active noise cancellation and 24-hour battery life.',
-    image: 'https://image-cdn.ubuy.com/topvision-noise-cancelling-headphones/400_400_100/696c8c1a48e3557eb800de7f.jpg',
-    category: 'Electronics',
-    stock: 8,
-  },
-];
 
 function StarRating({ rating }) {
   return (
@@ -52,17 +21,54 @@ function StarRating({ rating }) {
  
 function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [orderCreated, setOrderCreated] = useState(false);
- 
-  const product = useMemo(
-    () => sampleProducts.find((item) => item.id === id) || sampleProducts[0],
-    [id]
-  );
- 
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await getProductById(id);
+        
+        // Map backend fields to the component's expected fields
+        const mappedProduct = {
+          id: data._id,
+          listing_id: data._id,
+          name: data.title,
+          price: data.price,
+          seller: data.seller_id?.name || 'Local Seller',
+          sellerRating: 4.5, // Default or fetch if available
+          sellerSales: 120, // Default or fetch if available
+          deliveryTime: '2-4 days',
+          description: data.description,
+          image: data.image_url || 'https://i.ibb.co/000000/default-image.jpg',
+          category: data.category_name,
+          stock: data.countInStock || 0,
+        };
+        
+        setProduct(mappedProduct);
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setError("Failed to load product details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
   const totalPrice = useMemo(
-    () => Number((product.price * quantity).toFixed(2)),
-    [product.price, quantity]
+    () => {
+      if (!product) return 0;
+      return Number((product.price * quantity).toFixed(2));
+    },
+    [product, quantity]
   );
  
   const handleQuantityChange = (event) => {
@@ -95,6 +101,32 @@ function ProductDetail() {
     }
   };
  
+  if (loading) {
+    return (
+      <div className="product-detail-page">
+        <Navbar />
+        <main className="page-body" style={{ textAlign: 'center', padding: '100px' }}>
+          <h2>Loading product details...</h2>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="product-detail-page">
+        <Navbar />
+        <main className="page-body" style={{ textAlign: 'center', padding: '100px' }}>
+          <h2>Product Not Found</h2>
+          <p>{error}</p>
+          <button onClick={() => navigate('/products')} className="modern-btn mt-4">Back to Catalog</button>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="product-detail-page">
  
