@@ -76,7 +76,7 @@ router.get('/:id', async (req, res) => {
     try {
         const listing = await Listing.findById(req.params.id)
             .populate('category_id', 'name')
-            .populate('seller_id', 'name') // If you want seller info
+            .populate('seller_id', 'username') // Populate seller's username
             .lean();
 
         if (!listing) {

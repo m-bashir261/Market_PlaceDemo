@@ -40,7 +40,7 @@ function ProductDetail() {
           listing_id: data._id,
           name: data.title,
           price: data.price,
-          seller: data.seller_id?.name || 'Local Seller',
+          seller: data.seller_id?.username || 'Unknown Seller',
           sellerRating: 4.5, // Default or fetch if available
           sellerSales: 120, // Default or fetch if available
           deliveryTime: '2-4 days',
