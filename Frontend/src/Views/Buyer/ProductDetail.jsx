@@ -32,6 +32,7 @@ function ProductDetail() {
   const [newCommentText, setNewCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [toast, setToast] = useState({ message: '', type: '' });
 
   const currentUserId = useMemo(() => {
     const token = localStorage.getItem('token');
@@ -119,25 +120,41 @@ function ProductDetail() {
     }
   };
 
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (!toast.message) return;
+    const timer = setTimeout(() => setToast({ message: '', type: '' }), 3000);
+    return () => clearTimeout(timer);
+  }, [toast.message]);
+
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newCommentText.trim()) return;
     try {
         const token = localStorage.getItem('token');
-        if (!token) return alert('Please login to comment');
+        if (!token) {
+            showToast('Please login to comment.');
+            return;
+        }
 
         // Validate token: check if valid, not expired, and role is buyer
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const currentTime = Date.now() / 1000;
             if (payload.exp < currentTime) {
-                return alert('Your session has expired. Please login again.');
+                showToast('Your session has expired. Please login again.');
+                return;
             }
             if (payload.role !== 'buyer') {
-                return alert('Only buyers can comment.');
+                showToast('Only buyers can comment.');
+                return;
             }
         } catch (decodeError) {
-            return alert('Invalid token. Please login again.');
+            showToast('Invalid token. Please login again.');
+            return;
         }
 
         const addedComment = await addComment(id, newCommentText, token);
@@ -237,6 +254,11 @@ function ProductDetail() {
       <Navbar />
  
       <main className="page-body">
+        {toast.message && (
+          <div className={`toast-notification ${toast.type}`}>
+            {toast.message}
+          </div>
+        )}
  
         {/* ── Breadcrumb ── */}
         <nav className="breadcrumb">
