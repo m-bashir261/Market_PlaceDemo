@@ -59,7 +59,7 @@ export default function OrderView() {
             // Map search to MongoDB _id and the Listing Title (since we bypassed the User model)
             const matchesSearch =
                 (order._id && order._id.toLowerCase().includes(searchStr)) ||
-                (order.listing_id?.title && order.listing_id.title.toLowerCase().includes(searchStr));
+                (order.items && order.items.some(item => item.listing_id?.title && item.listing_id.title.toLowerCase().includes(searchStr)));
 
             const matchesStatus = statusFilter === '' || order.status === statusFilter;
 
@@ -172,10 +172,10 @@ export default function OrderView() {
                                     
                                     {/* LEFT COLUMN: The Image */}
                                     <div className="order-image-container">
-                                        {order.listing_id?.image_urls && order.listing_id.image_urls.length > 0 ? (
+                                        {order.items && order.items[0]?.listing_id?.image_urls && order.items[0].listing_id.image_urls.length > 0 ? (
                                             <img 
-                                                src={order.listing_id.image_urls[0]} 
-                                                alt={order.listing_id?.title || 'Item'} 
+                                                src={order.items[0].listing_id.image_urls[0]} 
+                                                alt={order.items[0].listing_id?.title || 'Item'} 
                                                 className="order-thumbnail"
                                             />
                                         ) : (
@@ -192,12 +192,12 @@ export default function OrderView() {
                                         <div className="order-header-row">
                                             <div className="order-id-section">
                                                 <span className="order-id">Order ID: {order.orderNumber}</span>
-                                                <span className={`status-badge badge-${order.status}`}>
+                                                <span className={`status-badge badge-${order.status.toLowerCase()}`}>
                                                     {order.status.toUpperCase()}
                                                 </span>
                                             </div>
                                             <div className="order-amount">
-                                                ${order.listing_id?.price?.toFixed(2) || '0.00'}
+                                                ${order.totalAmount?.toFixed(2) || '0.00'}
                                             </div>
                                         </div>
 
@@ -206,7 +206,8 @@ export default function OrderView() {
                                             <div className="detail-item">
                                                 <span className="detail-label">Item</span>
                                                 <span className="detail-value text-primary">
-                                                    {order.listing_id?.title || 'Unknown Item'}
+                                                    {order.items && order.items[0]?.listing_id?.title || 'Multiple Items'}
+                                                    {order.items?.length > 1 ? ` (+${order.items.length - 1} more)` : ''}
                                                 </span>
                                             </div>
                                             <div className="detail-item">

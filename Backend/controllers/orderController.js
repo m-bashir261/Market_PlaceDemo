@@ -4,17 +4,19 @@ const Order = require('../models/Order');
 // Place a new order
 const placeOrder = async (req, res) => {
   try {
-    const { listing_id } = req.body;
+    const { seller_id, items, totalAmount } = req.body;
 
     const buyer_id = req.user.id;
 
-    if (!listing_id) {
-      return res.status(400).json({ message: 'listing_id is required' });
+    if (!seller_id || !items || !items.length) {
+      return res.status(400).json({ message: 'seller_id and items array are required' });
     }
 
     const order = await Order.create({
       buyer_id,
-      listing_id,
+      seller_id,
+      items,
+      totalAmount,
     });
 
     res.status(201).json({
@@ -33,7 +35,8 @@ const getBuyerOrders = async (req, res) => {
     const buyer_id = req.user.id;
 
     const orders = await Order.find({ buyer_id })
-      .populate('listing_id')   
+      .populate('items.listing_id')
+      .populate('seller_id', 'username name')
       .sort({ createdAt: -1 }); 
 
     res.status(200).json(orders);
@@ -46,7 +49,9 @@ const getBuyerOrders = async (req, res) => {
 // Get a single order by ID
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('listing_id');
+    const order = await Order.findById(req.params.id)
+      .populate('items.listing_id')
+      .populate('seller_id', 'username name');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });

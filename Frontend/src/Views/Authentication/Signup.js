@@ -14,7 +14,7 @@ const Signup = () => {
             localStorage.setItem('role', data.user.role);
             
             // Redirect based on role
-            navigate(data.user.role === 'seller' ? '/seller/orders' : '/products');
+            navigate(data.user.role === 'seller' ? '/seller/orders' : '/home');
         } else {
             alert(data.message || "Registration failed");
         }

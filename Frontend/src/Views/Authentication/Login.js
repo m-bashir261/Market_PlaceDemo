@@ -23,7 +23,7 @@ const Login = () => {
                 if (data.user.role === 'seller') {
                     navigate('/seller/orders');
                 } else {
-                    navigate('/products'); // For buyers, you might want to navigate to a different page like '/products'
+                    navigate('/home'); 
                 }
             }
         } else {

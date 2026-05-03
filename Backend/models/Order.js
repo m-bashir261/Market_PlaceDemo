@@ -12,10 +12,35 @@ const orderSchema = new mongoose.Schema(
             required: true,
         },
 
-        listing_id:{
+        seller_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Listing',
+            ref: 'User',
             required: true,
+        },
+
+        items: [
+            {
+                listing_id: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Listing',
+                    required: true,
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                    default: 1,
+                },
+                price: {
+                    type: Number,
+                    required: true,
+                }
+            }
+        ],
+
+        totalAmount: {
+            type: Number,
+            required: true,
+            default: 0,
         },
 
         status:{

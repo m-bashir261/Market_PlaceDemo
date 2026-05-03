@@ -157,10 +157,11 @@ function OrderHistory() {
           ) : (
             <div className="oh-orders-list">
               {filtered.map(order => {
-                // Determine the product name and fallback image since the backend populated product might be null if 
-                // the MongoDB listing ID was a dummy or missing.
-                const pName = order.product?.name || 'Unknown Product';
-                const pImage = order.product?.image || 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=120&q=80';
+                const firstItem = order.items && order.items[0] ? order.items[0] : null;
+                const pName = firstItem?.listing_id?.title || 'Multiple Items';
+                const pImage = firstItem?.listing_id?.image_urls?.[0] || 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=120&q=80';
+                const sellerName = order.seller_id?.username || 'Unknown Seller';
+                const totalQty = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
                 
                 return (
                   <div key={order._id} className="oh-order-item">
@@ -172,10 +173,11 @@ function OrderHistory() {
 
                     {/* Order Info */}
                     <div className="oh-order-info">
-                      <p className="oh-product-name">{pName}</p>
+                      <p className="oh-product-name">{pName} {order.items?.length > 1 ? `(+${order.items.length - 1} more)` : ''}</p>
                       <p className="oh-meta">
-                        EGP {order.totalPrice?.toFixed(2)}
-                        &nbsp;·&nbsp; Qty: {order.quantity}
+                        ${order.totalAmount?.toFixed(2) || '0.00'}
+                        &nbsp;·&nbsp; Qty: {totalQty}
+                        &nbsp;·&nbsp; Seller: {sellerName}
                         &nbsp;·&nbsp; {new Date(order.createdAt).toLocaleDateString()}
                       </p>
                     </div>

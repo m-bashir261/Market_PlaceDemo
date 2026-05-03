@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import OrderView from "./Views/Seller/OrderView";
 import ProductDetail from './Views/Buyer/ProductDetail';
 import OrderHistory from './Views/Buyer/OrderHistory';
+import Checkout from './Views/Buyer/Checkout';
 import ProtectedRoute from './services/ProtectedRoute';
 
 
@@ -26,6 +27,7 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/orders" element={<ProtectedRoute allowedRole="buyer"><OrderHistory /></ProtectedRoute>} />
+            <Route path="/checkout" element={<ProtectedRoute allowedRole="buyer"><Checkout /></ProtectedRoute>} />
             <Route path="/buyer/product/:id" element={<ProductDetail />} />
             <Route path="/products" element={<ProductCatalog />} />
             {/* <Route path="/unauthorized" element={<Navigate to="/login" replace />} /> */}

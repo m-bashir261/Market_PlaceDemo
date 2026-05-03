@@ -11,14 +11,9 @@ const getIncomingOrders = async (req, res) => {
         // It's a real-looking ObjectId, but no User document actually exists for it.
         const sellerId = req.user.id; 
 
-        // 1. Find listings tagged with this fake seller ID
-        const sellerListings = await Listing.find({ seller_id: sellerId }).select('_id');
-        const listingIds = sellerListings.map(listing => listing._id);
-
-        // 2. Find orders tied ONLY to those listings
-        const incomingOrders = await Order.find({ listing_id: { $in: listingIds } })
-            .populate('listing_id', 'title price delivery_days image_urls')
-            .populate('buyer_id', 'firstName lastName username') // 👈 add this
+        const incomingOrders = await Order.find({ seller_id: sellerId })
+            .populate('items.listing_id', 'title price delivery_days image_urls')
+            .populate('buyer_id', 'firstName lastName username')
             .sort({ created_at: -1 });
 
         res.status(200).json(incomingOrders);
@@ -40,13 +35,13 @@ const updateOrderStatus = async (req, res) => {
             return res.status(400).json({ message: 'Invalid status provided' });
         }
 
-        const order = await Order.findOne({ orderNumber }).populate('listing_id');
+        const order = await Order.findOne({ orderNumber });
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        // Security check: This string comparison works perfectly even if the User doesn't exist!
-        if (order.listing_id.seller_id.toString() !== sellerId) {
+        // Security check
+        if (order.seller_id.toString() !== sellerId) {
             return res.status(403).json({ message: 'Not authorized to update this order' });
         }
 
