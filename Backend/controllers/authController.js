@@ -89,7 +89,7 @@ exports.protect = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.SECRET_KEY || 'secretkey');
         req.user = { id: decoded.id }; // make sure your JWT payload uses `id`
         next();
     } catch (err) {

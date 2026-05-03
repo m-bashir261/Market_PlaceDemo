@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Listing = require('../models/Listing');
 const ProductCategories = require('../models/ProductCategory');
+const Comment = require('../models/Comment');
+const { protect } = require('../controllers/authController');
 
 router.get('/', async (req, res) => {
     try {
@@ -97,4 +99,89 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+// Get comments for a product
+router.get('/:id/comments', async (req, res) => {
+    try {
+        const comments = await Comment.find({ listing_id: req.params.id })
+            .populate('user_id', 'username firstName lastName')
+            .populate('replies.user_id', 'username firstName lastName')
+            .sort({ createdAt: -1 });
+        res.status(200).json(comments);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// Add a comment to a product
+router.post('/:id/comments', protect, async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) return res.status(400).json({ message: "Comment text is required" });
+
+        const newComment = new Comment({
+            listing_id: req.params.id,
+            user_id: req.user.id,
+            text
+        });
+
+        const savedComment = await newComment.save();
+        
+        // Populate user before returning so frontend can display immediately
+        await savedComment.populate('user_id', 'username firstName lastName');
+
+        res.status(201).json(savedComment);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// Like/Unlike a comment
+router.post('/:id/comments/:commentId/like', protect, async (req, res) => {
+    try {
+        const comment = await Comment.findById(req.params.commentId);
+        if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+        const userId = req.user.id;
+        const index = comment.likes.indexOf(userId);
+
+        if (index === -1) {
+            comment.likes.push(userId);
+        } else {
+            comment.likes.splice(index, 1);
+        }
+
+        await comment.save();
+        res.status(200).json(comment.likes);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// Reply to a comment
+router.post('/:id/comments/:commentId/reply', protect, async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) return res.status(400).json({ message: "Reply text is required" });
+
+        const comment = await Comment.findById(req.params.commentId);
+        if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+        const newReply = {
+            user_id: req.user.id,
+            text
+        };
+
+        comment.replies.push(newReply);
+        await comment.save();
+
+        const updatedComment = await Comment.findById(req.params.commentId)
+            .populate('user_id', 'username firstName lastName')
+            .populate('replies.user_id', 'username firstName lastName');
+
+        res.status(201).json(updatedComment);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+module.exports = router;

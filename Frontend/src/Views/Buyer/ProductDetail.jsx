@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import './ProductDetail.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
-import { getProductById } from '../../services/products';
+import { getProductById, getComments, addComment, likeComment, replyToComment } from '../../services/products';
 
 
 function StarRating({ rating }) {
@@ -28,6 +28,19 @@ function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState("");
+
+  const currentUserId = useMemo(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+        return JSON.parse(atob(token.split('.')[1])).id;
+    } catch(e) { return null; }
+  }, []);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -51,8 +64,11 @@ function ProductDetail() {
         };
         
         setProduct(mappedProduct);
+
+        const commentsData = await getComments(id);
+        setComments(commentsData);
       } catch (err) {
-        console.error("Error fetching product:", err);
+        console.error("Error fetching product or comments:", err);
         setError("Failed to load product details.");
       } finally {
         setLoading(false);
@@ -100,6 +116,48 @@ function ProductDetail() {
       }
     } catch (error) {
       console.error('Error placing order:', error);
+    }
+  };
+
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!newCommentText.trim()) return;
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Please login to comment');
+        const addedComment = await addComment(id, newCommentText, token);
+        setComments([addedComment, ...comments]);
+        setNewCommentText("");
+    } catch (err) {
+        console.error("Error adding comment", err);
+        alert('Failed to add comment. Please try again.');
+    }
+  };
+
+  const handleLikeComment = async (commentId) => {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Please login to like');
+        const likes = await likeComment(id, commentId, token);
+        setComments(comments.map(c => c._id === commentId ? { ...c, likes } : c));
+    } catch (err) {
+        console.error("Error liking comment", err);
+    }
+  };
+
+  const handleReply = async (commentId, e) => {
+    e.preventDefault();
+    if (!replyText.trim()) return;
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Please login to reply');
+        const updatedComment = await replyToComment(id, commentId, replyText, token);
+        setComments(comments.map(c => c._id === commentId ? updatedComment : c));
+        setReplyingTo(null);
+        setReplyText("");
+    } catch (err) {
+        console.error("Error replying", err);
+        alert('Failed to add reply. Please try again.');
     }
   };
  
@@ -228,14 +286,92 @@ function ProductDetail() {
           </div>
         </section>
  
-        {/* ── Reviews Placeholder ── */}
+        {/* ── Comments Section ── */}
         <section className="reviews-section">
-          <h2 className="section-title">Customer Reviews</h2>
-          <div className="reviews-placeholder">
-            <p className="reviews-placeholder-title">No reviews yet</p>
-            <p className="reviews-placeholder-sub">
-              Placeholder for next sprint
-            </p>
+          <h2 className="section-title">Customer Comments</h2>
+          
+          <div className="add-comment-section">
+            <form onSubmit={handleAddComment} className="comment-form">
+              <textarea 
+                value={newCommentText}
+                onChange={(e) => setNewCommentText(e.target.value)}
+                placeholder="Write your comment here..."
+                className="comment-input"
+                rows="3"
+              />
+              <button type="submit" className="modern-btn mt-2">Post Comment</button>
+            </form>
+          </div>
+
+          <div className="comments-list">
+            {comments.length === 0 ? (
+              <p className="reviews-placeholder-title" style={{marginTop: '20px'}}>No comments yet. Be the first to comment!</p>
+            ) : (
+              comments.map(comment => (
+                <div key={comment._id} className="comment-card">
+                  <div className="comment-top-row">
+                    <div className="comment-avatar">
+                      {(comment.user_id?.username || 'U').charAt(0).toUpperCase()}
+                    </div>
+                    <div className="comment-author-block">
+                      <span className="comment-author">{comment.user_id?.username || 'Unknown'}</span>
+                      <span className="comment-date">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <button 
+                      onClick={() => handleLikeComment(comment._id)} 
+                      className={`heart-btn ${comment.likes?.includes(currentUserId) ? 'liked' : ''}`}
+                    >
+                      {comment.likes?.includes(currentUserId) ? '❤️' : '🤍'} {comment.likes?.length || 0}
+                    </button>
+                  </div>
+                  <p className="comment-text">{comment.text}</p>
+                  
+                  <div className="comment-actions">
+                    <button 
+                      onClick={() => {
+                        setReplyingTo(replyingTo === comment._id ? null : comment._id);
+                        setReplyText("");
+                      }} 
+                      className="action-btn"
+                    >
+                      Reply
+                    </button>
+                  </div>
+
+                  {replyingTo === comment._id && (
+                    <form onSubmit={(e) => handleReply(comment._id, e)} className="reply-form mt-2">
+                      <input 
+                        type="text" 
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Write a reply..."
+                        className="reply-input"
+                      />
+                      <button type="submit" className="modern-btn-small ml-2">Post</button>
+                    </form>
+                  )}
+
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="replies-list">
+                      {comment.replies.map((reply, idx) => (
+                        <div key={idx} className="reply-card">
+                          <div className="comment-top-row reply-top-row">
+                            <div className="comment-avatar reply-avatar">
+                              {(reply.user_id?.username || 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <div className="comment-author-block">
+                              <span className="comment-author">{reply.user_id?.username || 'Unknown'}</span>
+                              <span className="comment-date">{new Date(reply.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                          <p className="comment-text">{reply.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </section>
  

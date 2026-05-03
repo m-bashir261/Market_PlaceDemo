@@ -749,3 +749,226 @@ body {
   .order-controls          { flex-direction: column; align-items: flex-start; }
   .page-body               { padding-top: 78px; }
 }
+
+/* ── Comments Styles ── */
+.add-comment-section {
+  margin-bottom: 24px;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--pd-border);
+  border-radius: var(--pd-radius-sm);
+  background: var(--pd-surface-2);
+  color: var(--pd-text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  resize: vertical;
+  /* FIX: was "transition: border-color: 0.2s" — colon replaced with space */
+  transition: border-color 0.2s;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: var(--pd-primary);
+}
+
+.modern-btn {
+  background: var(--pd-primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--pd-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.modern-btn:hover {
+  opacity: 0.9;
+}
+
+.modern-btn-small {
+  background: var(--pd-primary);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment-card {
+  background: var(--pd-surface-2);
+  padding: 20px;
+  border-radius: var(--pd-radius-sm);
+  border: 1px solid var(--pd-border);
+}
+
+/* ── Comment Top Row: Avatar + Author + Heart ── */
+.comment-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.comment-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pd-primary) 0%, #a855f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px var(--pd-primary-glow);
+}
+
+.comment-author-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-author {
+  font-weight: 700;
+  color: var(--pd-text);
+  font-size: 0.95rem;
+}
+
+.comment-date {
+  font-size: 0.78rem;
+  color: var(--pd-text-muted);
+}
+
+/* ── Heart Button (far right) ── */
+.heart-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--pd-text-muted);
+  font-weight: 600;
+  transition: transform 0.2s var(--ease-spring);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.heart-btn:hover {
+  transform: scale(1.15);
+}
+
+.heart-btn.liked {
+  color: #f5304a;
+}
+
+.comment-text {
+  color: var(--pd-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  padding-left: 62px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 12px;
+  padding-left: 62px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  color: var(--pd-text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+
+.action-btn:hover {
+  color: var(--pd-primary);
+}
+
+.reply-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-left: 62px;
+}
+
+.reply-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--pd-border);
+  border-radius: 6px;
+  background: var(--pd-surface);
+  color: var(--pd-text);
+  font-family: var(--font-body);
+}
+
+.reply-input:focus {
+  outline: none;
+  border-color: var(--pd-primary);
+}
+
+.replies-list {
+  margin-top: 14px;
+  padding-left: 62px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reply-card {
+  background: var(--pd-surface);
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--pd-border);
+  border-left: 3px solid var(--pd-primary);
+}
+
+.reply-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.reply-top-row {
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.reply-card .comment-text {
+  padding-left: 42px;
+  margin-bottom: 0;
+}
+
+.mt-2 {
+  margin-top: 12px;
+}
+
+.ml-2 {
+  margin-left: 8px;
+}
