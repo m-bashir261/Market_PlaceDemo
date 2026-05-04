@@ -242,7 +242,7 @@ const ProductCatalog = () => {
             ) : (
                 <div className="products-grid">
                   {products.map(product => (
-                      <ProductCard key={product._id} listing={product} />
+                      <ProductCard key={product._id} listing={product} searchQuery={filters.search} />
                   ))}
                 </div>
             )}

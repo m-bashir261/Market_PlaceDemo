@@ -1,9 +1,34 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import './ProductCard.css';
+
 const defaultImg = "https://i.ibb.co/000000/default-image.jpg";
 
-const ProductCard = ({ listing, product }) => {
+// 1. Create the highlighting helper function
+const getHighlightedText = (text, highlight) => {
+  if (!highlight?.trim()) {
+    return <span>{text}</span>;
+  }
+
+  // Escape special characters and split text by the search term (case-insensitive)
+  const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+
+  return (
+    <span>
+      {parts.map((part, i) => 
+        regex.test(part) ? (
+          <mark key={i} className="search-highlight">{part}</mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </span>
+  );
+};
+
+const ProductCard = ({ listing, product, searchQuery = "" }) => {
   const navigate = useNavigate();
   const item = listing || product;
 
@@ -19,9 +44,14 @@ const ProductCard = ({ listing, product }) => {
         <img src={item.image_url || defaultImg} alt={item.title} className="product-img" />
       </div>
       <div className="product-info">
-        {/* <div className="product-brand">{item.brand || 'Local Brand'}</div> */}
-        <h3 className="product-name">{item.title}</h3>
-        <p className="product-desc">{item.description}</p>
+        {/* 2. Wrap the title and description in the helper function */}
+        <h3 className="product-name">
+          {getHighlightedText(item.title, searchQuery)}
+        </h3>
+        <p className="product-desc">
+          {getHighlightedText(item.description, searchQuery)}
+        </p>
+        
         <div className="product-footer">
           <div className="price-wrap">
             <span className="currency">$</span>
