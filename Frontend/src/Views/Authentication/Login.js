@@ -22,7 +22,7 @@ const Login = () => {
                 if (data.user.role === 'seller') {
                     navigate('/seller/orders');
                 } else {
-                    navigate('/products');
+                    navigate('/home'); 
                 }
             } else {
                 setError(data.message || 'Invalid credentials');
