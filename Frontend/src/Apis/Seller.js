@@ -57,7 +57,10 @@ export const getSellerListings = async () => {
 
 export const getSingleListing = async (id) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/listings/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_BASE_URL}/listings/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching listing:", error.response?.data || error.message);
