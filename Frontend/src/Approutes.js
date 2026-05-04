@@ -10,8 +10,6 @@ import Checkout from './Views/Buyer/Checkout';
 import ProtectedRoute from './services/ProtectedRoute';
 import ProductCatalog from "./Views/Buyer/ProductCatalog";
 
-import ProtectedRoute from './services/ProtectedRoute';
-
 import Home from "./Views/Buyer/Home";
 import Signup from "./Views/Authentication/Signup";
 import Login from "./Views/Authentication/Login";
