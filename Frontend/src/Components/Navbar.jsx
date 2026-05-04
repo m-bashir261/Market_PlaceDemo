@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Bell, Heart, Truck, Scale } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Bell, Heart, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
@@ -8,6 +8,9 @@ const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    
+    // Check if the token exists to determine auth status
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
@@ -50,6 +53,21 @@ const Navbar = () => {
         e.preventDefault();
         // Handle search
         console.log("Searching for:", searchQuery);
+    };
+
+    // --- New Logout Handler ---
+    const handleLogout = () => {
+        // 1. Remove the token from local storage
+        localStorage.removeItem('token');
+        
+        // 2. Update auth state
+        setIsAuthenticated(false);
+        
+        // 3. Close mobile menu if it's open
+        setIsMobileMenuOpen(false);
+        
+        // 4. Navigate to the home page
+        navigate('/home'); 
     };
 
     return (
@@ -126,10 +144,18 @@ const Navbar = () => {
                             <span className="badge badge-orange animate-bounce">2</span>
                         </button>
 
-                        <button className="sign-in-btn modern-btn" onClick={() => navigate('/login')}>
-                            <User size={16} />
-                            <span>Sign In</span>
-                        </button>
+                        {/* Conditional Rendering for Desktop Auth Button */}
+                        {isAuthenticated ? (
+                            <button className="sign-in-btn modern-btn" onClick={handleLogout}>
+                                <LogOut size={16} />
+                                <span>Logout</span>
+                            </button>
+                        ) : (
+                            <button className="sign-in-btn modern-btn" onClick={() => navigate('/login')}>
+                                <User size={16} />
+                                <span>Sign In</span>
+                            </button>
+                        )}
                     </div>
 
                     <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -175,10 +201,21 @@ const Navbar = () => {
                         </div>
 
                         <div className="mobile-auth mt-3 border-t pt-3">
-                            <button className="sign-in-btn modern-btn full-width" onClick={() => navigate('/login')}>
-                                <User size={16} />
-                                <span>Sign In</span>
-                            </button>
+                            {/* Conditional Rendering for Mobile Auth Button */}
+                            {isAuthenticated ? (
+                                <button className="sign-in-btn modern-btn full-width" onClick={handleLogout}>
+                                    <LogOut size={16} />
+                                    <span>Logout</span>
+                                </button>
+                            ) : (
+                                <button className="sign-in-btn modern-btn full-width" onClick={() => {
+                                    navigate('/login');
+                                    setIsMobileMenuOpen(false); // Clean up: close menu when navigating
+                                }}>
+                                    <User size={16} />
+                                    <span>Sign In</span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
