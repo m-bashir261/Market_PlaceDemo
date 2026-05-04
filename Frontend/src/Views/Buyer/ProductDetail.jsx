@@ -97,6 +97,14 @@ function ProductDetail() {
   const handlePlaceOrder = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        // You can use a standard alert, or replace this with your 
+        // custom UI notification (like a Toast or setting an error state)
+        alert('You must be logged in to place an order.');
+        
+        // Return early to stop the function from running the fetch request
+        return; 
+      }
       const response = await fetch('http://localhost:5000/api/orders', {
         method: 'POST',
         headers: {
