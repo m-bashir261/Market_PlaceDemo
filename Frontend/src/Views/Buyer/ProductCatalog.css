@@ -1,102 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 
-:root {
-  /* ── Core Palette ── */
-  --pc-bg: #f0f2f8;
-  --pc-surface: #ffffff;
-  --pc-surface-2: #f7f8fc;
-  --pc-border: #d8dce8;
-  --pc-border-strong: #b0b8d0;
-
-  /* ── Text — boosted contrast ── */
-  --pc-text: #0a0e1a;
-  --pc-text-secondary: #3a4260;
-  --pc-text-muted: #6b748f;
-
-  /* ── Brand — rich electric indigo ── */
-  --pc-primary: #3730e8;
-  --pc-primary-hover: #2720c8;
-  --pc-primary-light: #eeeeff;
-  --pc-primary-glow: rgba(55, 48, 232, 0.18);
-
-  /* ── Accent ── */
-  --pc-accent: #f5304a;
-  --pc-gold: #f59e0b;
-  --pc-green: #059669;
-
-  /* ── Cards & Effects ── */
-  --pc-card-bg: #ffffff;
-  --pc-shadow-sm: 0 2px 8px rgba(10, 14, 26, 0.06);
-  --pc-shadow: 0 8px 24px rgba(10, 14, 26, 0.09);
-  --pc-shadow-hover: 0 20px 48px rgba(55, 48, 232, 0.18);
-  --pc-radius: 18px;
-  --pc-radius-sm: 10px;
-  --pc-skeleton: #e4e8f0;
-  --pc-glass: rgba(255, 255, 255, 0.82);
-  --pc-glass-border: rgba(255, 255, 255, 0.6);
-
-  /* ── Typography ── */
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-
-  /* ── Transitions ── */
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --pc-bg: #080c18;
-    --pc-surface: #10152a;
-    --pc-surface-2: #161c30;
-    --pc-border: #232a40;
-    --pc-border-strong: #3a4260;
-
-    --pc-text: #f0f2ff;
-    --pc-text-secondary: #b8c0d8;
-    --pc-text-muted: #7888a8;
-
-    --pc-primary: #6366f1;
-    --pc-primary-hover: #4f52df;
-    --pc-primary-light: rgba(99, 102, 241, 0.12);
-    --pc-primary-glow: rgba(99, 102, 241, 0.25);
-
-    --pc-card-bg: #10152a;
-    --pc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --pc-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    --pc-shadow-hover: 0 20px 48px rgba(99, 102, 241, 0.25);
-
-    --pc-glass: rgba(16, 21, 42, 0.85);
-    --pc-glass-border: rgba(255, 255, 255, 0.07);
-    --pc-skeleton: #1e2540;
-  }
-}
-
-.dark {
-    --pc-bg: #080c18;
-    --pc-surface: #10152a;
-    --pc-surface-2: #161c30;
-    --pc-border: #232a40;
-    --pc-border-strong: #3a4260;
-
-    --pc-text: #f0f2ff;
-    --pc-text-secondary: #b8c0d8;
-    --pc-text-muted: #7888a8;
-
-    --pc-primary: #6366f1;
-    --pc-primary-hover: #4f52df;
-    --pc-primary-light: rgba(99, 102, 241, 0.12);
-    --pc-primary-glow: rgba(99, 102, 241, 0.25);
-
-    --pc-card-bg: #10152a;
-    --pc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --pc-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    --pc-shadow-hover: 0 20px 48px rgba(99, 102, 241, 0.25);
-
-    --pc-glass: rgba(16, 21, 42, 0.85);
-    --pc-glass-border: rgba(255, 255, 255, 0.07);
-    --pc-skeleton: #1e2540;
-}
+/* Page-specific product catalog styles only. Global theme variables are defined in index.css. */
 
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -110,19 +14,24 @@ body {
 }
 
 /* ── Page Container ── */
-.catalog-container {
+.catalog-page-container {
   font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+.catalog-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 32px 24px 64px;
-  min-height: 100vh;
 }
 
 /* ── Glass Header ── */
 .catalog-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
   margin-bottom: 36px;
   padding: 18px 32px;
   background: var(--pc-glass);
@@ -131,9 +40,6 @@ body {
   border-radius: var(--pc-radius);
   border: 1px solid var(--pc-glass-border);
   box-shadow: var(--pc-shadow), 0 0 0 1px rgba(255,255,255,0.4) inset;
-  position: sticky;
-  top: 16px;
-  z-index: 50;
   animation: slideDown 0.55s var(--ease-spring);
 }
 
@@ -154,6 +60,16 @@ body {
   margin: 0;
   font-size: 0.88rem;
   font-weight: 500;
+}
+
+.search-bar-container {
+  margin: 24px 0 32px;
+}
+
+.catalog-content {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
 }
 
 .controls-wrap {

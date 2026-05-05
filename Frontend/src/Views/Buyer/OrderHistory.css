@@ -1,53 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 
-/* ── Design Tokens ── */
-:root {
-  --oh-bg: #f0f2f8;
-  --oh-surface: #ffffff;
-  --oh-surface-2: #f7f8fc;
-  --oh-border: #d8dce8;
-  --oh-text: #0a0e1a;
-  --oh-text-secondary: #3a4260;
-  --oh-text-muted: #6b748f;
-  --oh-primary: #3730e8;
-  --oh-primary-light: #eeeeff;
-  --oh-primary-glow: rgba(55, 48, 232, 0.18);
-  --oh-shadow: 0 8px 32px rgba(10, 14, 26, 0.09);
-  --oh-radius: 18px;
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --oh-bg: #080c18;
-    --oh-surface: #10152a;
-    --oh-surface-2: #161c30;
-    --oh-border: #232a40;
-    --oh-text: #f0f2ff;
-    --oh-text-secondary: #b8c0d8;
-    --oh-text-muted: #7888a8;
-    --oh-primary: #6366f1;
-    --oh-primary-light: rgba(99, 102, 241, 0.12);
-    --oh-primary-glow: rgba(99, 102, 241, 0.25);
-    --oh-shadow: 0 8px 32px rgba(0,0,0,0.45);
-  }
-}
-
-html.dark :root {
-    --oh-bg: #080c18;
-    --oh-surface: #10152a;
-    --oh-surface-2: #161c30;
-    --oh-border: #232a40;
-    --oh-text: #f0f2ff;
-    --oh-text-secondary: #b8c0d8;
-    --oh-text-muted: #7888a8;
-    --oh-primary: #6366f1;
-    --oh-primary-light: rgba(99, 102, 241, 0.12);
-    --oh-primary-glow: rgba(99, 102, 241, 0.25);
-    --oh-shadow: 0 8px 32px rgba(0,0,0,0.45);
-}
+/* Page-specific order history styles only. Global theme variables are defined in index.css. */
 
 /* ── Page ── */
 .order-history-page {
@@ -77,6 +30,7 @@ html.dark :root {
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 12px;
+  max-width: 760px;
 }
 
 .oh-title {

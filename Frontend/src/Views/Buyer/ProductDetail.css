@@ -8,67 +8,7 @@
 }
 
 /* ── Design Tokens ── */
-:root {
-  --pd-bg: #f0f2f8;
-  --pd-surface: #ffffff;
-  --pd-surface-2: #f7f8fc;
-  --pd-border: #d8dce8;
-  --pd-border-strong: #b0b8d0;
-
-  /* Text — strong contrast */
-  --pd-text: #0a0e1a;
-  --pd-text-secondary: #3a4260;
-  --pd-text-muted: #6b748f;
-
-  /* Brand */
-  --pd-primary: #3730e8;
-  --pd-primary-hover: #2720c8;
-  --pd-primary-light: #eeeeff;
-  --pd-primary-glow: rgba(55, 48, 232, 0.18);
-
-  /* Accent */
-  --pd-accent: #f5304a;
-  --pd-gold: #f59e0b;
-  --pd-green: #059669;
-  --pd-green-bg: #d1fae5;
-
-  /* UI */
-  --pd-shadow-sm: 0 2px 8px rgba(10, 14, 26, 0.06);
-  --pd-shadow: 0 8px 32px rgba(10, 14, 26, 0.09);
-  --pd-shadow-btn: 0 4px 18px rgba(55, 48, 232, 0.35);
-  --pd-radius: 18px;
-  --pd-radius-sm: 10px;
-
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --pd-bg: #080c18;
-    --pd-surface: #10152a;
-    --pd-surface-2: #161c30;
-    --pd-border: #232a40;
-    --pd-border-strong: #3a4260;
-
-    --pd-text: #f0f2ff;
-    --pd-text-secondary: #b8c0d8;
-    --pd-text-muted: #7888a8;
-
-    --pd-primary: #6366f1;
-    --pd-primary-hover: #4f52df;
-    --pd-primary-light: rgba(99, 102, 241, 0.12);
-    --pd-primary-glow: rgba(99, 102, 241, 0.25);
-
-    --pd-shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --pd-shadow: 0 8px 32px rgba(0,0,0,0.45);
-    --pd-shadow-btn: 0 4px 18px rgba(99, 102, 241, 0.4);
-
-    --pd-green: #34d399;
-    --pd-green-bg: rgba(52, 211, 153, 0.12);
-  }
-}
+/* Global theme variables are defined in index.css. Page CSS should only use those vars. */
 
 /* ── Page ── */
 body {

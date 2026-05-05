@@ -5,6 +5,7 @@ import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
 import ProductCard from './ProductCard';
 import { getProducts } from '../../services/products';
+import { Link } from 'react-router-dom';
 import './Home.css';
 import './ProductCatalog.css';
 
@@ -115,9 +116,12 @@ const Home = () => {
                                     Explore Products
                                     <ArrowRight size={20} className="ml-2" />
                                 </button>
-                                <button className="hero-btn secondary">
+
+                                <Link to="/signup">
+                                  <button className="hero-btn secondary">
                                     Join as Seller
-                                </button>
+                                 </button>
+                                </Link>
                             </div>
 
                             <div className="hero-stats">
