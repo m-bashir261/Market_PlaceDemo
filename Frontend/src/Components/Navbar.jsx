@@ -152,7 +152,7 @@ const Navbar = () => {
                     </div>
 
                     <div className="navbar-actions hide-on-mobile md-up">
-                        <button className="action-btn" title="Seller Dashboard">
+                        <button className="action-btn" title="Seller Dashboard" onClick={() => navigate('/signup')}>
                             <Store size={20} className="action-icon" />
                             <span>Sell</span>
                         </button>
@@ -222,7 +222,7 @@ const Navbar = () => {
                         </form>
 
                         <div className="mobile-grid">
-                            <button className="grid-action-btn">
+                            <button className="grid-action-btn" onClick={() => navigate('/signup')}>
                                 <Store size={20} />
                                 <span>Sell</span>
                             </button>
