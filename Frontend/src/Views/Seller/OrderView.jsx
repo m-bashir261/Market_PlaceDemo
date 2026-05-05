@@ -131,11 +131,11 @@ export default function OrderView() {
                             {/* FIX 3: Ensure option values match the case used in your database */}
                             <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                                 <option value="">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
                             </select>
                         </div>
                     </div>
@@ -234,7 +234,7 @@ export default function OrderView() {
 
                                 <div className="status-options">
                                     {/* FIX 5: Normalize value case (e.g., 'pending' vs 'Pending') to match your DB strategy */}
-                                    {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(stat => (
+                                    {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(stat => (
                                         <label key={stat}>
                                             <input
                                                 type="radio"
