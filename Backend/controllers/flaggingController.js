@@ -106,7 +106,7 @@ const flagSeller = async (req, res) => {
 
         const previousFlag = order.buyerFlag;
         if (flag === previousFlag) {
-            // If the seller clicks the same vote again, remove the vote entirely.
+            // If the buyer clicks the same vote again, remove the vote entirely.
             const seller = await User.findById(order.seller_id._id);
             if (!seller) {
                 return res.status(404).json({ message: 'Seller not found' });
@@ -118,13 +118,13 @@ const flagSeller = async (req, res) => {
                 seller.downVotes = Math.max(0, seller.downVotes - 1);
             }
 
-            order.sellerFlag = null;
+            order.buyerFlag = null;
             await Promise.all([seller.save(), order.save()]);
 
             return res.status(200).json({
                 message: 'Seller flag removed successfully',
                 seller: { username: seller.username, upVotes: seller.upVotes, downVotes: seller.downVotes },
-                order: { orderNumber: order.orderNumber, sellerFlag: order.sellerFlag }
+                order: { orderNumber: order.orderNumber, buyerFlag: order.buyerFlag }
             });
         }
 
@@ -145,14 +145,14 @@ const flagSeller = async (req, res) => {
             seller.downVotes += 1;
         }
 
-        order.sellerFlag = flag;
+        order.buyerFlag = flag;
 
         await Promise.all([seller.save(), order.save()]);
 
         res.status(200).json({
             message: 'Seller flag updated successfully',
             seller: { username: seller.username, upVotes: seller.upVotes, downVotes: seller.downVotes },
-            order: { orderNumber: order.orderNumber, sellerFlag: order.sellerFlag }
+            order: { orderNumber: order.orderNumber, buyerFlag: order.buyerFlag }
         });
     } catch (error) {
         res.status(500).json({ message: 'Error flagging seller', error: error.message });

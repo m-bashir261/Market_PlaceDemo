@@ -93,7 +93,7 @@ function OrderHistory() {
           order.orderNumber === orderNumber
             ? { 
               ...order, 
-              sellerFlag: response.order?.sellerFlag,
+              buyerFlag: response.order?.buyerFlag,
               seller_id: {
                 ...order.seller_id,
                 upVotes: upVotes,
@@ -222,16 +222,16 @@ function OrderHistory() {
                         🚩 How was your experience with {sellerName}?
                       </p>
                       <button
-                        className={`flag-btn flag-good ${order.sellerFlag === 'good' ? 'active' : 'inactive'}`}
+                        className={`flag-btn flag-good ${order.buyerFlag === 'good' ? 'active' : 'inactive'}`}
                         onClick={() => handleFlagSeller(order.orderNumber, 'good')}
-                        title={order.sellerFlag === 'good' ? 'Remove good vote' : 'Flag seller as good'}
+                        title={order.buyerFlag === 'good' ? 'Remove good vote' : 'Flag seller as good'}
                       >
                         👍🏻
                       </button>
                       <button
-                        className={`flag-btn flag-bad ${order.sellerFlag === 'bad' ? 'active' : 'inactive'}`}
+                        className={`flag-btn flag-bad ${order.buyerFlag === 'bad' ? 'active' : 'inactive'}`}
                         onClick={() => handleFlagSeller(order.orderNumber, 'bad')}
-                        title={order.sellerFlag === 'bad' ? 'Remove bad vote' : 'Flag seller as bad'}
+                        title={order.buyerFlag === 'bad' ? 'Remove bad vote' : 'Flag seller as bad'}
                       >
                         👎🏻
                       </button>

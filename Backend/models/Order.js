@@ -113,6 +113,12 @@ const orderSchema = new mongoose.Schema(
             enum: ['good', 'bad', null],
             default: null,
         },
+
+        buyerFlag: {
+            type: String,
+            enum: ['good', 'bad', null],
+            default: null,
+        },
     },
     {
         timestamps: true,
