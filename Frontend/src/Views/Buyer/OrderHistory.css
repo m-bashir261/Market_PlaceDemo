@@ -390,6 +390,40 @@ html.dark :root {
   box-shadow: 0 8px 24px var(--oh-primary-glow);
 }
 
+/* --- Order Action Buttons --- */
+.oh-order-actions {
+  display: flex;
+  gap: 10px;
+
+.rate-item-btn {
+  background: rgba(140, 82, 255, 0.1); /* Subtle purple tint */
+  color: #8c52ff; /* Neon purple text */
+  border: 1px solid rgba(140, 82, 255, 0.4);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.rate-item-btn:hover {
+  background: #8c52ff;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(140, 82, 255, 0.5);
+}
+
+.rate-item-btn.reviewed {
+  background: transparent;
+  color: #555870;
+  border: 1px solid #2a2c41;
+  cursor:grab;
+  box-shadow: none;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .oh-order-item { 
