@@ -6,7 +6,7 @@ const OrderStatusLog = require('../models/OrderStatusLog');
 
 /**
  * @desc    Get orders for a seller (filtered by seller_id in orders where seller_id matches the authenticated user)
- * @route   GET /api/orders/seller/my-orders
+ * @route   GET /api/orders/incoming
  * @access  Private
  */
 const getIncomingOrders = async (req, res) => {
@@ -18,17 +18,13 @@ const getIncomingOrders = async (req, res) => {
             return res.status(400).json({ message: 'Invalid seller ID' });
         }
 
-        const incomingOrders = await Order.find({ seller_id: sellerId })
-            .populate('items.listing_id', 'title price delivery_days image_urls description')
-            .populate('buyer_id', 'firstName lastName username email phone upVotes downVotes')
-            .sort({ createdAt: -1 });
-        // 1. Find listings tagged with this fake seller ID
+        // 1. Find listings tagged with this seller ID
         const sellerListings = await Listing.find({ seller_id: sellerId }).select('_id');
         const listingIds = sellerListings.map(listing => listing._id);
 
         // 2. Find orders tied ONLY to those listings
-        const incomingOrders = await Order.find({ listing_id: { $in: listingIds } })
-            .populate('listing_id', 'title price delivery_days image_urls')
+        const incomingOrders = await Order.find({ 'items.listing_id': { $in: listingIds } })
+            .populate('items.listing_id', 'title items.price delivery_days image_urls')
             .populate('buyer_id', 'firstName lastName username upVotes downVotes')
             .sort({ created_at: -1 });
 
@@ -196,12 +192,17 @@ const flagBuyer = async (req, res) => {
             return res.status(400).json({ message: 'Invalid flag value' });
         }
 
-        const order = await Order.findOne({ orderNumber }).populate('listing_id').populate('buyer_id');
+        const order = await Order.findOne({ orderNumber }).populate('items.listing_id').populate('buyer_id');
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        if (order.listing_id.seller_id.toString() !== sellerId) {
+        // Check if seller owns any of the items in this order
+        const sellerOwnsOrder = order.items.some(item => 
+            item.listing_id && item.listing_id.seller_id && item.listing_id.seller_id.toString() === sellerId
+        );
+
+        if (!sellerOwnsOrder) {
             return res.status(403).json({ message: 'Not authorized to flag this buyer' });
         }
 

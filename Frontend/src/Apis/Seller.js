@@ -42,7 +42,7 @@ export const flagBuyer = async (orderNumber, flag) => {
     try {
         const token = localStorage.getItem('token');
         console.log(`Flagging buyer for order ${orderNumber} as "${flag}" with token:`, token);
-        const response = await axios.put(`${API_BASE_URL}/${orderNumber}/flag`, {
+        const response = await axios.put(`${API_BASE_URL}/orders/${orderNumber}/flag`, {
             flag: flag
         }, {
             headers: {

@@ -224,15 +224,8 @@ export default function OrderView() {
                                         </div>
 
                                         <div className="order-card-footer-info">
-                                            <div className="customer-info">
-                                                <span className="info-label">Customer:</span>
-                                                <span className="info-value">
-                                                    {order.buyer_id?.firstName || 'Guest'} {order.buyer_id?.lastName || ''}
-                                                </span>
-                                            </div>
                                             <div className="detail-item">
                                                 <span className="detail-label">Customer Name</span>
-                                                <span className="detail-value text-muted">
                                                     {order.buyer_id?.firstName} {order.buyer_id?.lastName}
                                                     
                                                     {/* REPUTATION SECTION */}
@@ -244,38 +237,38 @@ export default function OrderView() {
                                                             👎🏻 {order.buyer_id?.downVotes || 0}
                                                         </span>
                                                     </span>
-                                                </span>
-                                            <div className="order-total-price">
-                                                Total: <span>${order.totalAmount?.toFixed(2)}</span>
+                                                <div className="order-total-price">
+                                                    Total: <span>${order.totalAmount?.toFixed(2)}</span>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="order-actions">
-                                            <button className="action-btn btn-view">View Details</button>
-                                            <button
-                                                className="action-btn btn-update"
-                                                onClick={() => handleUpdateStatusClick(order.orderNumber)}
-                                            >
-                                                ✎ Update Status
-                                            </button>
-                                            <div className="flag-buttons">
-                                                <p>
-                                                    🚩 Flag User
-                                                </p>
+                                            <div className="order-actions">
+                                                <button className="action-btn btn-view">View Details</button>
                                                 <button
-                                                    className={`flag-btn flag-good ${order.sellerFlag === 'good' ? 'active' : 'inactive'}`}
-                                                    onClick={() => handleFlagBuyer(order.orderNumber, 'good')}
-                                                    title={order.sellerFlag === 'good' ? 'Remove good vote' : 'Flag buyer as good'}
+                                                    className="action-btn btn-update"
+                                                    onClick={() => handleUpdateStatusClick(order.orderNumber)}
                                                 >
-                                                    👍🏻
+                                                    ✎ Update Status
                                                 </button>
-                                                <button
-                                                    className={`flag-btn flag-bad ${order.sellerFlag === 'bad' ? 'active' : 'inactive'}`}
-                                                    onClick={() => handleFlagBuyer(order.orderNumber, 'bad')}
-                                                    title={order.sellerFlag === 'bad' ? 'Remove bad vote' : 'Flag buyer as bad'}
-                                                >
-                                                    👎🏻
-                                                </button>
+                                                <div className="flag-buttons">
+                                                    <p>
+                                                        🚩 Flag User
+                                                    </p>
+                                                    <button
+                                                        className={`flag-btn flag-good ${order.sellerFlag === 'good' ? 'active' : 'inactive'}`}
+                                                        onClick={() => handleFlagBuyer(order.orderNumber, 'good')}
+                                                        title={order.sellerFlag === 'good' ? 'Remove good vote' : 'Flag buyer as good'}
+                                                    >
+                                                        👍🏻
+                                                    </button>
+                                                    <button
+                                                        className={`flag-btn flag-bad ${order.sellerFlag === 'bad' ? 'active' : 'inactive'}`}
+                                                        onClick={() => handleFlagBuyer(order.orderNumber, 'bad')}
+                                                        title={order.sellerFlag === 'bad' ? 'Remove bad vote' : 'Flag buyer as bad'}
+                                                    >
+                                                        👎🏻
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -324,4 +317,4 @@ export default function OrderView() {
             </div>
         )
     );
-}
+};
