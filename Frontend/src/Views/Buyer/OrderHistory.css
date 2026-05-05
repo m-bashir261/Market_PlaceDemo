@@ -348,7 +348,7 @@
 .oh-order-actions {
   display: flex;
   gap: 10px;
-
+}
 .rate-item-btn {
   background: rgba(140, 82, 255, 0.1); /* Subtle purple tint */
   color: #8c52ff; /* Neon purple text */
