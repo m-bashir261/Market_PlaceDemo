@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import './OrderHistory.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
+import ReviewModal from '../../Components/ReviewModal';
 
 const STATUS_STYLES = {
   Pending: { color: '#856404', background: '#fff3cd', bar: '#f4c430' },
@@ -36,10 +37,17 @@ function OrderHistory() {
   const [filter, setFilter] = useState('All');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const filters = ['All', 'Pending', 'Shipped', 'Delivered', 'Cancelled'];
+  const [activeReviewOrder, setActiveReviewOrder] = useState(null);
+  const [activeReviewData, setActiveReviewData] = useState(null); // <-- Holds the review being edited
+  const [activeReviewListingId, setActiveReviewListingId] = useState(null);
+  const [toast, setToast] = useState({ message: '', type: '' });
+  const filters = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
 
-  useEffect(() => {
-    const fetchOrders = async () => {
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+  };
+
+  const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('token');
 
@@ -76,8 +84,20 @@ function OrderHistory() {
         setLoading(false);
       }
     };
+
+    
+  useEffect(() => {
     fetchOrders();
-  }, []);
+
+    if (!toast.message) return;
+    const timer = setTimeout(() => setToast({ message: '', type: '' }), 3000);
+    return () => clearTimeout(timer);
+
+  }, [toast.message]);
+
+  const handleReviewSuccess = (orderId) => {
+    fetchOrders();
+  };
 
   const filtered = filter === 'All'
     ? orders
@@ -86,10 +106,16 @@ function OrderHistory() {
   return (
     <div className="order-history-page">
 
-      {/* ── Navbar ── */}
       <Navbar />
 
       <main className="page-body">
+        
+        {/* <-- 3. RENDER TOAST NOTIFICATION --> */}
+        {toast.message && (
+          <div className={`toast-notification ${toast.type}`}>
+            {toast.message}
+          </div>
+        )}
 
         {/* ── Page Header ── */}
         <div className="oh-page-header">
@@ -151,9 +177,13 @@ function OrderHistory() {
                         <span className="oh-order-number">Seller: {sellerName}</span>
                         <span className="oh-order-date">{new Date(order.createdAt).toLocaleDateString()}</span>
                       </div>
-                      <div className="oh-order-header-aside">
-                        <StatusBadge status={order.status || 'Pending'} />
-                      </div>
+                      {/* The Aside is now a column, aligning items to the right */}
+                        <div 
+                          className="oh-order-header-aside" 
+                          style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}
+                        >
+                          <StatusBadge status={order.status || 'Pending'} />
+                        </div>
                     </div>
 
                     <div className="oh-order-items-list">
@@ -175,6 +205,15 @@ function OrderHistory() {
                               </p>
                             </div>
                             <div className="oh-sub-item-total">
+                              {order.status === 'Delivered' && (
+                                  <button onClick={() => {
+                                      setActiveReviewOrder(order);
+                                      setActiveReviewData(item.review || null);
+                                      setActiveReviewListingId(item.listing_id?._id || item.listing_id);
+                                  }} className={`rate-item-btn ${item.review ? 'reviewed' : ''}`}>
+                                      {item.review ? '✏️ Edit Review' : '⭐ Rate'}
+                                  </button>
+                              )}
                               ${(item.price * item.quantity).toFixed(2)}
                             </div>
                           </div>
@@ -183,10 +222,6 @@ function OrderHistory() {
                     </div>
 
                     <div className="oh-order-card-footer">
-                      
-                      <div className="oh-order-total-amount">
-                        Total Amount: <span>${order.totalAmount?.toFixed(2)}</span>
-                      </div>
                     </div>
                   </div>
                 );
@@ -196,6 +231,23 @@ function OrderHistory() {
         </div>
 
       </main>
+
+      {/* <-- 4. PASS SHOWTOAST TO THE MODAL --> */}
+      {activeReviewOrder && (
+        <ReviewModal
+          isOpen={true}
+          onClose={() => {
+            setActiveReviewOrder(null)
+            setActiveReviewData(null)
+            setActiveReviewListingId(null);
+            }}
+          orderId={activeReviewOrder._id}
+          listingId={activeReviewListingId}
+          onSuccess={handleReviewSuccess}
+          showToast={showToast}
+          existingReview={activeReviewData} // <-- Pass the review data!
+        />
+      )}
       <Footer />
     </div>
   );
