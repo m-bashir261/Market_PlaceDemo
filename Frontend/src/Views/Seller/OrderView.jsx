@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom'
-import { getIncomingOrders, updateOrderStatus, flagBuyer} from '../../Apis/Seller'; // Ensure this path matches your project structure
-import { getMe } from '../../Apis/authApi'; // New API call to fetch user info
+import { useNavigate, Link } from 'react-router-dom';
+import { getIncomingOrders, updateOrderStatus , flagBuyer} from '../../Apis/Seller';
+import { getMe } from '../../Apis/authApi';
 import './Seller.css';
 import LoadingScreen from '../Loading';
 import Navbar from '../Navbar/Navbar';
@@ -9,35 +9,32 @@ import Navbar from '../Navbar/Navbar';
 export default function OrderView() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    // Modal & Filter State
     const [selectedOrderNumber, setSelectedOrderNumber] = useState(null);
+    const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [selectedStatus, setSelectedStatus] = useState(null);
-    const [sellerName, setSellerName] = useState(''); // New state for seller's name
+    const [sellerName, setSellerName] = useState('');
     const [error, setError] = useState(null);
 
-
-    // Fetch orders when the component loads
     useEffect(() => {
         const fetchUser = async () => {
-            try{
+            try {
                 const user = await getMe();
                 setSellerName(user.firstName);
             } catch (error) {
-                setError({
-                    message: "Unable to load seller information. Please contact the developer.",
-                    details: error.message
-                });
+                // Non-blocking error for user fetch
+                console.error("User fetch error:", error);
             }
         };
 
         const fetchOrders = async () => {
             try {
                 const data = await getIncomingOrders();
-                setOrders(data);
+                const ordersList = Array.isArray(data) ? data : (data.orders || []);
+                setOrders(ordersList);
             } catch (error) {
                 setError({
                     message: "Unable to load orders. Please contact the developer.",
@@ -51,47 +48,46 @@ export default function OrderView() {
         fetchOrders();
     }, []);
 
-    // Filter and search logic
     const filteredOrders = useMemo(() => {
         return orders.filter((order) => {
             const searchStr = searchTerm.toLowerCase();
-            
-            // Map search to MongoDB _id and the Listing Title (since we bypassed the User model)
-            const matchesSearch =
-                (order._id && order._id.toLowerCase().includes(searchStr)) ||
-                (order.listing_id?.title && order.listing_id.title.toLowerCase().includes(searchStr));
 
-            const matchesStatus = statusFilter === '' || order.status === statusFilter;
+            const matchesSearch =
+                (order.orderNumber && String(order.orderNumber).toLowerCase().includes(searchStr)) ||
+                (order._id && order._id.toLowerCase().includes(searchStr)) ||
+                (order.items && order.items.some(item =>
+                    item.listing_id?.title && item.listing_id.title.toLowerCase().includes(searchStr)
+                ));
+
+            // FIX 1: Ensure case-insensitive comparison for status filtering
+            const matchesStatus = statusFilter === '' ||
+                (order.status && order.status.toLowerCase() === statusFilter.toLowerCase());
 
             return matchesSearch && matchesStatus;
         });
     }, [orders, searchTerm, statusFilter]);
 
-    // Open Modal
     const handleUpdateStatusClick = (orderNumber) => {
-        setSelectedOrderNumber(orderNumber);
-        // Find the current status of the order using the order number
         const order = orders.find(o => o.orderNumber === orderNumber);
         if (order) {
+            setSelectedOrderNumber(orderNumber);
             setSelectedStatus(order.status);
+            setSelectedOrderDetails(order);
         }
     };
 
-    // Close Modal
     const closeModal = () => {
         setSelectedOrderNumber(null);
         setSelectedStatus(null);
+        setSelectedOrderDetails(null);
     };
 
-    // Execute API call and update UI
     const handleSaveStatus = async () => {
         if (selectedStatus && selectedOrderNumber) {
             try {
-                // 1. Send update to the backend
                 await updateOrderStatus(selectedOrderNumber, selectedStatus);
 
-                // 2. If successful, update the local UI state
-                setOrders(orders.map(order =>
+                setOrders(prevOrders => prevOrders.map(order =>
                     order.orderNumber === selectedOrderNumber
                         ? { ...order, status: selectedStatus }
                         : order
@@ -144,103 +140,94 @@ export default function OrderView() {
                 <button onClick={() => window.location.reload()}>Retry</button>
             </div>
         ) : (
-        <div className="seller-dashboard">
-            <Navbar role="seller" name={sellerName} />
+            <div className="seller-dashboard">
+                <Navbar role="seller" name={sellerName} />
 
-            {/* Main Content */}
-            <div className="dashboard-content">
-                {/* Top Section with Title and Controls */}
-                <div className="dashboard-header">
-                    <div className="header-left">
-                        <h1>Your Sales Orders</h1>
-                        <p className="subtitle">Track and manage all incoming orders</p>
-                    </div>
-                    <div className="header-right">
-                        <div className="search-group">
-                            <input
-                                type="text"
-                                placeholder="Search order ID or Item Title..."
-                                className="form-input"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                <div className="dashboard-content">
+                    <div className="dashboard-header">
+                        <div className="header-left">
+                            <h1>Your Sales Orders</h1>
+                            <p className="subtitle">Track and manage all incoming orders</p>
                         </div>
-                        <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                            <option value="">All Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Orders Card */}
-                <div className="orders-card">
-                    <div className="card-header">
-                        <h2>Recent Orders</h2>
-                        <span className="order-count">
-                            {filteredOrders.length} of {orders.length} orders
-                        </span>
-                    </div>
-
-                    {/* No Results Message */}
-                    {filteredOrders.length === 0 ? (
-                        <div className="no-results">
-                            <span className="no-results-icon">📭</span>
-                            <p>No orders found</p>
-                            <small>Try adjusting your search or filters</small>
+                        <div className="header-right">
+                            <div className="search-group">
+                                <input
+                                    type="text"
+                                    placeholder="Search order ID or Item Title..."
+                                    className="form-input"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            {/* FIX 3: Ensure option values match the case used in your database */}
+                            <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                                <option value="">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
                         </div>
-                    ) : (
-                        /* Orders List */
-                        <div className="orders-list">
-                            {filteredOrders.map((order) => (
-                                <div key={order._id} className="order-card">
-                                    
-                                    {/* LEFT COLUMN: The Image */}
-                                    <div className="order-image-container">
-                                        {order.listing_id?.image_urls && order.listing_id.image_urls.length > 0 ? (
-                                            <img 
-                                                src={order.listing_id.image_urls[0]} 
-                                                alt={order.listing_id?.title || 'Item'} 
-                                                className="order-thumbnail"
-                                            />
-                                        ) : (
-                                            <div className="order-thumbnail placeholder">
-                                                <span>📷</span>
-                                            </div>
-                                        )}
-                                    </div>
+                    </div>
 
-                                    {/* RIGHT COLUMN: All Order Info and Actions */}
-                                    <div className="order-info-container">
-                                        
-                                        {/* Header (ID, Status, Price) */}
-                                        <div className="order-header-row">
+                    <div className="orders-card">
+                        <div className="card-header">
+                            <h2>Recent Orders</h2>
+                            <span className="order-count">
+                                {filteredOrders.length} of {orders.length} orders
+                            </span>
+                        </div>
+
+                        {filteredOrders.length === 0 ? (
+                            <div className="no-results">
+                                <span className="no-results-icon">📭</span>
+                                <p>No orders found</p>
+                                <small>Try adjusting your search or filters</small>
+                            </div>
+                        ) : (
+                            <div className="orders-list">
+                                {filteredOrders.map((order) => (
+                                    <div key={order._id} className="order-card">
+                                        <div className="order-card-header-row">
                                             <div className="order-id-section">
                                                 <span className="order-id">Order ID: {order.orderNumber}</span>
-                                                <span className={`status-badge badge-${order.status}`}>
-                                                    {order.status.toUpperCase()}
+                                                {/* FIX 4: Safety check for order.status before toUpperCase */}
+                                                <span className={`status-badge badge-${order.status?.toLowerCase()}`}>
+                                                    {order.status ? order.status.toUpperCase() : 'UNKNOWN'}
                                                 </span>
                                             </div>
-                                            <div className="order-amount">
-                                                ${order.listing_id?.price?.toFixed(2) || '0.00'}
+                                            <div className="order-card-date">
+                                                {new Date(order.createdAt).toLocaleDateString()}
                                             </div>
                                         </div>
 
-                                        {/* Details (Item Name, Date, Customer) */}
-                                        <div className="order-details">
-                                            <div className="detail-item">
-                                                <span className="detail-label">Item</span>
-                                                <span className="detail-value text-primary">
-                                                    {order.listing_id?.title || 'Unknown Item'}
-                                                </span>
-                                            </div>
-                                            <div className="detail-item">
-                                                <span className="detail-label">Date</span>
-                                                <span className="detail-value">
-                                                    {new Date(order.createdAt).toLocaleDateString()}
+                                        <div className="order-items-group">
+                                            {order.items.map((item, idx) => (
+                                                <div key={item._id || idx} className="order-sub-item">
+                                                    <div className="sub-item-img">
+                                                        {item.listing_id?.image_urls?.[0] ? (
+                                                            <img src={item.listing_id.image_urls[0]} alt={item.listing_id?.title} />
+                                                        ) : (
+                                                            <div className="img-placeholder">📦</div>
+                                                        )}
+                                                    </div>
+                                                    <div className="sub-item-details">
+                                                        <span className="sub-item-name">{item.listing_id?.title || 'Unknown Product'}</span>
+                                                        <span className="sub-item-meta">Qty: {item.quantity} · ${item.price?.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="sub-item-price">
+                                                        ${(item.price * item.quantity).toFixed(2)}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="order-card-footer-info">
+                                            <div className="customer-info">
+                                                <span className="info-label">Customer:</span>
+                                                <span className="info-value">
+                                                    {order.buyer_id?.firstName || 'Guest'} {order.buyer_id?.lastName || ''}
                                                 </span>
                                             </div>
                                             <div className="detail-item">
@@ -258,14 +245,13 @@ export default function OrderView() {
                                                         </span>
                                                     </span>
                                                 </span>
+                                            <div className="order-total-price">
+                                                Total: <span>${order.totalAmount?.toFixed(2)}</span>
                                             </div>
                                         </div>
 
-                                        {/* Actions (Buttons) */}
                                         <div className="order-actions">
-                                            <button className="action-btn btn-view">
-                                                View Details
-                                            </button>
+                                            <button className="action-btn btn-view">View Details</button>
                                             <button
                                                 className="action-btn btn-update"
                                                 onClick={() => handleUpdateStatusClick(order.orderNumber)}
@@ -292,46 +278,50 @@ export default function OrderView() {
                                                 </button>
                                             </div>
                                         </div>
-                                        
-                                    </div> {/* End of Right Column */}
-
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* Modal */}
-            {selectedOrderNumber && (
-                <div className="modal-overlay" onClick={closeModal}>
-                    <div className="update-status-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>Update Status</h2>
-                            <button className="close-btn" onClick={closeModal}>✕</button>
-                        </div>
-
-                        <div className="modal-content">
-                            <p>Order: <strong>{selectedOrderNumber}</strong></p>
-
-                            <div className="status-options">
-                                {/* Added checked and onChange handlers to the radio buttons to link them to React state */}
-                                <label><input type="radio" name="status" value="Pending" checked={selectedStatus === 'Pending'} onChange={(e) => setSelectedStatus(e.target.value)} /> Pending</label>
-                                <label><input type="radio" name="status" value="Processing" checked={selectedStatus === 'Processing'} onChange={(e) => setSelectedStatus(e.target.value)} /> Processing</label>
-                                <label><input type="radio" name="status" value="Shipped" checked={selectedStatus === 'Shipped'} onChange={(e) => setSelectedStatus(e.target.value)} /> Shipped</label>
-                                <label><input type="radio" name="status" value="Delivered" checked={selectedStatus === 'Delivered'} onChange={(e) => setSelectedStatus(e.target.value)} /> Delivered</label>
-                                <label><input type="radio" name="status" value="Cancelled" checked={selectedStatus === 'Cancelled'} onChange={(e) => setSelectedStatus(e.target.value)} /> Cancelled</label>
+                {selectedOrderNumber && (
+                    <div className="modal-overlay" onClick={closeModal}>
+                        <div className="update-status-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Update Status</h2>
+                                <button className="close-btn" onClick={closeModal}>✕</button>
                             </div>
 
-                            <div className="modal-actions">
-                                <button className="btn-cancel" onClick={closeModal}>Cancel</button>
-                                <button className="btn-save" onClick={handleSaveStatus}>Save Changes</button>
+                            <div className="modal-content">
+                                <p>Customer: <strong>{selectedOrderDetails?.buyer_id?.firstName} {selectedOrderDetails?.buyer_id?.lastName}</strong></p>
+                                <p>Order ID: <strong>{selectedOrderNumber}</strong></p>
+
+                                <div className="status-options">
+                                    {/* FIX 5: Normalize value case (e.g., 'pending' vs 'Pending') to match your DB strategy */}
+                                    {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(stat => (
+                                        <label key={stat}>
+                                            <input
+                                                type="radio"
+                                                name="status"
+                                                value={stat}
+                                                checked={selectedStatus?.toLowerCase() === stat}
+                                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                            />
+                                            {stat.charAt(0).toUpperCase() + stat.slice(1)}
+                                        </label>
+                                    ))}
+                                </div>
+
+                                <div className="modal-actions">
+                                    <button className="btn-cancel" onClick={closeModal}>Cancel</button>
+                                    <button className="btn-save" onClick={handleSaveStatus}>Save Changes</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
         )
     );
 }

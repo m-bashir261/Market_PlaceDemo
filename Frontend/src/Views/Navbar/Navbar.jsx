@@ -6,7 +6,7 @@ const Navbar = ({ role = 'buyer' , name = '' }) => {
 const navItems = role === 'seller'
 ? [
     { label: 'Dashboard', href: '/seller/dashboard' },
-    { label: 'Listings', href: '/seller/listings/create' },
+    { label: 'Listings', href: '/seller/listings' },
     { label: 'Incoming Orders', href: '/seller/orders' },
     ]
 : [

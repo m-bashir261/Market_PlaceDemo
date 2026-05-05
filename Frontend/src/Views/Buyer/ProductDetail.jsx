@@ -4,6 +4,7 @@ import './ProductDetail.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
 import { getProductById, getComments, addComment, likeComment, replyToComment } from '../../services/products';
+import { useCart } from '../../context/CartContext';
 
 
 function StarRating({ rating }) {
@@ -28,10 +29,13 @@ function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { addToCart } = useCart();
+
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [toast, setToast] = useState({ message: '', type: '' });
 
   const currentUserId = useMemo(() => {
     const token = localStorage.getItem('token');
@@ -54,6 +58,7 @@ function ProductDetail() {
           name: data.title,
           price: data.price,
           seller: data.seller_id?.username || 'Unknown Seller',
+          seller_id: data.seller_id?._id || data.seller_id,
           sellerRating: 4.5, // Default or fetch if available
           sellerSales: 120, // Default or fetch if available
           deliveryTime: '2-4 days',
@@ -94,37 +99,57 @@ function ProductDetail() {
     setQuantity(value);
   };
  
-  const handlePlaceOrder = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          listing_id: product.listing_id,
-        }),
-      });
-
-      if (response.ok) {
-        setOrderCreated(true);
-      } else {
-        const errData = await response.json();
-        console.error('Failed to place order:', errData.message);
-      }
-    } catch (error) {
-      console.error('Error placing order:', error);
-    }
+  const handleAddToCart = () => {
+    addToCart({
+      listing_id: product.listing_id,
+      name: product.name,
+      price: product.price,
+      seller: product.seller,
+      seller_id: product.seller_id,
+      image: product.image,
+      quantity: quantity
+    });
+    setOrderCreated(true);
+    setTimeout(() => setOrderCreated(false), 3000);
   };
+
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (!toast.message) return;
+    const timer = setTimeout(() => setToast({ message: '', type: '' }), 3000);
+    return () => clearTimeout(timer);
+  }, [toast.message]);
 
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newCommentText.trim()) return;
     try {
         const token = localStorage.getItem('token');
-        if (!token) return alert('Please login to comment');
+        if (!token) {
+            showToast('Please login to comment.');
+            return;
+        }
+
+        // Validate token: check if valid, not expired, and role is buyer
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+            if (payload.exp < currentTime) {
+                showToast('Your session has expired. Please login again.');
+                return;
+            }
+            if (payload.role !== 'buyer') {
+                showToast('Only buyers can comment.');
+                return;
+            }
+        } catch (decodeError) {
+            showToast('Invalid token. Please login again.');
+            return;
+        }
+
         const addedComment = await addComment(id, newCommentText, token);
         setComments([addedComment, ...comments]);
         setNewCommentText("");
@@ -138,6 +163,20 @@ function ProductDetail() {
     try {
         const token = localStorage.getItem('token');
         if (!token) return alert('Please login to like');
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+            if (payload.exp < currentTime) {
+                return alert('Your session has expired. Please login again.');
+            }
+            if (payload.role !== 'buyer') {
+                return alert('Only buyers can like comments.');
+            }
+        } catch (decodeError) {
+            return alert('Invalid token. Please login again.');
+        }
+
         const likes = await likeComment(id, commentId, token);
         setComments(comments.map(c => c._id === commentId ? { ...c, likes } : c));
     } catch (err) {
@@ -151,6 +190,20 @@ function ProductDetail() {
     try {
         const token = localStorage.getItem('token');
         if (!token) return alert('Please login to reply');
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+            if (payload.exp < currentTime) {
+                return alert('Your session has expired. Please login again.');
+            }
+            if (payload.role !== 'buyer') {
+                return alert('Only buyers can reply to comments.');
+            }
+        } catch (decodeError) {
+            return alert('Invalid token. Please login again.');
+        }
+
         const updatedComment = await replyToComment(id, commentId, replyText, token);
         setComments(comments.map(c => c._id === commentId ? updatedComment : c));
         setReplyingTo(null);
@@ -194,6 +247,11 @@ function ProductDetail() {
       <Navbar />
  
       <main className="page-body">
+        {toast.message && (
+          <div className={`toast-notification ${toast.type}`}>
+            {toast.message}
+          </div>
+        )}
  
         {/* ── Breadcrumb ── */}
         <nav className="breadcrumb">
@@ -260,10 +318,10 @@ function ProductDetail() {
             <button
               className="place-order-button"
               type="button"
-              onClick={handlePlaceOrder}
+              onClick={handleAddToCart}
               disabled={orderCreated}
             >
-              {orderCreated ? '✓ Order Confirmed' : 'Place Order'}
+              {orderCreated ? '✓ Product Added' : 'Add To Cart'}
             </button>
           </div>
         </section>

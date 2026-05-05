@@ -83,6 +83,7 @@ exports.protect = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.warn('Auth error: Missing or malformed Bearer token');
         return res.status(401).json({ message: 'No token provided' });
     }
 
@@ -93,7 +94,12 @@ exports.protect = (req, res, next) => {
         req.user = { id: decoded.id }; // make sure your JWT payload uses `id`
         next();
     } catch (err) {
-        return res.status(401).json({ message: 'Invalid token' });
+        console.error('JWT verification error:', err.message);
+        return res.status(401).json({ 
+            message: 'Invalid token',
+            details: err.message,
+            tip: 'Please log in again'
+        });
     }
 };
 

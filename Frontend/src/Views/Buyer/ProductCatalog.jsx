@@ -122,108 +122,110 @@ const ProductCatalog = () => {
   const sellerShopName = isSellerShop ? decodeURIComponent(filters.seller) : null;
 
   return (
-      <div className="catalog-container">
-        <header className="catalog-header">
-          <div className="header-title">
-            <h1>{isSellerShop ? `${sellerShopName}'s Shop` : 'Product Catalog'}</h1>
-            <p>{isSellerShop ? `View all products offered by ${sellerShopName}.` : 'Discover our premium selection of high quality items'}</p>
-          </div>
-        </header>
+      <div className="catalog-page-container">
+        <Navbar />
+        <div className="catalog-container">
+          <header className="catalog-header">
+            <div className="header-title">
+              <h1>{isSellerShop ? `${sellerShopName}'s Shop` : 'Product Catalog'}</h1>
+              <p>{isSellerShop ? `View all products offered by ${sellerShopName}.` : 'Discover our premium selection of high quality items'}</p>
+            </div>
+          </header>
         {isSellerShop && (
           <section className="seller-shop-banner">
             <button className="modern-btn" type="button" onClick={() => navigate('/products')}>View all products</button>
           </section>
         )}
-        <div className="search-bar-container">
-          <input 
-            type="text" 
-            placeholder="Search listings by name or description..." 
-            className="search-input"
-            value={filters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
-          />
-        </div>
-        <div className="catalog-content">
-          <aside className="filters-sidebar">
-            <div className="filter-group">
-              <h3>
-                <Filter size={18} /> Filters
-              </h3>
-            </div>
-
-            <div className="filter-group">
-              <h3>Category</h3>
-              <div className="filter-options">
-                <label className="checkbox-label">
-                  <input
-                      type="radio"
-                      name="category"
-                      checked={filters.category === 'ALL'}
-                      onChange={() => handleFilterChange('category', 'ALL')}
-                  />
-                  <span className="custom-checkbox"></span>
-                  <span className="label-text">All Categories</span>
-                </label>
-                {categories.map(cat => (
-                    <label key={cat._id} className="checkbox-label">
-                      <input
-                          type="radio"
-                          name="category"
-                          checked={filters.category === cat._id}
-                          onChange={() => handleFilterChange('category', cat._id)}
-                      />
-                      <span className="custom-checkbox"></span>
-                      <span className="label-text">{cat.name}</span>
-                    </label>
-                ))}
+          <div className="search-bar-container">
+            <input 
+              type="text" 
+              placeholder="Search listings by name or description..." 
+              className="search-input"
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+            />
+          </div>
+          <div className="catalog-content">
+            <aside className="filters-sidebar">
+              <div className="filter-group">
+                <h3>
+                  <Filter size={18} /> Filters
+                </h3>
               </div>
-            </div>
 
-            <div className="filter-group">
-              <h3>Price Range</h3>
-              <div style={{ padding: '10px 10px 20px 10px' }}>
-                <Slider
-                    range
-                    min={0}
-                    max={2000}
-                    step={10}
-                    value={localPrice}
-                    onChange={(val) => setLocalPrice(val)}
-                    trackStyle={[{ backgroundColor: 'var(--pc-primary)', height: 6 }]}
-                    handleStyle={[
-                      { borderColor: 'var(--pc-primary)', backgroundColor: 'white', opacity: 1, height: 20, width: 20, marginTop: -7 },
-                      { borderColor: 'var(--pc-primary)', backgroundColor: 'white', opacity: 1, height: 20, width: 20, marginTop: -7 }
-                    ]}
-                    railStyle={{ backgroundColor: 'var(--pc-border)', height: 6 }}
-                />
-              </div>
-              <div className="price-display-box">
-                <span>${localPrice[0]}</span>
-                <span>${localPrice[1]}</span>
-              </div>
-            </div>
-
-            <div className="filter-group">
-              <h3>Minimum Rating</h3>
-              <div className="star-rating">
-                {[1, 2, 3, 4, 5].map(star => (
-                    <Star
-                        key={star}
-                        size={24}
-                        className={filters.minRating >= star ? "star filled" : "star"}
-                        onClick={() => handleFilterChange('minRating', filters.minRating === star ? 0 : star)}
+              <div className="filter-group">
+                <h3>Category</h3>
+                <div className="filter-options">
+                  <label className="checkbox-label">
+                    <input
+                        type="radio"
+                        name="category"
+                        checked={filters.category === 'ALL'}
+                        onChange={() => handleFilterChange('category', 'ALL')}
                     />
-                ))}
+                    <span className="custom-checkbox"></span>
+                    <span className="label-text">All Categories</span>
+                  </label>
+                  {categories.map(cat => (
+                      <label key={cat._id} className="checkbox-label">
+                        <input
+                            type="radio"
+                            name="category"
+                            checked={filters.category === cat._id}
+                            onChange={() => handleFilterChange('category', cat._id)}
+                        />
+                        <span className="custom-checkbox"></span>
+                        <span className="label-text">{cat.name}</span>
+                      </label>
+                  ))}
+                </div>
               </div>
-              {filters.minRating > 0 && <span style={{fontSize: '0.8rem', color: 'var(--pc-text-muted)', marginTop: '8px', display: 'block'}}>{filters.minRating} Stars & Up (<span style={{textDecoration:'underline', cursor:'pointer'}} onClick={() => handleFilterChange('minRating', 0)}>Clear</span>)</span>}
-            </div>
-          </aside>
 
-          <main className="products-wrapper">
-            {loading ? (
-                <div className="products-grid">
-                  {[1,2,3,4,5,6].map(i => (
-                      <div key={i} className="product-card skeleton" style={{height: '400px'}}></div>
+              <div className="filter-group">
+                <h3>Price Range</h3>
+                <div style={{ padding: '10px 10px 20px 10px' }}>
+                  <Slider
+                      range
+                      min={0}
+                      max={2000}
+                      step={10}
+                      value={localPrice}
+                      onChange={(val) => setLocalPrice(val)}
+                      trackStyle={[{ backgroundColor: 'var(--pc-primary)', height: 6 }]}
+                      handleStyle={[
+                        { borderColor: 'var(--pc-primary)', backgroundColor: 'white', opacity: 1, height: 20, width: 20, marginTop: -7 },
+                        { borderColor: 'var(--pc-primary)', backgroundColor: 'white', opacity: 1, height: 20, width: 20, marginTop: -7 }
+                      ]}
+                      railStyle={{ backgroundColor: 'var(--pc-border)', height: 6 }}
+                  />
+                </div>
+                <div className="price-display-box">
+                  <span>${localPrice[0]}</span>
+                  <span>${localPrice[1]}</span>
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <h3>Minimum Rating</h3>
+                <div className="star-rating">
+                  {[1, 2, 3, 4, 5].map(star => (
+                      <Star
+                          key={star}
+                          size={24}
+                          className={filters.minRating >= star ? "star filled" : "star"}
+                          onClick={() => handleFilterChange('minRating', filters.minRating === star ? 0 : star)}
+                      />
+                  ))}
+                </div>
+                {filters.minRating > 0 && <span style={{fontSize: '0.8rem', color: 'var(--pc-text-muted)', marginTop: '8px', display: 'block'}}>{filters.minRating} Stars & Up (<span style={{textDecoration:'underline', cursor:'pointer'}} onClick={() => handleFilterChange('minRating', 0)}>Clear</span>)</span>}
+              </div>
+            </aside>
+
+            <main className="products-wrapper">
+              {loading ? (
+                  <div className="products-grid">
+                    {[1,2,3,4,5,6].map(i => (
+                        <div key={i} className="product-card skeleton" style={{height: '400px'}}></div>
                   ))}
                 </div>
             ) : products.length === 0 ? (
@@ -251,6 +253,7 @@ const ProductCatalog = () => {
         
         <Footer />
       </div>
+    </div>
   );
 };
 
