@@ -1,0 +1,49 @@
+.flag-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: 12px;
+    margin-top: 10px;
+}
+
+.flag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.flag-btn.active {
+    background-color: #ef4444;
+    color: white;
+}
+
+.flag-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.flag-btn.inactive:hover {
+    background-color: #cbd5e1;
+}
+
+.seller-reputation {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0f2f5;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #e74c3c;
+    margin-top: 8px;
+}

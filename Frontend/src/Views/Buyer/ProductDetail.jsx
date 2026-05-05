@@ -19,6 +19,14 @@ function StarRating({ rating }) {
     </div>
   );
 }
+
+function SellerReputation({ product }) {
+  return (
+    <span className="seller-reputation" title="Seller Reputation Flags">
+        🚩 {product.flags || 0}
+    </span>
+  );
+}
  
 function ProductDetail() {
   const { id } = useParams();
@@ -59,9 +67,10 @@ function ProductDetail() {
           price: data.price,
           seller: data.seller_id?.username || 'Unknown Seller',
           seller_id: data.seller_id?._id || data.seller_id,
-          sellerRating: 4.5, // Default or fetch if available
+          sellerRating: 4.5, // Default or calculate if available
+          flags: data.seller_id?.flags || 0,
           sellerSales: 120, // Default or fetch if available
-          deliveryTime: '2-4 days',
+          deliveryTime: data.delivery_days ? `${data.delivery_days} day(s)` : 'N/A',
           description: data.description,
           image: data.image_url || 'https://i.ibb.co/000000/default-image.jpg',
           category: data.category_name,
@@ -336,11 +345,12 @@ function ProductDetail() {
             <div className="seller-card-info">
               <h3 className="seller-card-name">{product.seller}</h3>
               <StarRating rating={product.sellerRating} />
+              <SellerReputation product={product} />
               <p className="seller-sales">{product.sellerSales} sales completed</p>
             </div>
-            <a href={`/shop/${product.seller}`} className="view-shop-btn">
+            <button onClick={() => navigate(`/products/${encodeURIComponent(product.seller)}`)} className="view-shop-btn">
               View Shop
-            </a>
+            </button>
           </div>
         </section>
  

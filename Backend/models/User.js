@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
         enum: ['buyer', 'seller'], // Strictly allow only these two roles
         required: true 
     },
+    flags: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import './OrderHistory.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
+import '../../Components/Flagging.css';
+import { flagSeller } from '../../Apis/Flagging';
 import ReviewModal from '../../Components/ReviewModal';
 
 const STATUS_STYLES = {
@@ -37,11 +39,12 @@ function OrderHistory() {
   const [filter, setFilter] = useState('All');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeReviewOrder, setActiveReviewOrder] = useState(null);
   const [activeReviewData, setActiveReviewData] = useState(null); // <-- Holds the review being edited
   const [activeReviewListingId, setActiveReviewListingId] = useState(null);
   const [toast, setToast] = useState({ message: '', type: '' });
-  const filters = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+  const filters = ['All', 'Pending', 'Processing', 'Processing','Shipped', 'Delivered', 'Cancelled'];  
 
   const showToast = (message, type = 'error') => {
     setToast({ message, type });
@@ -97,6 +100,39 @@ function OrderHistory() {
 
   const handleReviewSuccess = (orderId) => {
     fetchOrders();
+  };
+
+  // Handle flagging seller
+  const handleFlagSeller = async (orderNumber, sellerId) => {
+    try {
+        const response = await flagSeller(orderNumber);
+        // Backend returns seller stats in response.seller
+        const { flags } = response.seller || {};
+        const normalizedSellerId = sellerId ? String(sellerId) : null;
+
+        setOrders(prevOrders => prevOrders.map(order => {
+          const orderSellerId = String(order.seller_id?._id || order.seller_id || '');
+          const updatedOrder = { ...order };
+
+          if (normalizedSellerId && orderSellerId === normalizedSellerId) {
+            updatedOrder.seller_id = {
+              ...order.seller_id,
+              flags: flags
+            };
+          }
+
+          if (order.orderNumber === orderNumber || order._id === orderNumber) {
+            updatedOrder.buyerFlag = response.order?.buyerFlag;
+          }
+
+          return updatedOrder;
+        }));
+    } catch (error) {
+      setError({
+        message: "Failed to flag seller. Check console for details.",
+        details: error.message
+      });
+    }
   };
 
   const filtered = filter === 'All'
@@ -221,8 +257,22 @@ function OrderHistory() {
                       })}
                     </div>
 
-                    <div className="oh-order-card-footer">
+                    <div className="oh-order-total-amount">
+                      Total Amount: <span>${order.totalAmount?.toFixed(2)}</span>
                     </div>
+                    
+                    <div className="flag-buttons">
+                      <p>
+                        {order.buyerFlag ? 'You have flagged this seller.' : `Have you had a bad experience with ${sellerName}?`}
+                      </p>
+                      <button
+                        className={`flag-btn ${order.buyerFlag ? 'active' : 'inactive'}`}
+                        onClick={() => handleFlagSeller(order.orderNumber || order._id, order.seller_id?._id || order.seller_id)}
+                        title={order.buyerFlag ? 'Unflag this seller' : 'Flag this seller'}
+                      >
+                        {order.buyerFlag ? '🚩 Flagged' : '🚩 Flag seller'}
+                      </button>
+                  </div>
                   </div>
                 );
               })}

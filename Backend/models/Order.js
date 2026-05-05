@@ -107,6 +107,15 @@ const orderSchema = new mongoose.Schema(
                 type: String,
             },
         },
+
+        sellerFlag: {
+            type: Boolean,
+            default: false,
+        },
+        buyerFlag: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
