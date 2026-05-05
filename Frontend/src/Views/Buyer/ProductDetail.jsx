@@ -66,6 +66,7 @@ function ProductDetail() {
           image: data.image_url || 'https://i.ibb.co/000000/default-image.jpg',
           category: data.category_name,
           stock: data.countInStock || 0,
+          serviceableAreas: data.serviceableAreas || [],
         };
         
         setProduct(mappedProduct);
@@ -117,7 +118,8 @@ function ProductDetail() {
       seller: product.seller,
       seller_id: product.seller_id,
       image: product.image,
-      quantity: quantity
+      quantity: quantity,
+      serviceableAreas: product.serviceableAreas
     });
     setOrderCreated(true);
     setTimeout(() => setOrderCreated(false), 3000);

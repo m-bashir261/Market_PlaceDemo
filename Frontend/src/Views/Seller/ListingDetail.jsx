@@ -19,6 +19,18 @@ export default function ListingDetail() {
     const [error, setError] = useState(null);
     const [formData, setFormData] = useState({});
     const [sellerName, setSellerName] = useState('');
+    const [allRegions, setAllRegions] = useState([]);
+
+    useEffect(() => {
+    // Fetch the reference table data so the grid actually has regions to show
+        fetch('http://localhost:5000/api/regions')
+        .then(res => res.json())
+        .then(data => {
+            // Since your backend returns names like ["Cairo", "Giza"], set them here
+            setAllRegions(data);
+        })
+        .catch(err => console.error("Failed to load regions:", err));
+    }, []);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -48,6 +60,7 @@ export default function ListingDetail() {
                     countInStock: listingData.countInStock,
                     category_id: listingData.category_id,
                     is_active: listingData.is_active,
+                    serviceableAreas: listingData.serviceableAreas || [],
                 });
             } catch (err) {
                 setError({ message: err.message });
@@ -90,6 +103,29 @@ export default function ListingDetail() {
             <button onClick={() => window.location.reload()}>Retry</button>
         </div>
     );
+
+    // Add these functions inside your ListingDetail component before the return statement
+    const handleToggleRegion = (regionName) => {
+        setFormData(prev => {
+            // Look for the region in the current list of serviceable areas
+            const exists = prev.serviceableAreas.find(a => a.region === regionName);
+            
+            const updatedAreas = exists
+                ? prev.serviceableAreas.filter(a => a.region !== regionName) // Remove if unchecked
+                : [...prev.serviceableAreas, { region: regionName, fee: 0 }]; // Add new with default fee[cite: 6]
+            
+            return { ...prev, serviceableAreas: updatedAreas };
+        });
+    };
+
+    const handleUpdateFee = (regionName, newFee) => {
+        setFormData(prev => ({
+            ...prev,
+            serviceableAreas: prev.serviceableAreas.map(a => 
+                a.region === regionName ? { ...a, fee: Number(newFee) } : a // Update specific fee[cite: 6]
+            )
+        }));
+    };
 
     return (
         <div className="seller-dashboard">
@@ -196,6 +232,58 @@ export default function ListingDetail() {
                                 </select>
                             ) : (
                                 <p>{categories.find(c => c._id === listing.category_id)?.name || 'N/A'}</p>
+                            )}
+                        </div>
+
+                        <div className="detail-field">
+                            <label>Serviceable Areas & Shipping Fees</label>
+                            {editMode ? (
+                                <div className="regions-edit-grid">
+                                    {allRegions.map(region => {
+                                        const selectedArea = formData.serviceableAreas?.find(a => a.region === region);
+                                        const isSelected = !!selectedArea;
+
+                                        return (
+                                        <label key={region} className={`region-card ${isSelected ? 'selected' : ''}`}>
+                                            <div className="region-info-left">
+                                            <input 
+                                                type="checkbox" 
+                                                className="region-checkbox"
+                                                checked={isSelected}
+                                                onChange={() => handleToggleRegion(region)} 
+                                            />
+                                            <span className="region-name">{region}</span>
+                                            </div>
+                                            
+                                            {isSelected && (
+                                            <div className="fee-input-wrapper" onClick={(e) => e.stopPropagation()}>
+                                                <span className="currency-symbol">$</span>
+                                                <input 
+                                                type="number"
+                                                className="fee-input"
+                                                value={selectedArea.fee}
+                                                onChange={(e) => handleUpdateFee(region, e.target.value)}
+                                                min="0"
+                                                required
+                                                />
+                                            </div>
+                                            )}
+                                        </label>
+                                        );
+                                    })}
+                                    </div>
+                            ) : (
+                                <div className="regions-display-list">
+                                    {listing.serviceableAreas?.length > 0 ? (
+                                        listing.serviceableAreas.map((area, index) => (
+                                            <p key={index} className="display-area-row">
+                                                <strong>{area.region}</strong>: ${area.fee.toFixed(2)}
+                                            </p>
+                                        ))
+                                    ) : (
+                                        <p className="no-data-text">No regions specified.</p>
+                                    )}
+                                </div>
                             )}
                         </div>
 
