@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getIncomingOrders, updateOrderStatus , flagBuyer} from '../../Apis/Seller';
+import { getIncomingOrders, updateOrderStatus} from '../../Apis/Seller';
+import { flagBuyer } from '../../Apis/Flagging';
 import { getMe } from '../../Apis/authApi';
-import './Seller.css';
+import '../../Components/Flagging.css';
 import LoadingScreen from '../Loading';
 import Navbar from '../Navbar/Navbar';
 

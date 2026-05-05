@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import './OrderHistory.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
+import '../../Components/Flagging.css';
+import { flagSeller } from '../../Apis/Flagging';
 
 const STATUS_STYLES = {
   Pending: { color: '#856404', background: '#fff3cd', bar: '#f4c430' },
@@ -36,7 +38,8 @@ function OrderHistory() {
   const [filter, setFilter] = useState('All');
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const filters = ['All', 'Pending', 'Shipped', 'Delivered', 'Cancelled'];
+  const [error, setError] = useState(null);
+  const filters = ['All', 'Pending', 'Processing','Shipped', 'Delivered', 'Cancelled'];  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -78,6 +81,34 @@ function OrderHistory() {
     };
     fetchOrders();
   }, []);
+
+  // Handle flagging seller
+  const handleFlagSeller = async (orderNumber, flag) => {
+    try {
+        const response = await flagSeller(orderNumber, flag);
+        // Backend returns seller stats in response.seller with camelCase keys
+        const { upVotes, downVotes } = response.seller || {};
+
+        setOrders(orders.map(order =>
+          order.orderNumber === orderNumber
+            ? { 
+              ...order, 
+              sellerFlag: response.order?.sellerFlag,
+              seller_id: {
+                ...order.seller_id,
+                upVotes: upVotes,
+                downVotes: downVotes
+              }
+            }
+            : order
+        ));
+    } catch (error) {
+      setError({
+        message: "Failed to flag seller. Check console for details.",
+        details: error.message
+      });
+    }
+  };
 
   const filtered = filter === 'All'
     ? orders
@@ -182,12 +213,29 @@ function OrderHistory() {
                       })}
                     </div>
 
-                    <div className="oh-order-card-footer">
-                      
-                      <div className="oh-order-total-amount">
-                        Total Amount: <span>${order.totalAmount?.toFixed(2)}</span>
-                      </div>
+                    <div className="oh-order-total-amount">
+                      Total Amount: <span>${order.totalAmount?.toFixed(2)}</span>
                     </div>
+                    
+                    <div className="flag-buttons">
+                      <p>
+                        🚩 How was your experience with {sellerName}?
+                      </p>
+                      <button
+                        className={`flag-btn flag-good ${order.sellerFlag === 'good' ? 'active' : 'inactive'}`}
+                        onClick={() => handleFlagSeller(order.orderNumber, 'good')}
+                        title={order.sellerFlag === 'good' ? 'Remove good vote' : 'Flag seller as good'}
+                      >
+                        👍🏻
+                      </button>
+                      <button
+                        className={`flag-btn flag-bad ${order.sellerFlag === 'bad' ? 'active' : 'inactive'}`}
+                        onClick={() => handleFlagSeller(order.orderNumber, 'bad')}
+                        title={order.sellerFlag === 'bad' ? 'Remove bad vote' : 'Flag seller as bad'}
+                      >
+                        👎🏻
+                      </button>
+                  </div>
                   </div>
                 );
               })}

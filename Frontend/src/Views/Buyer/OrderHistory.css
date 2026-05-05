@@ -247,6 +247,7 @@
   font-weight: 600;
   color: var(--oh-text-secondary);
   font-size: 0.9rem;
+  margin-left: 10px;
 }
 
 .oh-order-total-amount span {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { placeOrder, getBuyerOrders, getOrderById, getSellerOrders } = require('../controllers/orderController');
-const { getIncomingOrders, updateOrderStatus, getSellerOrderStats, getSellerOrder, flagBuyer } = require('../controllers/OrderControllerSeller');
+const { getIncomingOrders, updateOrderStatus, getSellerOrderStats, getSellerOrder } = require('../controllers/OrderControllerSeller');
 const { protect } = require('../controllers/authController'); // Your auth middleware
 
 // ====== ORDER PLACEMENT ======
@@ -36,8 +36,6 @@ router.get('/:id', protect, getOrderById);
 // Route for sellers to update an order's status
 router.put('/:orderNumber/status', protect, updateOrderStatus);
 
-// Route for sellers to flag a buyer good or bad for an order
-router.put('/:orderNumber/flag', protect, flagBuyer);
 
 
 module.exports = router;

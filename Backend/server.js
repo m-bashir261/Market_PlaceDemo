@@ -14,6 +14,7 @@ app.use(express.json());
 app.use('/api/listings', require('./routes/listings'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/flags', require('./routes/flaggingRoutes')); 
 app.use('/api/auth', require('./routes/auth'));
 
 app.use(session({
