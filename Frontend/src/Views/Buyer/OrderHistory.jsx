@@ -83,25 +83,30 @@ function OrderHistory() {
   }, []);
 
   // Handle flagging seller
-  const handleFlagSeller = async (orderNumber, flag) => {
+  const handleFlagSeller = async (orderNumber, sellerId) => {
     try {
-        const response = await flagSeller(orderNumber, flag);
-        // Backend returns seller stats in response.seller with camelCase keys
-        const { upVotes, downVotes } = response.seller || {};
+        const response = await flagSeller(orderNumber);
+        // Backend returns seller stats in response.seller
+        const { flags } = response.seller || {};
+        const normalizedSellerId = sellerId ? String(sellerId) : null;
 
-        setOrders(orders.map(order =>
-          order.orderNumber === orderNumber
-            ? { 
-              ...order, 
-              buyerFlag: response.order?.buyerFlag,
-              seller_id: {
-                ...order.seller_id,
-                upVotes: upVotes,
-                downVotes: downVotes
-              }
-            }
-            : order
-        ));
+        setOrders(prevOrders => prevOrders.map(order => {
+          const orderSellerId = String(order.seller_id?._id || order.seller_id || '');
+          const updatedOrder = { ...order };
+
+          if (normalizedSellerId && orderSellerId === normalizedSellerId) {
+            updatedOrder.seller_id = {
+              ...order.seller_id,
+              flags: flags
+            };
+          }
+
+          if (order.orderNumber === orderNumber || order._id === orderNumber) {
+            updatedOrder.buyerFlag = response.order?.buyerFlag;
+          }
+
+          return updatedOrder;
+        }));
     } catch (error) {
       setError({
         message: "Failed to flag seller. Check console for details.",
@@ -219,21 +224,14 @@ function OrderHistory() {
                     
                     <div className="flag-buttons">
                       <p>
-                        🚩 How was your experience with {sellerName}?
+                        {order.buyerFlag ? 'You have flagged this seller.' : `Have you had a bad experience with ${sellerName}?`}
                       </p>
                       <button
-                        className={`flag-btn flag-good ${order.buyerFlag === 'good' ? 'active' : 'inactive'}`}
-                        onClick={() => handleFlagSeller(order.orderNumber, 'good')}
-                        title={order.buyerFlag === 'good' ? 'Remove good vote' : 'Flag seller as good'}
+                        className={`flag-btn ${order.buyerFlag ? 'active' : 'inactive'}`}
+                        onClick={() => handleFlagSeller(order.orderNumber || order._id, order.seller_id?._id || order.seller_id)}
+                        title={order.buyerFlag ? 'Unflag this seller' : 'Flag this seller'}
                       >
-                        👍🏻
-                      </button>
-                      <button
-                        className={`flag-btn flag-bad ${order.buyerFlag === 'bad' ? 'active' : 'inactive'}`}
-                        onClick={() => handleFlagSeller(order.orderNumber, 'bad')}
-                        title={order.buyerFlag === 'bad' ? 'Remove bad vote' : 'Flag seller as bad'}
-                      >
-                        👎🏻
+                        {order.buyerFlag ? '🚩 Flagged' : '🚩 Flag seller'}
                       </button>
                   </div>
                   </div>

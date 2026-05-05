@@ -25,7 +25,7 @@ const getIncomingOrders = async (req, res) => {
         // 2. Find orders tied ONLY to those listings
         const incomingOrders = await Order.find({ 'items.listing_id': { $in: listingIds } })
             .populate('items.listing_id', 'title items.price delivery_days image_urls')
-            .populate('buyer_id', 'firstName lastName username upVotes downVotes')
+            .populate('buyer_id', 'firstName lastName username')
             .sort({ created_at: -1 });
 
         res.status(200).json({

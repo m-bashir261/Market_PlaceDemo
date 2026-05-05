@@ -2,17 +2,12 @@ const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const User = require('../models/User');
 
-// @desc    Flag a buyer as good or bad from a seller order view
-// @route   PUT /api/orders/:orderNumber/flag
+// @desc    Flag a buyer from a seller order view (toggle flag)
+// @route   PUT /api/flags/:orderNumber/flag-buyer
 const flagBuyer = async (req, res) => {
     try {
         const { orderNumber } = req.params;
-        const { flag } = req.body;
         const sellerId = req.user.id;
-
-        if (!['good', 'bad'].includes(flag)) {
-            return res.status(400).json({ message: 'Invalid flag value' });
-        }
 
         const order = await Order.findOne({ orderNumber }).populate('items.listing_id').populate('buyer_id');
         if (!order) {
@@ -28,54 +23,28 @@ const flagBuyer = async (req, res) => {
             return res.status(403).json({ message: 'Not authorized to flag this buyer' });
         }
 
-        const previousFlag = order.sellerFlag;
-        if (flag === previousFlag) {
-            // If the seller clicks the same vote again, remove the vote entirely.
-            const buyer = await User.findById(order.buyer_id._id);
-            if (!buyer) {
-                return res.status(404).json({ message: 'Buyer not found' });
-            }
-
-            if (previousFlag === 'good') {
-                buyer.upVotes = Math.max(0, buyer.upVotes - 1);
-            } else if (previousFlag === 'bad') {
-                buyer.downVotes = Math.max(0, buyer.downVotes - 1);
-            }
-
-            order.sellerFlag = null;
-            await Promise.all([buyer.save(), order.save()]);
-
-            return res.status(200).json({
-                message: 'Buyer flag removed successfully',
-                buyer: { username: buyer.username, upVotes: buyer.upVotes, downVotes: buyer.downVotes },
-                order: { orderNumber: order.orderNumber, sellerFlag: order.sellerFlag }
-            });
-        }
-
         const buyer = await User.findById(order.buyer_id._id);
         if (!buyer) {
             return res.status(404).json({ message: 'Buyer not found' });
         }
 
-        if (previousFlag === 'good') {
-            buyer.upVotes = Math.max(0, buyer.upVotes - 1);
-        } else if (previousFlag === 'bad') {
-            buyer.downVotes = Math.max(0, buyer.downVotes - 1);
+        const wasFlagged = order.sellerFlag;
+        
+        if (wasFlagged) {
+            // Remove flag
+            order.sellerFlag = false;
+            buyer.flags = Math.max(0, buyer.flags - 1);
+        } else {
+            // Add flag
+            order.sellerFlag = true;
+            buyer.flags = (buyer.flags || 0) + 1;
         }
-
-        if (flag === 'good') {
-            buyer.upVotes += 1;
-        } else if (flag === 'bad') {
-            buyer.downVotes += 1;
-        }
-
-        order.sellerFlag = flag;
 
         await Promise.all([buyer.save(), order.save()]);
 
         res.status(200).json({
-            message: 'Buyer flag updated successfully',
-            buyer: { username: buyer.username, upVotes: buyer.upVotes, downVotes: buyer.downVotes },
+            message: wasFlagged ? 'Flag removed successfully' : 'Buyer flagged successfully',
+            buyer: { username: buyer.username, flags: buyer.flags },
             order: { orderNumber: order.orderNumber, sellerFlag: order.sellerFlag }
         });
     } catch (error) {
@@ -83,17 +52,12 @@ const flagBuyer = async (req, res) => {
     }
 };
 
-// @desc    Flag a seller as good or bad from a buyer order view
-// @route   PUT /api/orders/:orderNumber/flag-seller
+// @desc    Flag a seller from a buyer order view (toggle flag)
+// @route   PUT /api/flags/:orderNumber/flag-seller
 const flagSeller = async (req, res) => {
     try {
         const { orderNumber } = req.params;
-        const { flag } = req.body;
         const buyerId = req.user.id;
-
-        if (!['good', 'bad'].includes(flag)) {
-            return res.status(400).json({ message: 'Invalid flag value' });
-        }
 
         const order = await Order.findOne({ orderNumber }).populate('items.listing_id').populate('seller_id');
         if (!order) {
@@ -104,54 +68,28 @@ const flagSeller = async (req, res) => {
             return res.status(403).json({ message: 'Not authorized to flag this seller' });
         }
 
-        const previousFlag = order.buyerFlag;
-        if (flag === previousFlag) {
-            // If the buyer clicks the same vote again, remove the vote entirely.
-            const seller = await User.findById(order.seller_id._id);
-            if (!seller) {
-                return res.status(404).json({ message: 'Seller not found' });
-            }
-
-            if (previousFlag === 'good') {
-                seller.upVotes = Math.max(0, seller.upVotes - 1);
-            } else if (previousFlag === 'bad') {
-                seller.downVotes = Math.max(0, seller.downVotes - 1);
-            }
-
-            order.buyerFlag = null;
-            await Promise.all([seller.save(), order.save()]);
-
-            return res.status(200).json({
-                message: 'Seller flag removed successfully',
-                seller: { username: seller.username, upVotes: seller.upVotes, downVotes: seller.downVotes },
-                order: { orderNumber: order.orderNumber, buyerFlag: order.buyerFlag }
-            });
-        }
-
         const seller = await User.findById(order.seller_id._id);
         if (!seller) {
             return res.status(404).json({ message: 'Seller not found' });
         }
 
-        if (previousFlag === 'good') {
-            seller.upVotes = Math.max(0, seller.upVotes - 1);
-        } else if (previousFlag === 'bad') {
-            seller.downVotes = Math.max(0, seller.downVotes - 1);
+        const wasFlagged = order.buyerFlag;
+        
+        if (wasFlagged) {
+            // Remove flag
+            order.buyerFlag = false;
+            seller.flags = Math.max(0, seller.flags - 1);
+        } else {
+            // Add flag
+            order.buyerFlag = true;
+            seller.flags = (seller.flags || 0) + 1;
         }
-
-        if (flag === 'good') {
-            seller.upVotes += 1;
-        } else if (flag === 'bad') {
-            seller.downVotes += 1;
-        }
-
-        order.buyerFlag = flag;
 
         await Promise.all([seller.save(), order.save()]);
 
         res.status(200).json({
-            message: 'Seller flag updated successfully',
-            seller: { username: seller.username, upVotes: seller.upVotes, downVotes: seller.downVotes },
+            message: wasFlagged ? 'Flag removed successfully' : 'Seller flagged successfully',
+            seller: { username: seller.username, flags: seller.flags },
             order: { orderNumber: order.orderNumber, buyerFlag: order.buyerFlag }
         });
     } catch (error) {

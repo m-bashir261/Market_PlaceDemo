@@ -10,8 +10,7 @@ const UserSchema = new mongoose.Schema({
         enum: ['buyer', 'seller'], // Strictly allow only these two roles
         required: true 
     },
-    upVotes: { type: Number, default: 0 },
-    downVotes: { type: Number, default: 0 },
+    flags: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

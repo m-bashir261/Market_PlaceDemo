@@ -109,15 +109,12 @@ const orderSchema = new mongoose.Schema(
         },
 
         sellerFlag: {
-            type: String,
-            enum: ['good', 'bad', null],
-            default: null,
+            type: Boolean,
+            default: false,
         },
-
         buyerFlag: {
-            type: String,
-            enum: ['good', 'bad', null],
-            default: null,
+            type: Boolean,
+            default: false,
         },
     },
     {
