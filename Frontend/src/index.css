@@ -1,10 +1,143 @@
+:root {
+  --brand-grays-harbor: #4f637a;
+  --brand-copper-pot: #9c5847;
+  --brand-sturdy-brown: #715441;
+  --brand-steely-gray: #7a898f;
+  --brand-real-red: #b71c1c;
+  --brand-roman-column: #9d9a91;
+  --brand-calypso: #2a9db0;
+  --brand-loyal-blue: #26478c;
+  --brand-tricorn-black: #111111;
+  --brand-golden-gate: #d5a64a;
+  --brand-surface: #ffffff;
+  --brand-surface-alt: #f7f7f5;
+  --brand-border: #d8d8d6;
+  --brand-text: var(--brand-tricorn-black);
+  --brand-text-secondary: var(--brand-grays-harbor);
+  --brand-text-muted: #6f7a89;
+  --brand-shadow-sm: 0 2px 10px rgba(17, 17, 17, 0.08);
+  --brand-shadow: 0 8px 24px rgba(17, 17, 17, 0.1);
+
+  /* Shared theme vars for all buyer views */
+  --pc-bg: #f7f7f5;
+  --pc-surface: #ffffff;
+  --pc-surface-2: #f3f5f8;
+  --pc-border: #d8d8d6;
+  --pc-border-strong: #b8bcc0;
+  --pc-text: var(--brand-text);
+  --pc-text-secondary: var(--brand-text-secondary);
+  --pc-text-muted: var(--brand-text-muted);
+  --pc-primary: var(--brand-loyal-blue);
+  --pc-primary-hover: #203e72;
+  --pc-primary-light: rgba(38, 71, 140, 0.12);
+  --pc-primary-glow: rgba(38, 71, 140, 0.18);
+  --pc-accent: var(--brand-real-red);
+  --pc-gold: var(--brand-golden-gate);
+  --pc-green: var(--brand-calypso);
+  --pc-card-bg: #ffffff;
+  --pc-shadow-sm: var(--brand-shadow-sm);
+  --pc-shadow: var(--brand-shadow);
+  --pc-shadow-hover: rgba(38, 71, 140, 0.16);
+  --pc-radius: 18px;
+  --pc-radius-sm: 10px;
+  --pc-skeleton: #e4e8f0;
+  --pc-glass: rgba(255, 255, 255, 0.82);
+  --pc-glass-border: rgba(255, 255, 255, 0.6);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --co-bg: var(--pc-bg);
+  --co-surface: var(--pc-surface);
+  --co-surface-2: var(--pc-surface-2);
+  --co-border: var(--pc-border);
+  --co-text: var(--pc-text);
+  --co-text-secondary: var(--pc-text-secondary);
+  --co-text-muted: var(--pc-text-muted);
+  --co-primary: var(--pc-primary);
+  --co-primary-light: var(--pc-primary-light);
+  --co-primary-glow: var(--pc-primary-glow);
+
+  --oh-bg: var(--pc-bg);
+  --oh-surface: var(--pc-surface);
+  --oh-surface-2: var(--pc-surface-2);
+  --oh-border: var(--pc-border);
+  --oh-text: var(--pc-text);
+  --oh-text-secondary: var(--pc-text-secondary);
+  --oh-text-muted: var(--pc-text-muted);
+  --oh-primary: var(--pc-primary);
+  --oh-primary-light: var(--pc-primary-light);
+  --oh-primary-glow: var(--pc-primary-glow);
+  --oh-shadow: var(--pc-shadow);
+  --oh-radius: var(--pc-radius);
+
+  --pd-bg: var(--pc-bg);
+  --pd-surface: var(--pc-surface);
+  --pd-surface-2: var(--pc-surface-2);
+  --pd-border: var(--pc-border);
+  --pd-border-strong: var(--pc-border-strong);
+  --pd-text: var(--pc-text);
+  --pd-text-secondary: var(--pc-text-secondary);
+  --pd-text-muted: var(--pc-text-muted);
+  --pd-primary: var(--pc-primary);
+  --pd-primary-hover: var(--pc-primary-hover);
+  --pd-primary-light: var(--pc-primary-light);
+  --pd-primary-glow: var(--pc-primary-glow);
+  --pd-accent: var(--pc-accent);
+  --pd-gold: var(--pc-gold);
+  --pd-green: var(--pc-green);
+  --pd-green-bg: #d9f2f6;
+  --pd-shadow-sm: var(--pc-shadow-sm);
+  --pd-shadow: var(--pc-shadow);
+  --pd-shadow-btn: 0 4px 18px rgba(38, 71, 140, 0.18);
+  --pd-radius: var(--pc-radius);
+  --pd-radius-sm: var(--pc-radius-sm);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  background: var(--pc-bg);
+  color: var(--pc-text);
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Dark Mode Styles ── */
+.dark {
+  --pc-bg: #0f0f0f;
+  --pc-surface: #1a1a1a;
+  --pc-surface-2: #252525;
+  --pc-border: #333333;
+  --pc-border-strong: #404040;
+  --pc-text: #ffffff;
+  --pc-text-secondary: #cccccc;
+  --pc-text-muted: #888888;
+  --pc-primary: #4a90e2;
+  --pc-primary-hover: #357abd;
+  --pc-primary-light: rgba(74, 144, 226, 0.15);
+  --pc-primary-glow: rgba(74, 144, 226, 0.25);
+  --pc-accent: #ff6b6b;
+  --pc-gold: #ffd700;
+  --pc-green: #4ecdc4;
+  --pc-card-bg: #1a1a1a;
+  --pc-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --pc-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --pc-shadow-hover: rgba(74, 144, 226, 0.2);
+  --pc-radius: 18px;
+  --pc-radius-sm: 10px;
+  --pc-skeleton: #333333;
+  --pc-glass: rgba(26, 26, 26, 0.85);
+  --pc-glass-border: rgba(51, 51, 51, 0.6);
+}
+
+.dark body {
+  background: var(--pc-bg);
+  color: var(--pc-text);
 }
 
 code {

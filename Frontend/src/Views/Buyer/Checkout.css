@@ -1,49 +1,4 @@
-:root {
-  --co-bg: #f0f2f8;
-  --co-surface: #ffffff;
-  --co-surface-2: #f7f8fc;
-  --co-border: #d8dce8;
-  --co-text: #0a0e1a;
-  --co-text-secondary: #3a4260;
-  --co-text-muted: #6b748f;
-  --co-primary: #3730e8;
-  --co-primary-light: #eeeeff;
-  --co-primary-glow: rgba(55, 48, 232, 0.18);
-  --co-shadow: 0 8px 32px rgba(10, 14, 26, 0.09);
-  --co-radius: 18px;
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --co-bg: #080c18;
-    --co-surface: #10152a;
-    --co-surface-2: #161c30;
-    --co-border: #232a40;
-    --co-text: #f0f2ff;
-    --co-text-secondary: #b8c0d8;
-    --co-text-muted: #7888a8;
-    --co-primary: #6366f1;
-    --co-primary-light: rgba(99, 102, 241, 0.12);
-    --co-primary-glow: rgba(99, 102, 241, 0.25);
-    --co-shadow: 0 8px 32px rgba(0,0,0,0.45);
-  }
-}
-
-html.dark :root {
-    --co-bg: #080c18;
-    --co-surface: #10152a;
-    --co-surface-2: #161c30;
-    --co-border: #232a40;
-    --co-text: #f0f2ff;
-    --co-text-secondary: #b8c0d8;
-    --co-text-muted: #7888a8;
-    --co-primary: #6366f1;
-    --co-primary-light: rgba(99, 102, 241, 0.12);
-    --co-primary-glow: rgba(99, 102, 241, 0.25);
-    --co-shadow: 0 8px 32px rgba(0,0,0,0.45);
-}
+/* Page-specific checkout styles only. Global theme variables are defined in index.css. */
 
 .checkout-page {
   min-height: 100vh;
@@ -63,6 +18,12 @@ html.dark :root {
 
 .checkout-header {
   margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 760px;
 }
 
 .checkout-title {
