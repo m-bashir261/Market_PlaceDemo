@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Bell, Heart, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Bell, Heart, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { toast } from 'react-toastify';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -8,9 +11,9 @@ const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const { cartItems } = useCart();
+    const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     
-    // Check if the token exists to determine auth status
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
@@ -55,20 +58,51 @@ const Navbar = () => {
         console.log("Searching for:", searchQuery);
     };
 
-    // --- New Logout Handler ---
-    const handleLogout = () => {
-        // 1. Remove the token from local storage
-        localStorage.removeItem('token');
-        
-        // 2. Update auth state
-        setIsAuthenticated(false);
-        
-        // 3. Close mobile menu if it's open
-        setIsMobileMenuOpen(false);
-        
-        // 4. Navigate to the home page
-        navigate('/home'); 
+    const isTokenExpired = (token) => {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.exp < Date.now() / 1000;
+        } catch (e) {
+            return true;
+        }
     };
+
+    const handleProfileClick = () => {
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+
+        if (!token) {
+            toast.error("Unauthorized: Please sign in first.", { position: "top-right" });
+            navigate('/login');
+            return;
+        }
+
+        if (isTokenExpired(token)) {
+            toast.warning("Session Expired: Please sign in again.", { position: "top-right" });
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            navigate('/login');
+            return;
+        }
+
+        if (role !== 'buyer') {
+            toast.error("Access Denied: Log in again.", { position: "top-right" });
+            // Optional: stay on page or navigate to seller dashboard if they are a seller
+            // But the user said "never open seller dashboard", so we just show alert.
+            return;
+        }
+
+        // If all checks pass, go to buyer orders
+        navigate('/orders');
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        navigate('/login');
+    };
+
+    const isLoggedIn = !!localStorage.getItem('token');
 
     return (
         <>
@@ -120,7 +154,7 @@ const Navbar = () => {
                     </div>
 
                     <div className="navbar-actions hide-on-mobile md-up">
-                        <button className="action-btn" title="Seller Dashboard">
+                        <button className="action-btn" title="Seller Dashboard" onClick={() => navigate('/signup')}>
                             <Store size={20} className="action-icon" />
                             <span>Sell</span>
                         </button>
@@ -139,17 +173,22 @@ const Navbar = () => {
                             <span className="badge badge-pink">7</span>
                         </button>
 
-                        <button className="action-btn icon-only relative" title="Cart" onClick={() => navigate('/products')}>
+                        <button className="action-btn icon-only relative" title="Cart" onClick={() => navigate('/checkout')}>
                             <ShoppingCart size={20} className="action-icon" />
-                            <span className="badge badge-orange animate-bounce">2</span>
+                            {cartCount > 0 && <span className="badge badge-orange animate-bounce">{cartCount}</span>}
                         </button>
 
-                        {/* Conditional Rendering for Desktop Auth Button */}
-                        {isAuthenticated ? (
-                            <button className="sign-in-btn modern-btn" onClick={handleLogout}>
-                                <LogOut size={16} />
-                                <span>Logout</span>
-                            </button>
+                        {isLoggedIn ? (
+                            <>
+                                <button className="action-btn icon-only relative" onClick={handleProfileClick} title="Profile">
+                                    <div className="avatar">
+                                        <User size={16} />
+                                    </div>
+                                </button>
+                                <button className="action-btn icon-only relative" onClick={handleLogout} title="Log Out">
+                                    <LogOut size={20} className="action-icon" style={{color: '#ef4444'}} />
+                                </button>
+                            </>
                         ) : (
                             <button className="sign-in-btn modern-btn" onClick={() => navigate('/login')}>
                                 <User size={16} />
@@ -185,7 +224,7 @@ const Navbar = () => {
                         </form>
 
                         <div className="mobile-grid">
-                            <button className="grid-action-btn">
+                            <button className="grid-action-btn" onClick={() => navigate('/signup')}>
                                 <Store size={20} />
                                 <span>Sell</span>
                             </button>
@@ -193,25 +232,27 @@ const Navbar = () => {
                                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                                 <span>Theme</span>
                             </button>
-                            <button className="grid-action-btn relative">
+                            <button className="grid-action-btn relative" onClick={() => navigate('/checkout')}>
                                 <ShoppingCart size={20} />
-                                <span className="badge badge-orange badge-mobile">2</span>
+                                {cartCount > 0 && <span className="badge badge-orange badge-mobile">{cartCount}</span>}
                                 <span>Cart</span>
                             </button>
                         </div>
 
                         <div className="mobile-auth mt-3 border-t pt-3">
-                            {/* Conditional Rendering for Mobile Auth Button */}
-                            {isAuthenticated ? (
-                                <button className="sign-in-btn modern-btn full-width" onClick={handleLogout}>
-                                    <LogOut size={16} />
-                                    <span>Logout</span>
-                                </button>
+                            {isLoggedIn ? (
+                                <>
+                                    <button className="sign-in-btn modern-btn full-width mb-3" onClick={handleProfileClick}>
+                                        <User size={16} />
+                                        <span>Profile / Orders</span>
+                                    </button>
+                                    <button className="action-btn full-width" onClick={handleLogout} style={{ justifyContent: 'center', color: '#ef4444' }}>
+                                        <LogOut size={16} />
+                                        <span>Log Out</span>
+                                    </button>
+                                </>
                             ) : (
-                                <button className="sign-in-btn modern-btn full-width" onClick={() => {
-                                    navigate('/login');
-                                    setIsMobileMenuOpen(false); // Clean up: close menu when navigating
-                                }}>
+                                <button className="sign-in-btn modern-btn full-width" onClick={() => navigate('/login')}>
                                     <User size={16} />
                                     <span>Sign In</span>
                                 </button>
