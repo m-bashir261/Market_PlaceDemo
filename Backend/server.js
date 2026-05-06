@@ -27,6 +27,9 @@ app.use(session({
 
 const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+console.log('MONGO_URI:', process.env.MONGO_URI);
+
 if (!mongoUri) {
   console.error('❌ Missing MongoDB connection URI. Set MONGODB_URI or MONGO_URI in your .env file.');
   process.exit(1);

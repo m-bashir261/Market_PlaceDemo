@@ -1,5 +1,4 @@
 services:
-  # ---- Express Backend ----
   backend:
     build:
       context: ./Backend
@@ -7,14 +6,16 @@ services:
     ports:
       - "${PORT}:${PORT}"
     volumes:
-      - ./Backend:/app          # Mount source for live editing
-      - backend-deps:/app/node_modules  # Preserve container node_modules
+      - ./Backend:/app
+      - backend-deps:/app/node_modules
     env_file: .env
     environment:
-      MONGO_URI: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wfwwjwa.mongodb.net/marketplaceDB?appName=Cluster0
-      MONGODB_URI: mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.wfwwjwa.mongodb.net/marketplaceDB?appName=Cluster0
+      MONGO_URI: "mongodb://mariamramy1074_db_user:Shoyotastic@ac-fu0jurk-shard-00-00.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-01.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-02.wfwwjwa.mongodb.net:27017/marketplaceDB?ssl=true&replicaSet=atlas-ef3awd-shard-0&authSource=admin&appName=Cluster0"
+      MONGODB_URI: "mongodb://mariamramy1074_db_user:Shoyotastic@ac-fu0jurk-shard-00-00.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-01.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-02.wfwwjwa.mongodb.net:27017/marketplaceDB?ssl=true&replicaSet=atlas-ef3awd-shard-0&authSource=admin&appName=Cluster0"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
-  # ---- React Frontend ----
   frontend:
     build:
       context: ./Frontend
@@ -22,10 +23,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./Frontend:/app          # Mount source for hot-reload
-      - frontend-deps:/app/node_modules  # Preserve container node_modules
+      - ./Frontend:/app
+      - frontend-deps:/app/node_modules
     environment:
-      WATCHPACK_POLLING: "true"  # Enables hot-reload inside Docker on all OSes
+      WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
       WDS_SOCKET_PORT: 3000
     depends_on:

@@ -88,3 +88,13 @@ export const deleteListing = async (id) => {
     });
     return response.data;
 };
+
+export const getPublicSellerListings = async (username) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/listings/public/seller/${username}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching public seller listings:", error.response?.data || error.message);
+        throw error;
+    }
+};

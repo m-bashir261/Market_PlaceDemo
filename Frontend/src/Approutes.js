@@ -9,7 +9,7 @@ import OrderHistory from './Views/Buyer/OrderHistory';
 import Checkout from './Views/Buyer/Checkout';
 import ProtectedRoute from './services/ProtectedRoute';
 import ProductCatalog from "./Views/Buyer/ProductCatalog";
-
+import SellerShop from './Views/Buyer/SellerShop';
 import Home from "./Views/Buyer/Home";
 import Signup from "./Views/Authentication/Signup";
 import Login from "./Views/Authentication/Login";
@@ -24,6 +24,7 @@ function AppRoutes() {
             <Route path="/home" element={<Home />} />
             <Route path="/seller/orders" element={<ProtectedRoute allowedRole="seller"><OrderView /></ProtectedRoute>} />
             <Route path="/seller/listings" element={<ProtectedRoute allowedRole="seller"><Listings /></ProtectedRoute>} />
+            <Route path="/seller/listings/create" element={<ProtectedRoute allowedRole="seller"><CreateListings /></ProtectedRoute>} />
             <Route path="/seller/listings/:id" element={<ProtectedRoute allowedRole="seller"><ListingDetail /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
@@ -31,9 +32,9 @@ function AppRoutes() {
             <Route path="/checkout" element={<ProtectedRoute allowedRole="buyer"><Checkout /></ProtectedRoute>} />
             <Route path="/buyer/product/:id" element={<ProductDetail />} />
             <Route path="/products" element={<ProductCatalog />} />
+            <Route path="/shop/:username" element={<SellerShop />} />
             {/* <Route path="/unauthorized" element={<Navigate to="/login" replace />} /> */}
 
-            <Route path="/seller/listings/create" element={<ProtectedRoute allowedRole="seller"><CreateListings /></ProtectedRoute>} />
             </Routes>
         </Router>
     );
