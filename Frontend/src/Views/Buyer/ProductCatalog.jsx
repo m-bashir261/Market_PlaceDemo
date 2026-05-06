@@ -6,11 +6,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
-
-
-import { useLocation } from 'react-router-dom';
-
-
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getProducts, getCategories } from '../../services/products';
 
 const ProductCatalog = () => {
@@ -19,13 +15,16 @@ const ProductCatalog = () => {
   const [loading, setLoading] = useState(true);
 
   const location = useLocation();
+  const navigate = useNavigate();
+  const { seller: sellerParam } = useParams();
   const initialCategory = location.state?.category || 'ALL';
 
   const [filters, setFilters] = useState({
     category: initialCategory,
     priceRange: 'ALL',
     minRating: 0,
-    search: ''
+    search: '',
+    seller: sellerParam || 'ALL'
   });
 
   const [localPrice, setLocalPrice] = useState([0, 2000]);
@@ -43,6 +42,22 @@ const ProductCatalog = () => {
     }, 500); // Debounce slider movement before querying the db
     return () => clearTimeout(timeout);
   }, [localPrice, filters.priceRange]);
+
+  useEffect(() => {
+  if (sellerParam) {
+    // If a seller is in the URL, update filter to that seller
+    if (sellerParam !== filters.seller) {
+      setFilters(prev => ({ ...prev, seller: sellerParam }));
+      setPage(1);
+    }
+  } else {
+    // CRITICAL: If no seller is in URL, reset the seller filter to 'ALL'
+    if (filters.seller !== 'ALL') {
+      setFilters(prev => ({ ...prev, seller: 'ALL' }));
+      setPage(1);
+    }
+  }
+}, [sellerParam]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -71,7 +86,8 @@ const ProductCatalog = () => {
           limit: 12,
           priceRange: filters.priceRange,
           minRating: filters.minRating,
-          search: filters.search
+          search: filters.search,
+          seller: filters.seller
         });
 
         if (Array.isArray(data)) {
@@ -88,12 +104,22 @@ const ProductCatalog = () => {
     };
 
     loadProducts();
-  }, [filters.category, filters.priceRange, filters.minRating, filters.search, page]);
+  }, [filters.category, filters.priceRange, filters.minRating, filters.search, filters.seller, page]);
+
+  useEffect(() => {
+    if (sellerParam && sellerParam !== filters.seller) {
+      setFilters(prev => ({ ...prev, seller: sellerParam }));
+      setPage(1);
+    }
+  }, [sellerParam]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setPage(1);
   };
+
+  const isSellerShop = filters.seller && filters.seller !== 'ALL';
+  const sellerShopName = isSellerShop ? decodeURIComponent(filters.seller) : null;
 
   return (
       <div className="catalog-page-container">
@@ -101,10 +127,15 @@ const ProductCatalog = () => {
         <div className="catalog-container">
           <header className="catalog-header">
             <div className="header-title">
-              <h1>Product Catalog</h1>
-              <p>Discover our premium selection of high quality items</p>
+              <h1>{isSellerShop ? `${sellerShopName}'s Shop` : 'Product Catalog'}</h1>
+              <p>{isSellerShop ? `View all products offered by ${sellerShopName}.` : 'Discover our premium selection of high quality items'}</p>
             </div>
           </header>
+        {isSellerShop && (
+          <section className="seller-shop-banner">
+            <button className="modern-btn" type="button" onClick={() => navigate('/products')}>View all products</button>
+          </section>
+        )}
           <div className="search-bar-container">
             <input 
               type="text" 
@@ -205,7 +236,7 @@ const ProductCatalog = () => {
                   <button
                       className="modern-btn"
                       style={{ margin: '20px auto' }}
-                      onClick={() => setFilters({category: 'ALL', priceRange: 'ALL', minRating: 0})}
+                      onClick={() => setFilters({category: 'ALL', priceRange: 'ALL', minRating: 0, search: '', seller: 'ALL'})}
                   >
                     Clear Filters
                   </button>
@@ -213,7 +244,7 @@ const ProductCatalog = () => {
             ) : (
                 <div className="products-grid">
                   {products.map(product => (
-                      <ProductCard key={product._id} listing={product} />
+                      <ProductCard key={product._id} listing={product} searchQuery={filters.search} />
                   ))}
                 </div>
             )}

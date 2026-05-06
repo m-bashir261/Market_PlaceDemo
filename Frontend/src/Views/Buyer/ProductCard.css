@@ -1,0 +1,8 @@
+/* Styling for the highlighted text */
+.search-highlight {
+  background-color: #fde047; /* Soft yellow */
+  color: #000;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: bold;
+}

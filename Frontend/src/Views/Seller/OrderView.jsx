@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getIncomingOrders, updateOrderStatus } from '../../Apis/Seller';
+import { getIncomingOrders, updateOrderStatus} from '../../Apis/Seller';
+import { flagBuyer } from '../../Apis/Flagging';
 import { getMe } from '../../Apis/authApi';
-import './Seller.css';
+import '../../Components/Flagging.css';
 import LoadingScreen from '../Loading';
 import Navbar from '../Navbar/Navbar';
 
@@ -94,8 +95,45 @@ export default function OrderView() {
                 ));
                 closeModal();
             } catch (error) {
-                alert("Failed to update status: " + error.message);
+                setError({
+                    message: "Failed to update order status. Check console for details.",
+                    details: error.message
+                });
             }
+        }
+    };
+
+    // Handle flagging buyer
+    const handleFlagBuyer = async (orderNumber, buyerId) => {
+        try {
+            const response = await flagBuyer(orderNumber);
+            // Backend returns buyer stats in response.buyer
+            const { flags } = response.buyer || {};
+            const normalizedBuyerId = buyerId ? String(buyerId) : null;
+
+            setOrders(prevOrders => prevOrders.map(order => {
+                const orderBuyerId = String(order.buyer_id?._id || order.buyer_id || '');
+                const isSameBuyer = normalizedBuyerId && orderBuyerId === normalizedBuyerId;
+                const updatedOrder = { ...order };
+
+                if (isSameBuyer) {
+                    updatedOrder.buyer_id = {
+                        ...order.buyer_id,
+                        flags: flags
+                    };
+                }
+
+                if (order.orderNumber === orderNumber || order._id === orderNumber) {
+                    updatedOrder.sellerFlag = response.order?.sellerFlag;
+                }
+
+                return updatedOrder;
+            }));
+        } catch (error) {
+            setError({
+                message: "Failed to flag buyer. Check console for details.",
+                details: error.message
+            });
         }
     };
 
@@ -193,25 +231,40 @@ export default function OrderView() {
                                         </div>
 
                                         <div className="order-card-footer-info">
-                                            <div className="customer-info">
-                                                <span className="info-label">Customer:</span>
-                                                <span className="info-value">
-                                                    {order.buyer_id?.firstName || 'Guest'} {order.buyer_id?.lastName || ''}
-                                                </span>
+                                            <div className="detail-item">
+                                                <span className="detail-label">Customer Name</span>
+                                                    {order.buyer_id?.firstName} {order.buyer_id?.lastName}
+                                                    
+                                                    {/* REPUTATION SECTION */}
+                                                    <span className="seller-reputation" title="Buyer Reputation Flags">
+                                                        🚩 {order.buyer_id?.flags || 0}
+                                                    </span>
+                                                <div className="order-total-price">
+                                                    Total: <span>${order.totalAmount?.toFixed(2)}</span>
+                                                </div>
                                             </div>
-                                            <div className="order-total-price">
-                                                Total: <span>${order.totalAmount?.toFixed(2)}</span>
-                                            </div>
-                                        </div>
 
-                                        <div className="order-actions">
-                                            <button className="action-btn btn-view">View Details</button>
-                                            <button
-                                                className="action-btn btn-update"
-                                                onClick={() => handleUpdateStatusClick(order.orderNumber)}
-                                            >
-                                                ✎ Update Status
-                                            </button>
+                                            <div className="order-actions">
+                                                <button className="action-btn btn-view">View Details</button>
+                                                <button
+                                                    className="action-btn btn-update"
+                                                    onClick={() => handleUpdateStatusClick(order.orderNumber)}
+                                                >
+                                                    ✎ Update Status
+                                                </button>
+                                                <div className="flag-buttons">
+                                                    <p>
+                                                        {order.sellerFlag ? '' : `Did ${order.buyer_id?.firstName} cause you any trouble?`}
+                                                    </p>
+                                                    <button
+                                                        className={`flag-btn ${order.sellerFlag ? 'active' : 'inactive'}`}
+                                                    onClick={() => handleFlagBuyer(order.orderNumber, order.buyer_id?._id || order.buyer_id)}
+                                                        title={order.sellerFlag ? 'Unflag this buyer' : 'Flag this buyer'}
+                                                    >
+                                                        {order.sellerFlag ? '🚩 Flagged' : '🚩 Flag buyer'}
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -259,4 +312,4 @@ export default function OrderView() {
             </div>
         )
     );
-}
+};

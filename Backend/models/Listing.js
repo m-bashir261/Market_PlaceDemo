@@ -45,6 +45,17 @@ const listingSchema = new mongoose.Schema({
             type: Number, 
             default: 0 
         },
+        serviceableAreas: [{
+            region: { 
+            type: String, 
+            required: true 
+            },
+            fee: { 
+            type: Number, 
+            required: true, 
+            default: 0 
+            }
+        }]
     
     },
     

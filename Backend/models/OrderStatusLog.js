@@ -6,7 +6,6 @@ const orderStatusLogSchema = new mongoose.Schema(
     orderNumber: {
             type: String,
             ref: 'Order',
-            unique: true,
         },
     status: {
         type: String,

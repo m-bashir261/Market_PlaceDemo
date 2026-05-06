@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
+const User = require('../models/User');
 const OrderStatusLog = require('../models/OrderStatusLog');
 
 /**
  * @desc    Get orders for a seller (filtered by seller_id in orders where seller_id matches the authenticated user)
- * @route   GET /api/orders/seller/my-orders
+ * @route   GET /api/orders/incoming
  * @access  Private
  */
 const getIncomingOrders = async (req, res) => {
@@ -17,10 +18,15 @@ const getIncomingOrders = async (req, res) => {
             return res.status(400).json({ message: 'Invalid seller ID' });
         }
 
-        const incomingOrders = await Order.find({ seller_id: sellerId })
-            .populate('items.listing_id', 'title price delivery_days image_urls description')
-            .populate('buyer_id', 'firstName lastName username email phone')
-            .sort({ createdAt: -1 });
+        // 1. Find listings tagged with this seller ID
+        const sellerListings = await Listing.find({ seller_id: sellerId }).select('_id');
+        const listingIds = sellerListings.map(listing => listing._id);
+
+        // 2. Find orders tied ONLY to those listings
+        const incomingOrders = await Order.find({ 'items.listing_id': { $in: listingIds } })
+            .populate('items.listing_id', 'title items.price delivery_days image_urls')
+            .populate('buyer_id', 'firstName lastName username')
+            .sort({ created_at: -1 });
 
         res.status(200).json({
             success: true,

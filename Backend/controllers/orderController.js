@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
+const Review = require('../models/Review');
 
 // Place a new order
 const placeOrder = async (req, res) => {
@@ -40,6 +41,30 @@ const placeOrder = async (req, res) => {
       return res.status(400).json({ message: 'seller_id does not match the listings' });
     }
 
+    // 1. Verify stock for all items before creating the order
+    const listingsToUpdate = [];
+    for (const item of items) {
+      const listing = listings.find(l => l._id.toString() === item.listing_id);
+      
+      if (!listing) {
+        return res.status(404).json({ message: `Product not found` });
+      }
+
+      // Check if requested quantity exceeds available stock
+      if (listing.countInStock < item.quantity) {
+        return res.status(400).json({ 
+          message: `Not enough stock for ${listing.title}. Only ${listing.countInStock} left.` 
+        });
+      }
+
+      // 2. Deduct the stock
+      listing.countInStock -= item.quantity;
+      listingsToUpdate.push(listing);
+    }
+
+    // 3. Save all the updated listings back to the database
+    await Promise.all(listingsToUpdate.map(listing => listing.save()));
+
     // Create order
     const order = await Order.create({
       buyer_id,
@@ -71,10 +96,34 @@ const getBuyerOrders = async (req, res) => {
   try {
     const buyer_id = req.user.id;
 
-    const orders = await Order.find({ buyer_id })
+    let orders = await Order.find({ buyer_id })
       .populate('items.listing_id', 'title price image_urls')
       .populate('seller_id', 'username name email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // 2. Fetch all reviews made by this buyer
+    const userReviews = await Review.find({ buyer_id: req.user.id });
+    
+    // Create an array or Set of order IDs that have been reviewed
+    const reviewedOrderIds = userReviews.map(r => r.order_id.toString());
+
+    orders = orders.map(order => {
+        return {
+            ...order,
+            items: (order.items || []).map(item => {
+                const listingId = item.listing_id?._id || item.listing_id;
+                const review = userReviews.find(
+                    r => r.order_id.toString() === order._id.toString() &&
+                          r.listing_id.toString() === listingId.toString()
+                );
+                return {
+                    ...item,
+                    review: review || null
+                };
+            })
+        };
+    });
 
     res.status(200).json({
       success: true,

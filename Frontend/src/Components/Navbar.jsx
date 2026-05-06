@@ -12,6 +12,7 @@ const Navbar = () => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const { cartItems } = useCart();
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+    
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
