@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Listing = require('../models/Listing');
+const Review = require('../models/Review');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -109,6 +111,48 @@ exports.getUser = async (req, res) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.status(200).json(user);
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getSellerInfo = async (req, res) => {
+    try {
+        const { username } = req.params;
+        console.log('getSellerInfo called with username:', username);
+        
+        // Find seller by username
+        const seller = await User.findOne({ username: username.toLowerCase() }).select('username flags');
+        console.log('Seller found:', seller);
+        if (!seller) return res.status(404).json({ message: 'Seller not found' });
+        
+        // Get all listings for this seller
+        const listings = await Listing.find({ seller_id: seller._id });
+        console.log('Listings found:', listings.length);
+        
+        let averageRating = 0;
+        let totalReviews = 0;
+        
+        // Only query reviews if there are listings
+        if (listings.length > 0) {
+            const listingIds = listings.map(l => l._id);
+            const reviews = await Review.find({ listing_id: { $in: listingIds } });
+            totalReviews = reviews.length;
+            console.log('Reviews found:', reviews.length);
+            averageRating = reviews.length > 0 
+                ? parseFloat((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1))
+                : 0;
+        }
+        
+        const responseData = {
+            username: seller.username,
+            flags: seller.flags || 0,
+            rating: averageRating,
+            totalReviews: totalReviews
+        };
+        console.log('Sending response:', responseData);
+        res.status(200).json(responseData);
+    } catch (error) {
+        console.error('Error in getSellerInfo:', error);
         res.status(500).json({ message: error.message });
     }
 };

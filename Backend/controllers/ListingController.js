@@ -94,7 +94,7 @@ const deleteListing = async (req, res) => {
 const getListingsByUsername = async (req, res) => {
     try {
         const User = require('../models/User');
-        const seller = await User.findOne({ username: req.params.username });
+        const seller = await User.findOne({ username: req.params.username.toLowerCase() });
         if (!seller) return res.status(404).json({ message: 'Seller not found' });
 
         const listings = await Listing.find({ seller_id: seller._id, is_active: true });

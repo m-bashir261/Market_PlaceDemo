@@ -360,7 +360,7 @@ function ProductDetail() {
               <SellerReputation product={product} />
               <p className="seller-sales">{product.sellerSales} sales completed</p>
             </div>
-            <button onClick={() => navigate(`/products/${encodeURIComponent(product.seller)}`)} className="view-shop-btn">
+            <button onClick={() => navigate(`/shop/${encodeURIComponent(product.seller)}`)} className="view-shop-btn">
               View Shop
             </button>
           </div>

@@ -10,4 +10,7 @@ router.post('/login', authController.login);
 
 router.get('/get-user', authController.protect ,authController.getUser);
 
+// Route: GET /api/auth/seller/:username
+router.get('/seller/:username', authController.getSellerInfo);
+
 module.exports = router;

@@ -98,3 +98,13 @@ export const getPublicSellerListings = async (username) => {
         throw error;
     }
 };
+
+export const getSellerInfo = async (username) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/auth/seller/${username}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching seller info:", error.response?.data || error.message);
+        throw error;
+    }
+};

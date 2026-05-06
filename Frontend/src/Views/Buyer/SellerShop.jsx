@@ -2,21 +2,55 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
-import { getPublicSellerListings } from '../../Apis/Seller';
+import { getPublicSellerListings, getSellerInfo } from '../../Apis/Seller';
 import './SellerShop.css';
 
 export default function SellerShop() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [listings, setListings] = useState([]);
+    const [sellerInfo, setSellerInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        getPublicSellerListings(username)
-            .then(setListings)
-            .catch(() => setError('Could not load this shop.'))
-            .finally(() => setLoading(false));
+        let isMounted = true;
+        console.log('Loading shop for username:', username);
+        
+        const loadShop = async () => {
+            try {
+                // Always fetch listings (required)
+                const listingsData = await getPublicSellerListings(username);
+                console.log('Listings data:', listingsData);
+                if (!isMounted) return;
+                setListings(listingsData);
+                
+                // Try to fetch seller info (optional - shop works without it)
+                try {
+                    console.log('Fetching seller info for:', username);
+                    const infoData = await getSellerInfo(username);
+                    console.log('Seller info response:', infoData);
+                    if (isMounted) {
+                        setSellerInfo(infoData);
+                        console.log('Seller info set:', infoData);
+                    }
+                } catch (infoError) {
+                    console.warn('Failed to load seller info, continuing without it:', infoError);
+                    // Don't fail the whole page if seller info fails
+                }
+            } catch (error) {
+                console.error('Shop loading error:', error);
+                if (isMounted) setError('Could not load this shop.');
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+        
+        loadShop();
+        
+        return () => {
+            isMounted = false;
+        };
     }, [username]);
 
     if (loading) return (
@@ -44,6 +78,12 @@ export default function SellerShop() {
                     <div>
                         <h1 className="shop-username">{username}'s Shop</h1>
                         <p className="shop-count">{listings.length} active listing{listings.length !== 1 ? 's' : ''}</p>
+                        {sellerInfo && (
+                            <div className="shop-seller-stats">
+                                <span className="seller-rating">⭐ {sellerInfo.rating} ({sellerInfo.totalReviews} reviews)</span>
+                                <span className="seller-flags">🚩 {sellerInfo.flags} flag{sellerInfo.flags !== 1 ? 's' : ''}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
