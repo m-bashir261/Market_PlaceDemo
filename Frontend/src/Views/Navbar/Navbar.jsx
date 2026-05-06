@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // if you use React Router
 import './Navbar.css';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = ({ role = 'buyer' , name = '' }) => {
-const navItems = role === 'seller'
+    const navigate = useNavigate();
+    const navItems = role === 'seller'
+    
 ? [
     { label: 'Dashboard', href: '/seller/dashboard' },
     { label: 'Listings', href: '/seller/listings' },
@@ -16,6 +19,12 @@ const navItems = role === 'seller'
     { label: 'Wishlist', href: '/buyer/wishlist' }
     ];
 
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        navigate('/login');
+    };
 return (
 <nav className="navbar">
     {/* Left side: logo + seller badge (only for sellers) */}
@@ -47,7 +56,7 @@ return (
         </Link>
         </>
     )}
-    <button className="logout-btn" onClick={() => {/* handle logout */}}>
+    <button className="logout-btn" onClick={handleLogout}>
         Logout
     </button>
     </div>

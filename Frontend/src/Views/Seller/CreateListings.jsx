@@ -6,6 +6,7 @@ import ListingComp from '../../assets/ListingComp.lottie';
 import { getCategories } from '../../services/products';
 import { useEffect } from 'react';
 
+
 const useCategories = () => {
     const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(true)
@@ -56,13 +57,50 @@ export default function CreateListing() {
   const [imageFiles, setImageFiles] = useState([])
   const [uploading, setUploading] = useState(false)
   const { categories, loading, error: categoryError } = useCategories() // this custom hook fetches the list of categories from the backend and manages loading and error states for that request.
-
+  const [allRegions, setAllRegions] = useState([])
+  const [selectedAreas, setSelectedAreas] = useState([]);
   // handleChange is a generic function that updates a component's state in real-time as a user types or selects a value in a form element
   // e typically refers to the Event Object. It is a standard naming convention for the first argument passed to an event handler function
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   } // this function takes the existing formData object, spreads its properties into a new object, and then updates the specific property that corresponds to the name of the input field that triggered the event with its current value. This allows for dynamic handling of multiple form fields without needing separate state variables or handlers for each one.
 
+
+
+
+  useEffect(() => {
+    // Fetch the reference table data
+    fetch('http://localhost:5000/api/regions')
+      .then(res => res.json())
+      .then(data => setAllRegions(data));
+  }, []);
+
+  const toggleRegion = (regionName) => {
+    setSelectedAreas(prev => {
+      const exists = prev.find(area => area.region === regionName);
+      if (exists) {
+        // If it's already selected, remove it
+        return prev.filter(area => area.region !== regionName);
+      } else {
+        // If newly selected, add it with a default fee of 0
+        return [...prev, { region: regionName, fee: 0 }];
+      }
+    });
+  };
+
+  // Handle typing a custom fee for a selected region
+  const handleFeeChange = (regionName, feeValue) => {
+    setSelectedAreas(prev => 
+      prev.map(area => 
+        area.region === regionName 
+          ? { ...area, fee: Number(feeValue) } 
+          : area
+      )
+    );
+  };
+
+
+  
   const handleFileDrop = (e) => {
   e.preventDefault()
   const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'))
@@ -106,7 +144,8 @@ const removeFile = (index) => {
           price: Number(formData.price),
           delivery_days: Number(formData.delivery_days),
           image_url: imageUrls,
-          countInStock: Number(formData.stock)
+          countInStock: Number(formData.stock), 
+          serviceableAreas: selectedAreas
         })
       })
 
@@ -203,16 +242,16 @@ const removeFile = (index) => {
 
             <div className="form-group">
 
-  <label>Title</label>
-  <input 
-    className="form-input" 
-    name="title" 
-    placeholder="e.g. Headset, Sewing Machine, etc."
-    value={formData.title} 
-    onChange={handleChange} 
-    required 
-  />
-</div>
+            <label>Title</label>
+            <input 
+              className="form-input" 
+              name="title" 
+              placeholder="e.g. Headset, Sewing Machine, etc."
+              value={formData.title} 
+              onChange={handleChange} 
+              required 
+            />
+            </div>
 
            <div className="form-group">
              <label>Images</label>
@@ -224,17 +263,17 @@ const removeFile = (index) => {
                     <input type="file" accept="image/*" multiple onChange={handleFileSelect} />
                 </div>
 
-     {imageFiles.length > 0 && (
-    <div className="image-preview-grid">
-      {imageFiles.map((file, i) => (
-        <div key={i} className="image-preview-item">
-          <img src={URL.createObjectURL(file)} alt={file.name} className="image-preview-thumb" />
-          <button type="button" onClick={() => removeFile(i)} className="image-preview-remove">×</button>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+              {imageFiles.length > 0 && (
+              <div className="image-preview-grid">
+                {imageFiles.map((file, i) => (
+                  <div key={i} className="image-preview-item">
+                    <img src={URL.createObjectURL(file)} alt={file.name} className="image-preview-thumb" />
+                    <button type="button" onClick={() => removeFile(i)} className="image-preview-remove">×</button>
+                  </div>
+                ))}
+              </div>
+              )}
+            </div>
 
             <div className="form-group">
               <label>Description</label>
@@ -299,6 +338,54 @@ const removeFile = (index) => {
                 <option value=""> -- Select a category -- </option>
                 {categories.map((category) => (<option key={category._id} value={category._id}>{category.name}</option>))}
               </select>
+            </div>
+
+            <div className="form-group">
+              <div style={{ marginBottom: '8px' }}>
+                <label>Serviceable Areas & Shipping Fees</label>
+                <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>
+                  Select the regions you deliver to and set your custom shipping cost for each.
+                </p>
+              </div>
+
+              <div className="regions-grid">
+                {allRegions.map(region => {
+                  // Check if this region is currently selected
+                  const selectedArea = selectedAreas.find(a => a.region === region);
+                  const isSelected = !!selectedArea;
+
+                  return (
+                    <div key={region} className={`region-card ${isSelected ? 'selected' : ''}`}>
+                      <label className="region-label">
+                        <input 
+                          type="checkbox" 
+                          className="region-checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleRegion(region)}
+                        />
+                        <span className="region-name">{region}</span>
+                      </label>
+                      
+                      {/* Only show the fee input if the checkbox is checked */}
+                      {isSelected && (
+                        <div className="fee-input-wrapper">
+                          <span className="currency-symbol">$</span>
+                          <input 
+                            type="number"
+                            className="fee-input"
+                            placeholder="0.00"
+                            min="0"
+                            // UX trick: if it's 0, show empty so they can type immediately
+                            value={selectedArea.fee === 0 ? '' : selectedArea.fee} 
+                            onChange={(e) => handleFeeChange(region, e.target.value)}
+                            required
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="form-actions">

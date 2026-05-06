@@ -75,6 +75,7 @@ function ProductDetail() {
           image: data.image_url || 'https://i.ibb.co/000000/default-image.jpg',
           category: data.category_name,
           stock: data.countInStock || 0,
+          serviceableAreas: data.serviceableAreas || [],
         };
         
         setProduct(mappedProduct);
@@ -109,6 +110,16 @@ function ProductDetail() {
   };
  
   const handleAddToCart = () => {
+
+    const token = localStorage.getItem('token');
+      if (!token) {
+        // You can use a standard alert, or replace this with your 
+        // custom UI notification (like a Toast or setting an error state)
+        alert('You must be logged in to place an order.');
+        
+        // Return early to stop the function from running the fetch request
+        return; 
+      }
     addToCart({
       listing_id: product.listing_id,
       name: product.name,
@@ -116,7 +127,8 @@ function ProductDetail() {
       seller: product.seller,
       seller_id: product.seller_id,
       image: product.image,
-      quantity: quantity
+      quantity: quantity,
+      serviceableAreas: product.serviceableAreas
     });
     setOrderCreated(true);
     setTimeout(() => setOrderCreated(false), 3000);

@@ -4,7 +4,7 @@ const Listing = require('../models/Listing');
 const ListingPost = async (req, res) => {
     try {
         // Inside your route file
-        const { title, description, price, delivery_days, image_url, category_id, countInStock } = req.body;
+        const { title, description, price, delivery_days, image_url, category_id, countInStock, serviceableAreas } = req.body;
         
         const sellerId = req.user.id;
         const fakeCategoryId = category_id;
@@ -17,7 +17,8 @@ const ListingPost = async (req, res) => {
             delivery_days,
             image_urls: image_url,
             countInStock,
-            category_id: fakeCategoryId // !!!!Replace with actual category_id from session
+            category_id: fakeCategoryId, // !!!!Replace with actual category_id from session
+            serviceableAreas: serviceableAreas
         });
 
         await newListing.save(); // hana5od el data w y7otaha fe el database

@@ -41,6 +41,30 @@ const placeOrder = async (req, res) => {
       return res.status(400).json({ message: 'seller_id does not match the listings' });
     }
 
+    // 1. Verify stock for all items before creating the order
+    const listingsToUpdate = [];
+    for (const item of items) {
+      const listing = listings.find(l => l._id.toString() === item.listing_id);
+      
+      if (!listing) {
+        return res.status(404).json({ message: `Product not found` });
+      }
+
+      // Check if requested quantity exceeds available stock
+      if (listing.countInStock < item.quantity) {
+        return res.status(400).json({ 
+          message: `Not enough stock for ${listing.title}. Only ${listing.countInStock} left.` 
+        });
+      }
+
+      // 2. Deduct the stock
+      listing.countInStock -= item.quantity;
+      listingsToUpdate.push(listing);
+    }
+
+    // 3. Save all the updated listings back to the database
+    await Promise.all(listingsToUpdate.map(listing => listing.save()));
+
     // Create order
     const order = await Order.create({
       buyer_id,

@@ -17,6 +17,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/flags', require('./routes/flaggingRoutes')); 
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/regions', require('./routes/regions'));
 
 app.use(session({
   secret: 'NinjaSho', // Change this to a random string

@@ -30,7 +30,7 @@ const Checkout = () => {
     country: 'Egypt'
   });
 
-  // Group items by seller_id
+  // 1. Group items by seller
   const groupedItems = cartItems.reduce((acc, item) => {
     const sellerId = item.seller_id;
     if (!acc[sellerId]) {
@@ -46,9 +46,37 @@ const Checkout = () => {
     return acc;
   }, {});
 
+  // 2. Calculate the overlapping regions for everything in the cart
+  const availableCartRegions = React.useMemo(() => {
+    if (!cartItems || cartItems.length === 0) return [];
+    
+    const itemRegionNames = cartItems.map(item => 
+      (item.serviceableAreas || []).map(area => area.region)
+    );
+    
+    return itemRegionNames.reduce((commonRegions, currentItemRegions) => {
+      return commonRegions.filter(region => currentItemRegions.includes(region));
+    });
+  }, [cartItems]);
+
+  // 3. Calculate Subtotal (MUST be before Total)
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = Object.keys(groupedItems).length * 5; // $5 per seller
-  const total = subtotal + shipping;
+
+  // 4. Calculate dynamic shipping cost (MUST be before Total)
+  const shippingCost = React.useMemo(() => {
+    if (!shippingDetails.city) return 0;
+
+    return cartItems.reduce((totalShipping, item) => {
+      const areaRule = item.serviceableAreas?.find(
+        area => area.region === shippingDetails.city
+      );
+      const itemShippingFee = areaRule ? areaRule.fee : 0;
+      return totalShipping + (itemShippingFee * item.quantity);
+    }, 0);
+  }, [cartItems, shippingDetails.city]);
+
+  // 5. Calculate Total (Now that subtotal and shippingCost exist, this is safe!)
+  const total = subtotal + shippingCost;
 
   const validateForm = () => {
     const errors = {};
@@ -224,9 +252,13 @@ const Checkout = () => {
                         <span>${subtotal.toFixed(2)}</span>
                       </div>
                       <div className="summary-row">
-                        <span>Shipping ({Object.keys(groupedItems).length} sellers)</span>
-                        <span>${shipping.toFixed(2)}</span>
-                      </div>
+                      <span>Shipping {shippingDetails.city ? `to ${shippingDetails.city}` : ''}</span>
+                      <span>
+                        {shippingDetails.city 
+                          ? `$${shippingCost.toFixed(2)}` 
+                          : 'Calculated at checkout'}
+                      </span>
+                    </div>
                       <div className="summary-total">
                         <span>Total</span>
                         <span>${total.toFixed(2)}</span>
@@ -374,18 +406,28 @@ const Checkout = () => {
                         />
                       </div>
                       <div className="form-group">
-                        <label htmlFor="city">City *</label>
-                        <input
-                          type="text"
+                      <label htmlFor="city">City *</label>
+                      {availableCartRegions.length === 0 ? (
+                        <span className="error-text">
+                          Error: The items in your cart do not share a common delivery zone. 
+                          Please remove some items or order them separately.
+                        </span>
+                      ) : (
+                        <select
                           id="city"
                           name="city"
                           value={shippingDetails.city}
                           onChange={handleInputChange}
-                          placeholder="New Cairo"
-                          className={formErrors.city ? 'input-error' : ''}
-                        />
-                        {formErrors.city && <span className="error-text">{formErrors.city}</span>}
-                      </div>
+                          className={`form-input ${formErrors.city ? 'input-error' : ''}`}
+                        >
+                          <option value="">-- Select a City --</option>
+                          {availableCartRegions.map(region => (
+                            <option key={region} value={region}>{region}</option>
+                          ))}
+                        </select>
+                      )}
+                      {formErrors.city && <span className="error-text">{formErrors.city}</span>}
+                    </div>
                       <div className="form-group">
                         <label htmlFor="state">District/State *</label>
                         <input
@@ -433,9 +475,13 @@ const Checkout = () => {
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
                     <div className="summary-row">
-                      <span>Shipping ({Object.keys(groupedItems).length} sellers)</span>
-                      <span>${shipping.toFixed(2)}</span>
-                    </div>
+                    <span>Shipping {shippingDetails.city ? `to ${shippingDetails.city}` : ''}</span>
+                    <span>
+                      {shippingDetails.city 
+                        ? `$${shippingCost.toFixed(2)}` 
+                        : 'Calculated at checkout'}
+                    </span>
+                  </div>
                     <div className="summary-total">
                       <span>Total</span>
                       <span>${total.toFixed(2)}</span>
@@ -543,9 +589,13 @@ const Checkout = () => {
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
                     <div className="summary-row">
-                      <span>Shipping ({Object.keys(groupedItems).length} sellers × $5)</span>
-                      <span>${shipping.toFixed(2)}</span>
-                    </div>
+                    <span>Shipping {shippingDetails.city ? `to ${shippingDetails.city}` : ''}</span>
+                    <span>
+                      {shippingDetails.city 
+                        ? `$${shippingCost.toFixed(2)}` 
+                        : 'Calculated at checkout'}
+                    </span>
+                  </div>
                     <div className="summary-total">
                       <span>Total Amount</span>
                       <span>${total.toFixed(2)}</span>
