@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import './ProductDetail.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
+import AIReviewSummary from '../../Components/AIReviewSummary';
 import { getProductById, getComments, addComment, likeComment, replyToComment } from '../../services/products';
 import { useCart } from '../../context/CartContext';
 
@@ -369,7 +370,10 @@ function ProductDetail() {
         {/* ── Comments Section ── */}
         <section className="reviews-section">
           <h2 className="section-title">Customer Comments</h2>
-          
+
+          {/* ── AI Summary Card (top of reviews) ── */}
+          <AIReviewSummary listingId={product.listing_id} />
+
           <div className="add-comment-section">
             <form onSubmit={handleAddComment} className="comment-form">
               <textarea 

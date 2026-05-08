@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const session = require('express-session');
+const { startAISummaryWorker } = require('./workers/aiSummaryWorker');
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use('/api/flags', require('./routes/flaggingRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/regions', require('./routes/regions'));
+app.use('/api/ai-summary', require('./routes/aiSummaryRoutes'));
 
 app.use(session({
   secret: 'NinjaSho', // Change this to a random string
@@ -39,8 +41,12 @@ if (!mongoUri) {
 }
 
 mongoose.connect(mongoUri)
-  .then(() => console.log(`MongoDB connected ✅`))
-  .catch(err => console.log("❌ Error connecting to MongoDB:", err));
+  .then(() => {
+    console.log('MongoDB connected ✅');
+    // Boot the AI summary worker only after DB is ready
+    startAISummaryWorker();
+  })
+  .catch(err => console.log('❌ Error connecting to MongoDB:', err));
 
 app.get('/', (req, res) => {
   res.send('API is running');

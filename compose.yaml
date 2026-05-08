@@ -1,10 +1,49 @@
 services:
+
+  # ── Ollama Sidecar ─────────────────────────────────────────────────────────
+  # Runs Llama 3.2 locally inside the Compose network.
+  # The model is downloaded once and cached in the `ollama-models` volume.
+  # Subsequent starts detect the cached files and skip the pull entirely.
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    # Mount the custom entrypoint that handles first-time model pull
+    volumes:
+      - ollama-models:/root/.ollama          # persistent model cache
+      - ./ollama-entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    environment:
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
+    expose:
+      - "11434"                               # internal only — not exposed to host
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 12          # allows up to ~2 min for first-time model download
+      start_period: 15s
+
+  # ── Redis (BullMQ job queue backend) ───────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend (Node.js / Express) ────────────────────────────────────────────
   backend:
     build:
       context: ./Backend
     restart: unless-stopped
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-5000}:${PORT:-5000}"
     volumes:
       - ./Backend:/app
       - backend-deps:/app/node_modules
@@ -12,10 +51,22 @@ services:
     environment:
       MONGO_URI: "mongodb://mariamramy1074_db_user:Shoyotastic@ac-fu0jurk-shard-00-00.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-01.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-02.wfwwjwa.mongodb.net:27017/marketplaceDB?ssl=true&replicaSet=atlas-ef3awd-shard-0&authSource=admin&appName=Cluster0"
       MONGODB_URI: "mongodb://mariamramy1074_db_user:Shoyotastic@ac-fu0jurk-shard-00-00.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-01.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-02.wfwwjwa.mongodb.net:27017/marketplaceDB?ssl=true&replicaSet=atlas-ef3awd-shard-0&authSource=admin&appName=Cluster0"
+      # ── Point to the sidecar container, not localhost ──
+      OLLAMA_BASE_URL: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
+      # ── Point to the Redis container ──
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    depends_on:
+      ollama:
+        condition: service_healthy   # wait until Ollama + model are ready
+      redis:
+        condition: service_healthy
     dns:
       - 8.8.8.8
       - 8.8.4.4
 
+  # ── Frontend (React) ───────────────────────────────────────────────────────
   frontend:
     build:
       context: ./Frontend
@@ -35,3 +86,5 @@ services:
 volumes:
   backend-deps:
   frontend-deps:
+  ollama-models:    # persists the downloaded model across restarts
+  redis-data:       # persists Redis queue state across restarts
