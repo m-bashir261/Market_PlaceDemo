@@ -91,6 +91,8 @@ const getAISummary = async (req, res) => {
             status: 'completed',
             listing_id:    aiReview.listing_id,
             summary:       aiReview.summary,
+            pros:          aiReview.pros || [],
+            cons:          aiReview.cons || [],
             ai_rating:     aiReview.ai_rating,
             analysis_type: aiReview.analysis_type,
             reviews_analyzed:          aiReview.reviews_analyzed,

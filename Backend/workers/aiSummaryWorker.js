@@ -196,6 +196,8 @@ async function processSummarizationJob(job) {
                 $set: {
                     analysis_type: analysisType,
                     summary: llmResult.summary,
+                    pros: llmResult.pros,
+                    cons: llmResult.cons,
                     ai_rating: llmResult.ai_rating,
                     review_count_at_generation: reviewCount,
                     reviews_analyzed: reviewsAnalyzed,

@@ -22,13 +22,15 @@ const SYSTEM_PROMPT = `You are an expert product analyst AI. Your only job is to
 
 RULES — follow these without exception:
 1. Respond with ONLY a raw JSON object. No markdown, no code fences, no explanatory text before or after the JSON.
-2. The JSON object must have exactly two keys: "summary" and "ai_rating".
+2. The JSON object must have exactly four keys: "summary", "ai_rating", "pros", and "cons".
 3. "summary" must be a string: a concise, well-written, unbiased paragraph (3–5 sentences maximum).
 4. "ai_rating" must be a floating-point number between 1.0 and 5.0, rounded to one decimal place.
-5. Do not include any other keys, comments, or trailing commas.
+5. "pros" must be an array of 2–5 short strings, each describing a distinct positive aspect of the product.
+6. "cons" must be an array of 1–4 short strings, each describing a distinct negative aspect or limitation. If no negatives are evident, use an array with a single honest caveat.
+7. Do not include any other keys, comments, or trailing commas.
 
 Example of a valid response:
-{"summary": "This product is highly regarded for its durability and ease of use. Customers frequently praise the fast shipping and responsive seller support. A small number of users reported sizing inconsistencies, but overall satisfaction is high.","ai_rating": 4.3}`;
+{"summary": "This product is highly regarded for its durability and ease of use. Customers frequently praise the fast shipping and responsive seller support. A small number of users reported sizing inconsistencies, but overall satisfaction is high.","ai_rating": 4.3,"pros": ["Durable build quality", "Fast shipping", "Responsive seller support"],"cons": ["Sizing inconsistencies reported by some users"]}`;
 
 // ─── Prompt Templates ─────────────────────────────────────────────────────────
 
@@ -46,6 +48,8 @@ ${listing.description}
 Based solely on the product title and description above:
 - Write a helpful, informative "summary" explaining what this product is and its potential use cases for a buyer.
 - Assign an "ai_rating" that reflects the listing quality and appeal based on the description (not actual reviews). Be conservative: use a range of 3.0–4.0 for an unknown product.
+- List 2–5 "pros": notable positive features or selling points evident from the description.
+- List 1–4 "cons": potential drawbacks or limitations a buyer should be aware of. If nothing negative is stated, include one honest uncertainty (e.g., "No customer reviews yet to validate claims").
 
 Return ONLY the JSON object.`;
 }
@@ -67,6 +71,8 @@ ${reviewBlock}
 Based on the reviews above:
 - Write an unbiased "summary" that captures the overall sentiment, highlights the most praised aspects, and notes any recurring complaints.
 - Calculate a fair "ai_rating" that reflects the true sentiment of the reviews (not a simple arithmetic average — weigh recency and intensity of sentiment).
+- List 2–5 "pros": the most frequently praised or standout positive aspects across reviewers.
+- List 1–4 "cons": the most commonly mentioned complaints or recurring negatives. If reviews are overwhelmingly positive, include the most minor criticism mentioned.
 
 Return ONLY the JSON object.`;
 }
@@ -120,7 +126,7 @@ async function callLLM(userPrompt) {
  * Extracts and validates the JSON object from the LLM's raw text output.
  * Uses a regex fallback to handle model preamble or markdown wrapping.
  * @param {string} raw
- * @returns {{summary: string, ai_rating: number}}
+ * @returns {{summary: string, ai_rating: number, pros: string[], cons: string[]}}
  */
 function parseAndValidateLLMResponse(raw) {
     let parsed;
@@ -129,8 +135,8 @@ function parseAndValidateLLMResponse(raw) {
     try {
         parsed = JSON.parse(raw.trim());
     } catch (_) {
-        // Fallback: extract the first {...} block in the response
-        const match = raw.match(/\{[\s\S]*?\}/);
+        // Fallback: extract the first complete {...} block in the response
+        const match = raw.match(/\{[\s\S]*\}/);
         if (!match) {
             throw new Error(`LLM returned non-JSON output: ${raw.slice(0, 200)}`);
         }
@@ -156,9 +162,18 @@ function parseAndValidateLLMResponse(raw) {
     // Clamp ai_rating to [1.0, 5.0] and round to 1 decimal
     parsed.ai_rating = Math.round(Math.min(5.0, Math.max(1.0, parsed.ai_rating)) * 10) / 10;
 
+    // Validate and normalise pros/cons — graceful fallback if model omits them
+    const normList = (val) => {
+        if (Array.isArray(val)) return val.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim());
+        if (typeof val === 'string' && val.trim()) return [val.trim()];
+        return [];
+    };
+
     return {
-        summary: parsed.summary.trim(),
+        summary:   parsed.summary.trim(),
         ai_rating: parsed.ai_rating,
+        pros:      normList(parsed.pros),
+        cons:      normList(parsed.cons),
     };
 }
 

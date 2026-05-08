@@ -17,7 +17,41 @@ import React, { useMemo } from 'react';
 import { useAISummary } from '../hooks/useAISummary';
 import './AIReviewSummary.css';
 
-// ─── Sub-component: SVG Star ─────────────────────────────────────────────────
+// ─── Sub-component: Pros / Cons List ─────────────────────────────────────────
+
+function ProConsList({ pros = [], cons = [] }) {
+    if (pros.length === 0 && cons.length === 0) return null;
+    return (
+        <div className="ai-procons-row">
+            {pros.length > 0 && (
+                <div className="ai-procons-section ai-procons-section--pros">
+                    <div className="ai-procons-heading">
+                        <span className="ai-procons-icon" aria-hidden="true">✓</span>
+                        Pros
+                    </div>
+                    <ul className="ai-procons-list">
+                        {pros.map((p, i) => (
+                            <li key={i} className="ai-procons-item ai-procons-item--pro">{p}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            {cons.length > 0 && (
+                <div className="ai-procons-section ai-procons-section--cons">
+                    <div className="ai-procons-heading">
+                        <span className="ai-procons-icon" aria-hidden="true">✕</span>
+                        Cons
+                    </div>
+                    <ul className="ai-procons-list">
+                        {cons.map((c, i) => (
+                            <li key={i} className="ai-procons-item ai-procons-item--con">{c}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+}
 
 function StarIcon({ filled, half }) {
     return (
@@ -188,6 +222,9 @@ function AIReviewSummary({ listingId }) {
 
                 <div className="ai-summary-content">
                     <p className="ai-summary-text">{data.summary}</p>
+
+                    {/* Pros / Cons */}
+                    <ProConsList pros={data.pros} cons={data.cons} />
 
                     {/* Metadata footer */}
                     <div className="ai-summary-meta">

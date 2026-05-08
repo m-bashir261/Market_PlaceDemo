@@ -34,6 +34,17 @@ const aiReviewSchema = new mongoose.Schema(
             trim: true,
         },
 
+        // AI-identified key strengths (array of short strings)
+        pros: {
+            type: [String],
+            default: [],
+        },
+
+        // AI-identified key weaknesses / caveats (array of short strings)
+        cons: {
+            type: [String],
+            default: [],
+        },
         // AI-calculated fair rating: float 1.0 – 5.0
         ai_rating: {
             type: Number,
