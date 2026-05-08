@@ -25,7 +25,7 @@ OLLAMA_PID=$!
 # Wait for the API to become ready (up to 60 seconds)
 echo "[Ollama Sidecar] Waiting for API to be ready..."
 for i in $(seq 1 60); do
-    if curl -sf http://localhost:11434/api/tags > /dev/null 2>&1; then
+    if ollama list > /dev/null 2>&1; then
         echo "[Ollama Sidecar] API is ready."
         break
     fi
