@@ -14,7 +14,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useAISummary } from '../../hooks/useAISummary';
+import { useAISummary } from '../hooks/useAISummary';
 import './AIReviewSummary.css';
 
 // ─── Sub-component: SVG Star ─────────────────────────────────────────────────
