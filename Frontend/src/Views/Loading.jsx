@@ -25,17 +25,15 @@ return (
 
 const styles = {
 container: {
-position: 'fixed',
-top: 0,
-left: 0,
+position: 'relative',
 width: '100%',
-height: '100%',
+minHeight: '100vh',
 backgroundColor: 'rgba(15, 23, 42, 0.95)',
 backdropFilter: 'blur(8px)',
 display: 'flex',
 justifyContent: 'center',
 alignItems: 'center',
-zIndex: 9999,
+zIndex: 800,
 fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 },
 content: {

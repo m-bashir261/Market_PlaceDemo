@@ -20,7 +20,7 @@ const Login = () => {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('role', data.user.role);
                 if (data.user.role === 'seller') {
-                    navigate('/seller/orders');
+                    navigate('/seller/dashboard');
                 } else {
                     navigate('/home'); 
                 }

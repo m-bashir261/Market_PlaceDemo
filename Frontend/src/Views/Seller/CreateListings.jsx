@@ -1,18 +1,41 @@
 import { Link   }  from 'react-router-dom';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import './Seller.css';
 import ListingComp from '../../assets/ListingComp.lottie';
 import { getCategories } from '../../services/products';
-import { useEffect } from 'react';
+import { getMe } from '../../Apis/authApi';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from '../../Components/SellerDashboard/Sidebar';
 
 
 const useCategories = () => {
     const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const navigate = useNavigate();
 
     useEffect(() => {
+      const tokenExpired =  async () => {
+          try {
+              await getMe();
+              return true;
+          } catch (error) {
+              console.error("i am in token expired catch block");
+              if (error.status === 401) {
+              navigate('/login');
+              toast.error("Session expired. Please log in again.");
+              return false; // Token expired, stop execution
+              } else {
+                  setError({
+                  message: "An error occurred while verifying your session.",
+                  details: error.message
+              });
+              return false; // Other error, stop execution
+              }
+          }
+      };
       const fetchCategories = async () => {
         try {
           const categories = await getCategories();
@@ -23,8 +46,14 @@ const useCategories = () => {
           setLoading(false);
         }
       };
-
-      fetchCategories();
+      
+      const initialize = async () => {
+          const isTokenValid = await tokenExpired();
+          if (isTokenValid) {
+              await fetchCategories();
+          }
+      };
+      initialize();
     }, []);
     return { categories, loading, error }
 }
@@ -52,6 +81,7 @@ export default function CreateListing() {
     category_id: '',
     stock: ''
   })
+  const [sellerName, setSellerName] = useState(null);
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false) // success is a boolean that flips to true to track if listing creation was successful
   const [imageFiles, setImageFiles] = useState([])
@@ -69,6 +99,18 @@ export default function CreateListing() {
 
 
   useEffect(() => {
+    const fetchUser = async () => {
+            try{
+                const user = await getMe();
+                setSellerName(user.firstName);
+            } catch (error) {
+                setError({
+                    message: "Unable to load seller information. Please contact the developer.",
+                    details: error.message
+                });
+            }
+        };
+    fetchUser();
     // Fetch the reference table data
     fetch('http://localhost:5000/api/regions')
       .then(res => res.json())
@@ -213,19 +255,11 @@ const removeFile = (index) => {
   }
 
   return (
-    <div className="seller-dashboard">
-      {/* Reusing header style */}
-      <header className="seller-header">
-      <Link to="/seller/orders" className="seller-hub-link">
-        <div className="seller-badge">
-          <span className="badge-icon">📦</span>
-          <span className="seller-label">SELLER HUB</span>
-        </div>
-      </Link>
-      </header>
+    <div className="order-view-container">
+      <Sidebar username={sellerName}/>
 
-      <main className="dashboard-content">
-        <div className="dashboard-header">
+      <main className="order-view-container-content">
+        <div className="order-view-container-header">
           <div className="header-left">
             <h1>Create a New Listing</h1>
             <p className="subtitle">Fill in the details to list your service or product.</p>

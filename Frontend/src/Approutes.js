@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import SellerDashboard  from "./Views/Seller/SellerDashboard";
 import OrderView from "./Views/Seller/OrderView";
 import CreateListings from "./Views/Seller/CreateListings";
 import Listings from "./Views/Seller/Listings";
@@ -22,6 +23,7 @@ function AppRoutes() {
             <Route path="/buyer/orders" element={<Navigate to="/login" replace />} />
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/seller/dashboard" element={<ProtectedRoute allowedRole="seller"><SellerDashboard /></ProtectedRoute>} />
             <Route path="/seller/orders" element={<ProtectedRoute allowedRole="seller"><OrderView /></ProtectedRoute>} />
             <Route path="/seller/listings" element={<ProtectedRoute allowedRole="seller"><Listings /></ProtectedRoute>} />
             <Route path="/seller/listings/create" element={<ProtectedRoute allowedRole="seller"><CreateListings /></ProtectedRoute>} />
