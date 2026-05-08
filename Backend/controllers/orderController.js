@@ -1,6 +1,8 @@
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
 const Review = require('../models/Review');
+const { sendOrderConfirmation } = require('../emailService');
+
 
 // Place a new order
 const placeOrder = async (req, res) => {
@@ -78,6 +80,14 @@ const placeOrder = async (req, res) => {
     await order.populate('seller_id', 'username email name');
     await order.populate('buyer_id', 'username email name');
     await order.populate('items.listing_id', 'title price image_urls');
+
+    // ✅ Send confirmation email (non-blocking)
+    sendOrderConfirmation(
+        order,
+        shippingDetails.email || req.user.email,
+        `${shippingDetails.firstName} ${shippingDetails.lastName}`
+    ).catch(err => console.error('Email send failed (non-blocking):', err.message));
+
 
     res.status(201).json({
       message: 'Order placed successfully',

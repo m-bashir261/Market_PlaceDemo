@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { getIncomingOrders, updateOrderStatus} from '../../Apis/Seller';
 import { flagBuyer } from '../../Apis/Flagging';
 import { getMe } from '../../Apis/authApi';
+import { toast } from 'react-toastify';
 import '../../Components/Flagging.css';
 import LoadingScreen from '../Loading';
 import Navbar from '../Navbar/Navbar';
@@ -21,6 +22,26 @@ export default function OrderView() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        const tokenExpired =  async () => {
+            try {
+                await getMe();
+                return true;
+            } catch (error) {
+                console.error("i am in token expired catch block");
+                if (error.status === 401) {
+                navigate('/login');
+                toast.error("Session expired. Please log in again.");
+                return false; // Token expired, stop execution
+                } else {
+                    setError({
+                    message: "An error occurred while verifying your session.",
+                    details: error.message
+                });
+                return false; // Other error, stop execution
+                }
+            }
+        };
+        
         const fetchUser = async () => {
             try {
                 const user = await getMe();
@@ -45,8 +66,14 @@ export default function OrderView() {
                 setLoading(false);
             }
         };
-        fetchUser();
-        fetchOrders();
+        const initialize = async () => {
+            const isTokenValid = await tokenExpired();
+            if (isTokenValid) {
+                await fetchUser();
+                await fetchOrders();
+            }
+        };
+        initialize();
     }, []);
 
     const filteredOrders = useMemo(() => {
@@ -253,15 +280,17 @@ export default function OrderView() {
                                                     ✎ Update Status
                                                 </button>
                                                 <div className="flag-buttons">
-                                                    <p>
-                                                        {order.sellerFlag ? '' : `Did ${order.buyer_id?.firstName} cause you any trouble?`}
-                                                    </p>
                                                     <button
                                                         className={`flag-btn ${order.sellerFlag ? 'active' : 'inactive'}`}
-                                                    onClick={() => handleFlagBuyer(order.orderNumber, order.buyer_id?._id || order.buyer_id)}
-                                                        title={order.sellerFlag ? 'Unflag this buyer' : 'Flag this buyer'}
+                                                        onClick={() => handleFlagBuyer(order.orderNumber, order.buyer_id?._id || order.buyer_id)}
+                                                        title={order.sellerFlag ? 'Unflag this buyer' : ''}
                                                     >
                                                         {order.sellerFlag ? '🚩 Flagged' : '🚩 Flag buyer'}
+                                                        {!order.sellerFlag && (
+                                                            <span className="flag-tooltip">
+                                                                Did {order.buyer_id?.firstName} cause you any trouble?
+                                                            </span>
+                                                        )}
                                                     </button>
                                                 </div>
                                             </div>
@@ -286,19 +315,32 @@ export default function OrderView() {
                                 <p>Order ID: <strong>{selectedOrderNumber}</strong></p>
 
                                 <div className="status-options">
-                                    {/* FIX 5: Normalize value case (e.g., 'pending' vs 'Pending') to match your DB strategy */}
-                                    {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(stat => (
-                                        <label key={stat}>
-                                            <input
-                                                type="radio"
-                                                name="status"
-                                                value={stat}
-                                                checked={selectedStatus?.toLowerCase() === stat}
-                                                onChange={(e) => setSelectedStatus(e.target.value)}
-                                            />
-                                            {stat.charAt(0).toUpperCase() + stat.slice(1)}
-                                        </label>
-                                    ))}
+                                    {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(stat => {
+                                        const isCurrentStatus = selectedOrderDetails?.status?.toLowerCase() === stat.toLowerCase();
+                                        const isSelected = selectedStatus?.toLowerCase() === stat.toLowerCase();
+
+                                        return (
+                                            <label
+                                                key={stat}
+                                                className={`status-option-label ${isCurrentStatus ? 'disabled-option' : ''}`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="status"
+                                                    value={stat}
+                                                    checked={isSelected}
+                                                    disabled={isCurrentStatus}
+                                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                                />
+                                                <span className="status-text">{stat}</span>
+                                                {isCurrentStatus && (
+                                                    <span className="current-status-tooltip">
+                                                        Order already {stat}
+                                                    </span>
+                                                )}
+                                            </label>
+                                        );
+                                    })}
                                 </div>
 
                                 <div className="modal-actions">

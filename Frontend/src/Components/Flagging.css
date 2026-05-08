@@ -1,8 +1,7 @@
 .flag-buttons {
     display: flex;
+    align-items: center;
     gap: 8px;
-    margin-left: 12px;
-    margin-top: 10px;
 }
 
 .flag-btn {
@@ -19,6 +18,31 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     background-color: #e2e8f0;
     color: #475569;
+    position: relative;
+}
+
+.flag-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0s 0.2s;
+    
+    /* Positioning above the button */
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0%;
+    transform: translateX(-50%);
+    
+    /* Visual style */
+    background: #1e293b;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .flag-btn.active {
@@ -29,6 +53,24 @@
 .flag-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.flag-btn:hover .flag-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.2s ease, visibility 0s 0s;
+}
+
+/* Small arrow pointing down to the button */
+.flag-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 80%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1e293b transparent transparent transparent;
 }
 
 .flag-btn.inactive:hover {

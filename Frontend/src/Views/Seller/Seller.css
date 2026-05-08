@@ -197,53 +197,64 @@ gap: 12px;
 }
 
 .order-card {
-    background-color: white;
-    border-radius: 12px;
+    background-color: #ffffff;
+    border-radius: 16px;
     padding: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border: 1px solid #f1f5f9;
 }
 
 .order-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* Header row: order ID + status badge on left, date on right */
 .order-card-header-row {
     padding: 16px 24px;
-    background-color: #f8f9fa;
+    background-color: #f8fafc;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e9ecef;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .order-items-group {
     padding: 8px 24px;
+    background-color: #ffffff;
 }
 
 .order-sub-item {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 12px 0;
+    padding: 14px 0;
     border-bottom: 1px dashed #e9ecef;
 }
 
 .order-sub-item:last-child {
     border-bottom: none;
+    padding-bottom: 8px;
 }
 
 .sub-item-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
     overflow: hidden;
-    border: 1px solid #e9ecef;
+    border: 1.5px solid #e2e8f0;
     flex-shrink: 0;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
 }
 
 .sub-item-img img {
@@ -254,33 +265,42 @@ gap: 12px;
 
 .sub-item-details {
     flex: 1;
+    min-width: 0;
 }
 
 .sub-item-name {
     display: block;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 14px;
-    color: #2c3e50;
+    color: #1e293b;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sub-item-meta {
     font-size: 12px;
-    color: #7f8c8d;
+    color: #64748b;
 }
 
 .sub-item-price {
     font-weight: 700;
-    color: #667eea;
-    font-size: 16px;
+    color: #4f46e5;  /* matches your indigo primary */
+    font-size: 15px;
+    white-space: nowrap;
 }
 
+/* Footer info section */
 .order-card-footer-info {
     padding: 16px 24px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     border-top: 1px solid #e9ecef;
+    background: #fafbfc;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 .info-label {
@@ -298,20 +318,23 @@ gap: 12px;
 }
 
 .order-total-price {
+    margin-top: 4px;
     font-size: 14px;
-    color: #7f8c8d;
+    color: #475569;
 }
 
 .order-total-price span {
     font-size: 20px;
     font-weight: 700;
-    color: #667eea;
-    margin-left: 8px;
+    color: #4f46e5;
+    margin-left: 6px;
 }
 
 .order-card-date {
     font-size: 13px;
-    color: #7f8c8d;
+    color: #64748b;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 /* Adjust header row to fit inside the right column */
@@ -325,50 +348,94 @@ gap: 12px;
 
 
 .order-id-section {
-display: flex;
-align-items: center;
-gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .order-id {
-font-weight: 700;
-color: #2c3e50;
-font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 15px;
+    white-space: nowrap;
 }
+
 
 .status-badge {
-display: inline-block;
-padding: 4px 10px;
-border-radius: 6px;
-font-size: 11px;
-font-weight: 700;
-letter-spacing: 0.5px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
-.badge-Pending {
-background-color: #fff3cd;
-color: #856404;
+/* Status colours (keep yours, just refined) */
+.badge-pending    { background-color: #fef3c7; color: #92400e; }
+.badge-processing { background-color: #dbeafe; color: #1e40af; }
+.badge-shipped    { background-color: #ffedd5; color: #9a3412; }
+.badge-delivered  { background-color: #dcfce7; color: #166534; }
+.badge-cancelled  { background-color: #fee2e2; color: #991b1b; }
+
+
+/* Disabled radio label */
+.status-option-label.disabled-option {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.badge-Processing {
-background-color: #cfe2ff;
-color: #084298;
+.status-option-label.disabled-option:hover {
+    background-color: transparent; /* remove the normal hover effect */
 }
 
-.badge-Shipped {
-background-color: #ffe5cc;
-color: #b73500;
+/* Tooltip for disabled option – appears on hover */
+.status-option-label {
+    position: relative;   /* needed for tooltip positioning */
 }
 
-.badge-Delivered {
-background-color: #d1e7dd;
-color: #0f5132;
+.current-status-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0s 0.2s;
+    position: absolute;
+    left: 35%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 10px;
+    background: #1e293b;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.badge-Cancelled {
-background-color: #e7afb2;
-color: #c7314d;
+/* Arrow pointing left */
+.current-status-tooltip::before {
+    content: "";
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #1e293b transparent transparent;
 }
+
+/* Show tooltip on label hover (only when disabled) */
+.status-option-label.disabled-option:hover .current-status-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.2s, visibility 0s 0s;
+}
+
 
 .order-amount {
 font-size: 20px;
@@ -392,149 +459,150 @@ color: #667eea;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .detail-label {
-font-size: 12px;
-color: #95a5a6;
-font-weight: 600;
-text-transform: uppercase;
-letter-spacing: 0.5px;
-margin-bottom: 4px;
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .detail-value {
-font-size: 14px;
-color: #5092e7;
-font-weight: 500;
+    font-size: 14px;
+    color: #334155;
+    font-weight: 500;
 }
 
-/* Actions at the bottom */
+/* Right side: actions */
 .order-actions {
     display: flex;
-    gap: 12px;
-    margin-top: 4px; 
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
 .action-btn {
-flex: 1;
-padding: 10px 16px;
-border: none;
-border-radius: 6px;
-font-size: 13px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.3s;
-border: 2px solid transparent;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    white-space: nowrap;
 }
 
 .btn-view {
-background-color: #5092e7;
-color: white;
+    background-color: #4f46e5;
+    color: white;
+    border: 2px solid #4f46e5;
 }
 
 .btn-view:hover {
-background-color: #3a7bc8;
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background-color: #4338ca;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
 .btn-update {
-background-color: transparent;
-color: #5092e7;
-border: 2px solid #5092e7;
+    background-color: transparent;
+    color: #4f46e5;
+    border: 2px solid #4f46e5;
 }
 
 .btn-update:hover {
-background-color: #3a7bc8;
-color: white;
+    background-color: #eef2ff;
+    transform: translateY(-1px);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-.dashboard-header {
-flex-direction: column;
-}
+    .dashboard-header {
+    flex-direction: column;
+    }
 
-.header-right {
-width: 100%;
-flex-direction: column;
-}
+    .header-right {
+    width: 100%;
+    flex-direction: column;
+    }
 
-.search-group {
-min-width: 100%;
-}
+    .search-group {
+    min-width: 100%;
+    }
 
-.order-details {
-grid-template-columns: 1fr;
-}
+    .order-details {
+    grid-template-columns: 1fr;
+    }
 
-.order-card {
-padding: 12px;
-}
+    .order-card {
+    padding: 12px;
+    }
 
-.order-id {
-font-size: 14px;
-}
+    .order-id {
+    font-size: 14px;
+    }
 
-.order-amount {
-font-size: 16px;
-}
-}
+    .order-amount {
+    font-size: 16px;
+    }
+    }
 
 @media (max-width: 480px) {
-.seller-header {
-flex-direction: column;
-gap: 12px;
-align-items: flex-start;
-}
+    .seller-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    }
 
-.dashboard-content {
-padding: 16px;
-}
+    .dashboard-content {
+    padding: 16px;
+    }
 
-.header-left h1 {
-font-size: 24px;
-}
+    .header-left h1 {
+    font-size: 24px;
+    }
 
-.order-header-row {
-flex-direction: column;
-align-items: flex-start;
-gap: 8px;
-}
+    .order-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    }
 
-.order-actions {
-flex-direction: column;
-}
+    .order-actions {
+    flex-direction: column;
+    }
 
-.action-btn {
-width: 100%;
-}
-}
+    .action-btn {
+    width: 100%;
+    }
+    }
 
-/* Modal Styles */
-.modal-overlay {
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background-color: rgba(0, 0, 0, 0.5);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 1000;
-animation: fadeIn 0.2s;
-}
+    /* Modal Styles */
+    .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s;
+    }
 
 @keyframes fadeIn {
-from {
-opacity: 0;
-}
-to {
-opacity: 1;
-}
-}
+    from {
+    opacity: 0;
+    }
+    to {
+    opacity: 1;
+    }
+    }
 
 .update-status-modal {
 background: white;
@@ -617,7 +685,7 @@ transition: background-color 0.2s;
 color: #2c3e50;
 }
 
-.status-options label:hover {
+.status-options label:hover:not(.disabled-option) {
 background-color: #6d7e96;
 color: #ffffff;
 font-weight: 600;

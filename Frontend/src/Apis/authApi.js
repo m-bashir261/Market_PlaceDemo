@@ -23,14 +23,23 @@ export const getMe = async () => {
         const token = localStorage.getItem('token');
         const response = await fetch(`${API_URL}/get-user`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            headers: {
+            // Fix: Combine headers into a single object
+            headers: { 
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
-        return response.json();
+
+        // Fix: Manually throw an error for 401s and other bad statuses
+        if (!response.ok) {
+            const error = new Error("Request failed");
+            error.status = response.status; // Attach the 401 status so tokenExpired can see it
+            throw error;
+        }
+
+        return await response.json();
     } catch (error) {
-        console.error('Error fetching user:', error.response?.data || error.message);
-        throw error;
+        console.error('Error fetching user:', error);
+        throw error; // Re-throw so tokenExpired catches it
     }
 };

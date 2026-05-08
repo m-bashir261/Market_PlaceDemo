@@ -2,21 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Bell, Heart, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useLocationContext } from '../context/LocationContext';
 import { toast } from 'react-toastify';
+import LocationPicker from './LocationPicker';
 import './Navbar.css';
+
 
 const Navbar = () => {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [showMap, setShowMap] = useState(false);
+    const [savedLocation, setSavedLocation] = useState(() => {
+        // Try context first, fall back to localStorage
+        const fromStorage = localStorage.getItem('userLocation');
+        return fromStorage ? JSON.parse(fromStorage) : null;
+    });
     const { cartItems } = useCart();
+    const { location, updateLocation, clearLocation } = useLocationContext();
+
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-    
+
+    const handleConfirmLocation = (location) => {
+        setSavedLocation(location);
+        updateLocation(location);
+    };
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
         let isDark;
+
+        if (location) {
+            setSavedLocation(location);
+        }
         
         if (savedTheme) {
             isDark = savedTheme === 'dark';
@@ -35,7 +54,7 @@ const Navbar = () => {
             document.documentElement.classList.add('light');
             localStorage.setItem('theme', 'light');
         }
-    }, []);
+    }, [[location]]);
 
     const toggleDarkMode = () => {
         const newValue = !isDarkMode;
@@ -98,6 +117,9 @@ const Navbar = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
+        localStorage.removeItem('userLocation');
+        clearLocation();  // ✅ also clear from context (in-memory state)
+        setSavedLocation(null);  // ✅ clear the local state too
         navigate('/login');
     };
 
@@ -131,10 +153,15 @@ const Navbar = () => {
                     <div className="navbar-location hide-on-mobile">
                         <div className="location-box">
                             <MapPin size={16} className="location-icon" />
-                            <div>
-                                <p className="location-label">Deliver to</p>
-                                <button className="location-btn text-truncate">Select location</button>
-                            </div>
+                            <button className="location-btn text-truncate" onClick={() => setShowMap(true)}>
+                                {savedLocation ? savedLocation.address.split(',')[0] : 'Select location'}
+                            </button>
+
+                            <LocationPicker
+                                isOpen={showMap}
+                                onClose={() => setShowMap(false)}
+                                onConfirm={handleConfirmLocation}
+                            />
                         </div>
                     </div>
 
@@ -207,7 +234,9 @@ const Navbar = () => {
                             <MapPin size={16} className="location-icon" />
                             <div>
                                 <p className="location-label">Deliver to</p>
-                                <button className="location-btn text-truncate">Select location</button>
+                                <button className="location-btn text-truncate" onClick={() => setShowMap(true)}>
+                                    {savedLocation ? savedLocation.address.split(',')[0] : 'Select location'}
+                                </button>
                             </div>
                         </div>
 

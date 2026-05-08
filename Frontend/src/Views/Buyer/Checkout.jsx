@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useLocationContext } from '../../context/LocationContext';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
@@ -7,12 +8,16 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './Checkout.css';
 
+
+
 const Checkout = () => {
   const { cartItems, removeFromCart, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [formErrors, setFormErrors] = useState({});
   const [step, setStep] = useState(1); // Step 1: Cart, Step 2: Details, Step 3: Review
+  const { location } = useLocationContext();
+
 
   const [shippingDetails, setShippingDetails] = useState({
     firstName: '',
@@ -29,6 +34,26 @@ const Checkout = () => {
     postalCode: '',
     country: 'Egypt'
   });
+
+  const applySavedLocation = () => {
+      if (!location) return;
+      setShippingDetails(prev => ({
+          ...prev,
+          addressLine1: location.addressLine1 || prev.addressLine1,
+          city: location.city || prev.city,
+          state: location.state || prev.state,
+          postalCode: location.postalCode || prev.postalCode,
+          country: location.country || prev.country,
+          // leave building, floor, apartment as they are (manual entry)
+      }));
+  };
+
+
+  useEffect(() => {
+      if (step === 2 && location && !shippingDetails.addressLine1 && !shippingDetails.city) {
+          applySavedLocation();
+      }
+  }, [step]);
 
   // 1. Group items by seller
   const groupedItems = cartItems.reduce((acc, item) => {
@@ -283,6 +308,21 @@ const Checkout = () => {
                   <ChevronLeft size={20} /> Back
                 </button>
                 <h1 className="checkout-title">Delivery Address</h1>
+                {location && (
+                    <div style={{ marginBottom: '20px' }}>
+                        <button
+                            type="button"
+                            className="secondary-btn"   // reusing existing style
+                            onClick={applySavedLocation}
+                            style={{ maxWidth: '250px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        >
+                            📍 Use my map location
+                        </button>
+                        <small style={{ display: 'block', marginTop: '4px', color: 'var(--co-text-secondary)' }}>
+                            {location.address}
+                        </small>
+                    </div>
+                )}
                 <p className="text-secondary">Enter your delivery details to continue.</p>
               </header>
 
@@ -426,7 +466,13 @@ const Checkout = () => {
                           ))}
                         </select>
                       )}
-                      {formErrors.city && <span className="error-text">{formErrors.city}</span>}
+                      {formErrors.city ? null : (
+                            location?.city && !availableCartRegions.includes(location.city) && shippingDetails.city === location.city && (
+                                <small className="error-text" style={{ color: '#f59e0b' }}>
+                                    ⚠️ Your saved city "{location.city}" is not deliverable for all items in your cart. Please choose a compatible city.
+                                </small>
+                            )
+                        )}
                     </div>
                       <div className="form-group">
                         <label htmlFor="state">District/State *</label>
