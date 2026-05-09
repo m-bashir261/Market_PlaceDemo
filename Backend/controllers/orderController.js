@@ -16,8 +16,8 @@ const placeOrder = async (req, res) => {
     if (!shippingDetails) return res.status(400).json({ message: 'shippingDetails are required' });
     if (!shippingDetails.firstName || !shippingDetails.lastName || !shippingDetails.email ||
         !shippingDetails.phone || !shippingDetails.addressLine1 || !shippingDetails.city ||
-        !shippingDetails.state || !shippingDetails.postalCode)
-      return res.status(400).json({ message: 'All shipping details are required' });
+        !shippingDetails.state)
+      return res.status(400).json({ message: 'All required shipping details must be filled' });
 
     const listingIds = items.map(item => item.listing_id);
     const listings = await Listing.find({ _id: { $in: listingIds } });
