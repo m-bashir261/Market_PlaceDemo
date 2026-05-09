@@ -1,4 +1,4 @@
-#!/bin/sh
+﻿#!/bin/sh
 # ollama-entrypoint.sh
 #
 # Sidecar entrypoint script for the Ollama container.
