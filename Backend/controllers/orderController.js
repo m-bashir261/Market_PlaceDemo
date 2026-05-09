@@ -1,7 +1,7 @@
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
 const Review = require('../models/Review');
-const { sendOrderConfirmation } = require('../emailService');
+const { sendOrderConfirmation } = require('../emailservice');
 
 
 // Place a new order

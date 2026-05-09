@@ -12,6 +12,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 5000
-
-# Use --watch for auto-restart on file changes (Node 22 built-in)
-CMD ["sh", "-c", "npm install && node --watch server.js"]
+CMD ["node", "server.js"]
