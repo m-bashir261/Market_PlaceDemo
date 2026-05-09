@@ -215,12 +215,12 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                     <div className="flex items-center space-x-3">
                       <div className="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
                         <div className="h-5 w-5 flex items-center justify-center text-yellow-600 font-bold text-sm">
-                          ₹
+                          LE
                         </div>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Revenue</p>
-                        <p className="text-xl font-bold">₹{sellerStats.revenue.toLocaleString()}</p>
+                        <p className="text-xl font-bold">LE{sellerStats.revenue.toLocaleString()}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -266,7 +266,7 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <div className="flex-1">
                         <p className="font-medium">New order received</p>
-                        <p className="text-sm text-muted-foreground">iPhone 15 Pro Max - ₹134,900</p>
+                        <p className="text-sm text-muted-foreground">iPhone 15 Pro Max - LE134,900</p>
                       </div>
                       <span className="text-sm text-muted-foreground">2 mins ago</span>
                     </div>
@@ -331,7 +331,7 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
 
                       <div className="grid grid-cols-3 gap-4">
                         <div>
-                          <Label htmlFor="price">Price (₹) *</Label>
+                          <Label htmlFor="price">Price (LE) *</Label>
                           <Input
                             id="price"
                             type="number"
@@ -342,7 +342,7 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                           />
                         </div>
                         <div>
-                          <Label htmlFor="originalPrice">Original Price (₹)</Label>
+                          <Label htmlFor="originalPrice">Original Price (LE)</Label>
                           <Input
                             id="originalPrice"
                             type="number"
@@ -472,10 +472,10 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                         </div>
                         
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold">₹{product.price.toLocaleString()}</span>
+                          <span className="text-lg font-bold">LE{product.price.toLocaleString()}</span>
                           {product.originalPrice && (
                             <span className="text-sm text-muted-foreground line-through">
-                              ₹{product.originalPrice.toLocaleString()}
+                              LE{product.originalPrice.toLocaleString()}
                             </span>
                           )}
                         </div>
@@ -600,7 +600,7 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="deliveryFee">Delivery Fee (₹)</Label>
+                          <Label htmlFor="deliveryFee">Delivery Fee (LE)</Label>
                           <Input
                             id="deliveryFee"
                             type="number"
@@ -610,7 +610,7 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                           />
                         </div>
                         <div>
-                          <Label htmlFor="minOrder">Min Order (₹)</Label>
+                          <Label htmlFor="minOrder">Min Order (LE)</Label>
                           <Input
                             id="minOrder"
                             type="number"
@@ -663,11 +663,11 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({ onClose }) => 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl">
                         <h5 className="font-medium text-blue-700 dark:text-blue-400">Delivery Fee</h5>
-                        <p className="text-2xl font-bold text-blue-900 dark:text-blue-300">₹{shopDetails.deliveryFee}</p>
+                        <p className="text-2xl font-bold text-blue-900 dark:text-blue-300">LE{shopDetails.deliveryFee}</p>
                       </div>
                       <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl">
                         <h5 className="font-medium text-green-700 dark:text-green-400">Min Order</h5>
-                        <p className="text-2xl font-bold text-green-900 dark:text-green-300">₹{shopDetails.minOrderAmount}</p>
+                        <p className="text-2xl font-bold text-green-900 dark:text-green-300">LE{shopDetails.minOrderAmount}</p>
                       </div>
                     </div>
                   </div>

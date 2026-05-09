@@ -134,7 +134,7 @@ const Navbar = () => {
             <div className="promo-banner">
                 <div className="promo-content">
                     <span className="promo-icon">🚚</span>
-                    <span>FREE delivery on orders $500+ • 📍 Now delivering in 10-20 minutes • 💎 Premium member exclusive deals</span>
+                    <span>FREE delivery on orders 500 LE+ • 📍 Now delivering in 10-20 minutes • 💎 Premium member exclusive deals</span>
                     <span className="promo-icon">✨</span>
                 </div>
             </div>

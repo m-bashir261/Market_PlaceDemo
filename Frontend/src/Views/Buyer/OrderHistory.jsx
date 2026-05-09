@@ -217,7 +217,7 @@ function OrderHistory() {
                             <div className="oh-sub-item-info">
                               <p className="oh-sub-item-name">{itemTitle}</p>
                               <p className="oh-sub-item-meta">
-                                Qty: {item.quantity} &nbsp;·&nbsp; ${item.price?.toFixed(2)}
+                                Qty: {item.quantity} &nbsp;·&nbsp; {item.price?.toFixed(2)} LE
                               </p>
                             </div>
                             <div className="oh-sub-item-total">
@@ -233,7 +233,7 @@ function OrderHistory() {
                                   {item.review ? '✏️ Edit Review' : '⭐ Rate'}
                                 </button>
                               )}
-                              ${(item.price * item.quantity).toFixed(2)}
+                              {(item.price * item.quantity).toFixed(2)} LE
                             </div>
                           </div>
                         );
@@ -241,7 +241,7 @@ function OrderHistory() {
                     </div>
 
                     <div className="oh-order-total-amount">
-                      Total Amount: <span>${order.totalAmount?.toFixed(2)}</span>
+                      Total Amount: <span>{order.totalAmount?.toFixed(2)} LE</span>
                     </div>
 
                     <div className="flag-buttons">

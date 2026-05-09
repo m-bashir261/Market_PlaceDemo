@@ -78,8 +78,8 @@ const ProductCard = ({ listing, product, searchQuery = "" }) => {
         <p className="product-desc">{getHighlightedText(item.description, searchQuery)}</p>
         <div className="product-footer">
           <div className="price-wrap">
-            <span className="currency">$</span>
             <span className="price">{item.price ? item.price.toFixed(2) : '0.00'}</span>
+            <span className="currency"> LE</span>
           </div>
           {item.countInStock > 0
             ? <span className="stock-status in-stock">{item.countInStock} in stock</span>

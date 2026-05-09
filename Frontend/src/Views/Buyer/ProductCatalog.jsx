@@ -226,8 +226,8 @@ const ProductCatalog = () => {
                   />
                 </div>
                 <div className="price-display-box">
-                  <span>${localPrice[0]}</span>
-                  <span>${localPrice[1]}</span>
+                  <span>{localPrice[0]} LE</span>
+                  <span>{localPrice[1]} LE</span>
                 </div>
               </div>
 

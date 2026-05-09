@@ -297,7 +297,7 @@ const Checkout = () => {
                               <div className="checkout-item-meta">
                                 Qty: {item.quantity}
                               </div>
-                              <div className="checkout-item-price">${(item.price * item.quantity).toFixed(2)}</div>
+                              <div className="checkout-item-price">{(item.price * item.quantity).toFixed(2)} LE</div>
                             </div>
                             <button className="remove-btn" onClick={() => removeFromCart(item.listing_id)}>
                               <Trash2 size={18} />
@@ -306,7 +306,7 @@ const Checkout = () => {
                         ))}
                         <div className="summary-row mt-3 pt-3" style={{ borderTop: '1px solid var(--co-border)' }}>
                           <span>Seller Subtotal:</span>
-                          <strong>${group.total.toFixed(2)}</strong>
+                          <strong>{group.total.toFixed(2)} LE</strong>
                         </div>
                       </div>
                     ))}
@@ -317,19 +317,19 @@ const Checkout = () => {
                       <h2 className="summary-title">Order Summary</h2>
                       <div className="summary-row">
                         <span>Subtotal</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>{subtotal.toFixed(2)} LE</span>
                       </div>
                       <div className="summary-row">
                       <span>Shipping {shippingDetails.city ? `to ${shippingDetails.city}` : ''}</span>
                       <span>
                         {shippingDetails.city 
-                          ? `$${shippingCost.toFixed(2)}` 
+                          ? `${shippingCost.toFixed(2)} LE` 
                           : 'Calculated at checkout'}
                       </span>
                     </div>
                       <div className="summary-total">
                         <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>{total.toFixed(2)} LE</span>
                       </div>
 
                       <button
@@ -590,19 +590,19 @@ const Checkout = () => {
                     <h2 className="summary-title">Order Summary</h2>
                     <div className="summary-row">
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>{subtotal.toFixed(2)} LE</span>
                     </div>
                     <div className="summary-row">
                     <span>Shipping {shippingDetails.city ? `to ${shippingDetails.city}` : ''}</span>
                     <span>
                       {shippingDetails.city 
-                        ? `$${shippingCost.toFixed(2)}` 
+                        ? `${shippingCost.toFixed(2)} LE` 
                         : 'Calculated at checkout'}
                     </span>
                   </div>
                     <div className="summary-total">
                       <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>{total.toFixed(2)} LE</span>
                     </div>
 
                     <button
@@ -676,23 +676,23 @@ const Checkout = () => {
                             <div className="checkout-item-info">
                               <h3 className="checkout-item-name">{item.name}</h3>
                               <div className="checkout-item-meta">
-                                Qty: {item.quantity} × ${item.price.toFixed(2)}
+                                Qty: {item.quantity} × {item.price.toFixed(2)} LE
                               </div>
                             </div>
-                            <div className="checkout-item-price">${(item.price * item.quantity).toFixed(2)}</div>
+                            <div className="checkout-item-price">{(item.price * item.quantity).toFixed(2)} LE</div>
                           </div>
                         ))}
                         <div className="summary-row mt-3 pt-3" style={{ borderTop: '1px solid var(--co-border)' }}>
                           <span>Subtotal:</span>
-                          <strong>${group.total.toFixed(2)}</strong>
+                          <strong>{group.total.toFixed(2)} LE</strong>
                         </div>
                         <div className="summary-row" style={{ fontSize: '0.9rem', color: 'var(--co-text-secondary)' }}>
                           <span>Shipping:</span>
-                          <strong>$5.00</strong>
+                          <strong>5.00 LE</strong>
                         </div>
                         <div className="summary-row" style={{ fontSize: '1.1rem', fontWeight: '700', borderTop: '1px dashed var(--co-border)', paddingTop: '10px', marginTop: '10px' }}>
                           <span>Total:</span>
-                          <strong>${(group.total + 5).toFixed(2)}</strong>
+                          <strong>{(group.total + 5).toFixed(2)} LE</strong>
                         </div>
                       </div>
                     ))}
@@ -704,19 +704,19 @@ const Checkout = () => {
                     <h2 className="summary-title">Order Summary</h2>
                     <div className="summary-row">
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>{subtotal.toFixed(2)} LE</span>
                     </div>
                     <div className="summary-row">
                     <span>Shipping {shippingDetails.city ? `to ${shippingDetails.city}` : ''}</span>
                     <span>
                       {shippingDetails.city 
-                        ? `$${shippingCost.toFixed(2)}` 
+                        ? `${shippingCost.toFixed(2)} LE` 
                         : 'Calculated at checkout'}
                     </span>
                   </div>
                     <div className="summary-total">
                       <span>Total Amount</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>{total.toFixed(2)} LE</span>
                     </div>
 
                     <button

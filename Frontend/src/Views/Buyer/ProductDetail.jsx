@@ -305,7 +305,7 @@ function ProductDetail() {
                 <p className="product-category">{product.category}</p>
                 <h1>{product.name}</h1>
               </div>
-              <span className="product-price">${product.price.toFixed(2)}</span>
+              <span className="product-price">{product.price.toFixed(2)} LE</span>
             </div>
  
             <p className="product-description">{product.description}</p>
@@ -339,7 +339,7 @@ function ProductDetail() {
  
             <div className="order-summary">
               <p><strong>Total</strong></p>
-              <p className="total-price">${totalPrice.toFixed(2)}</p>
+              <p className="total-price">{totalPrice.toFixed(2)} LE</p>
             </div>
  
             <button

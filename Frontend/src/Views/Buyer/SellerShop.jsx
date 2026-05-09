@@ -106,7 +106,7 @@ export default function SellerShop() {
                                 <div className="shop-card-info">
                                     <h3 className="shop-card-title">{listing.title}</h3>
                                     <p className="shop-card-desc">{listing.description}</p>
-                                    <span className="shop-card-price">${listing.price?.toFixed(2)}</span>
+                                    <span className="shop-card-price">{listing.price?.toFixed(2)} LE</span>
                                 </div>
                             </div>
                         ))}

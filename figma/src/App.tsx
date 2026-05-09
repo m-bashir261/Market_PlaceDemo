@@ -126,7 +126,7 @@ export default function App() {
 
   // Format price in Indian currency
   const formatPrice = (price: number) => {
-    return `₹${price.toLocaleString('en-IN')}`;
+    return `LE${price.toLocaleString('en-IN')}`;
   };
 
   return (
@@ -294,7 +294,7 @@ const ProductDetail: React.FC<{
   const hasMultipleSellers = variants.length > 1;
 
   const formatPrice = (price: number) => {
-    return `₹${price.toLocaleString('en-IN')}`;
+    return `LE${price.toLocaleString('en-IN')}`;
   };
 
   return (
@@ -428,7 +428,7 @@ const ShopDetail: React.FC<{
   const shopProducts = products.filter(p => p.shop.id === shop.id);
 
   const formatPrice = (price: number) => {
-    return `₹${price.toLocaleString('en-IN')}`;
+    return `LE${price.toLocaleString('en-IN')}`;
   };
 
   return (
@@ -464,11 +464,11 @@ const ShopDetail: React.FC<{
             </div>
             <div className="flex justify-between">
               <span>Delivery Fee:</span>
-              <span>₹{shop.deliveryFee}</span>
+              <span>LE{shop.deliveryFee}</span>
             </div>
             <div className="flex justify-between">
               <span>Min Order:</span>
-              <span>₹{shop.minOrderAmount}</span>
+              <span>LE{shop.minOrderAmount}</span>
             </div>
             <div className="flex justify-between">
               <span>Status:</span>
@@ -525,7 +525,7 @@ const PriceCompare: React.FC<{
   const variants = getProductVariants(productName);
 
   const formatPrice = (price: number) => {
-    return `₹${price.toLocaleString('en-IN')}`;
+    return `LE${price.toLocaleString('en-IN')}`;
   };
 
   return (

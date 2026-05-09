@@ -324,7 +324,7 @@ const removeFile = (index) => {
 
             <div className="form-row">
               <div className="form-group">
-                <label>Price ($)</label>
+                <label>Price (LE)</label>
                 <input 
                   className="form-input" 
                   name="price" 
@@ -403,7 +403,6 @@ const removeFile = (index) => {
                       {/* Only show the fee input if the checkbox is checked */}
                       {isSelected && (
                         <div className="fee-input-wrapper">
-                          <span className="currency-symbol">$</span>
                           <input 
                             type="number"
                             className="fee-input"
@@ -414,6 +413,7 @@ const removeFile = (index) => {
                             onChange={(e) => handleFeeChange(region, e.target.value)}
                             required
                           />
+                          <span className="currency-symbol">LE</span>
                         </div>
                       )}
                     </div>

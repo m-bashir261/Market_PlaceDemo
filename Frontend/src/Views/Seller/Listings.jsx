@@ -136,7 +136,7 @@ export default function Listings() {
                                     <p className="listing-card-description">{listing.description}</p>
 
                                     <div className="listing-card-meta">
-                                        <span className="listing-price">${listing.price?.toFixed(2)}</span>
+                                        <span className="listing-price">{listing.price?.toFixed(2)} LE</span>
                                         <span className="listing-stock">{listing.countInStock} in stock</span>
                                         <span className="listing-delivery">🚚 {listing.delivery_days} days</span>
                                     </div>

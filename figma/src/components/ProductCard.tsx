@@ -45,7 +45,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   // Format price in Indian style
   const formatPrice = (price: number) => {
-    return `₹${price.toLocaleString('en-IN')}`;
+    return `LE${price.toLocaleString('en-IN')}`;
   };
 
   return (

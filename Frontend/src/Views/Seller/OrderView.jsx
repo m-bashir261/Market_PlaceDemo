@@ -248,10 +248,10 @@ export default function OrderView() {
                                                     </div>
                                                     <div className="sub-item-details">
                                                         <span className="sub-item-name">{item.listing_id?.title || 'Unknown Product'}</span>
-                                                        <span className="sub-item-meta">Qty: {item.quantity} · ${item.price?.toFixed(2)}</span>
+                                                        <span className="sub-item-meta">Qty: {item.quantity} · {item.price?.toFixed(2)} LE</span>
                                                     </div>
                                                     <div className="sub-item-price">
-                                                        ${(item.price * item.quantity).toFixed(2)}
+                                                        {(item.price * item.quantity).toFixed(2)} LE
                                                     </div>
                                                 </div>
                                             ))}
@@ -267,7 +267,7 @@ export default function OrderView() {
                                                         🚩 {order.buyer_id?.flags || 0}
                                                     </span>
                                                 <div className="order-total-price">
-                                                    Total: <span>${order.totalAmount?.toFixed(2)}</span>
+                                                    Total: <span>{order.totalAmount?.toFixed(2)} LE</span>
                                                 </div>
                                             </div>
 

@@ -111,7 +111,7 @@ const ListingPreview = () => {
                                     </div>
                                 </div>
                                 <div className="listing-gallery-card__price">
-                                    LE{listing.price?.toFixed(2) || '0.00'}
+                                    {listing.price?.toFixed(2) || '0.00'} LE
                                 </div>
                             </div>
                         ))
@@ -152,7 +152,7 @@ const ListingPreview = () => {
                                         <span className="listing-table-title">{listing.title}</span>
                                     </div>
                                     <div className="listing-table-cell listing-table-cell--price">
-                                        <span className="listing-table-price">LE{listing.price?.toFixed(2)}</span>
+                                        <span className="listing-table-price">{listing.price?.toFixed(2)} LE</span>
                                     </div>
                                     <div className="listing-table-cell listing-table-cell--stock">
                                         <span className={`listing-table-stock ${listing.countInStock > 0 ? 'in-stock' : 'out-of-stock'}`}>

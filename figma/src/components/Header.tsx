@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"></div>
         <div className="relative z-10 flex items-center justify-center space-x-4">
           <span className="animate-pulse">🚚</span>
-          <span>FREE delivery on orders ₹500+ • 📍 Now delivering in 10-20 minutes • 💎 Premium member exclusive deals</span>
+          <span>FREE delivery on orders LE500+ • 📍 Now delivering in 10-20 minutes • 💎 Premium member exclusive deals</span>
           <span className="animate-pulse">✨</span>
         </div>
       </div>

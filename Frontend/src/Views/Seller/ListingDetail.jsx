@@ -219,11 +219,11 @@ export default function ListingDetail() {
 
                         <div className="form-row">
                             <div className="detail-field">
-                                <label>Price ($)</label>
+                                <label>Price (LE)</label>
                                 {editMode ? (
                                     <input className="form-input" name="price" type="number" value={formData.price} onChange={handleChange} />
                                 ) : (
-                                    <p>${listing.price?.toFixed(2)}</p>
+                                    <p>{listing.price?.toFixed(2)} LE</p>
                                 )}
                             </div>
                             <div className="detail-field">
@@ -281,7 +281,6 @@ export default function ListingDetail() {
                                             
                                             {isSelected && (
                                             <div className="fee-input-wrapper" onClick={(e) => e.stopPropagation()}>
-                                                <span className="currency-symbol">$</span>
                                                 <input 
                                                 type="number"
                                                 className="fee-input"
@@ -290,6 +289,7 @@ export default function ListingDetail() {
                                                 min="0"
                                                 required
                                                 />
+                                                <span className="currency-symbol">LE</span>
                                             </div>
                                             )}
                                         </label>
@@ -301,7 +301,7 @@ export default function ListingDetail() {
                                     {listing.serviceableAreas?.length > 0 ? (
                                         listing.serviceableAreas.map((area, index) => (
                                             <p key={index} className="display-area-row">
-                                                <strong>{area.region}</strong>: ${area.fee.toFixed(2)}
+                                                <strong>{area.region}</strong>: {area.fee.toFixed(2)} LE
                                             </p>
                                         ))
                                     ) : (

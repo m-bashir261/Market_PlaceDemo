@@ -118,7 +118,7 @@ export default function Wishlist() {
                   <p className="wl-desc">{item.description}</p>
 
                   <div className="wl-footer">
-                    <span className="wl-price">${item.price?.toFixed(2)}</span>
+                    <span className="wl-price">{item.price?.toFixed(2)} LE</span>
                     <div className="wl-actions">
                       <button
                         className="wl-cart-btn"

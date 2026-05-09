@@ -181,24 +181,24 @@ const Home = () => {
                                     <div className="glass-card hero-product-card card-1">
                                         <img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200&h=200&fit=crop" alt="Phone" />
                                         <h4>iPhone 15 Pro</h4>
-                                        <p>$1,199</p>
+                                        <p>1,199 LE</p>
                                     </div>
                                     <div className="glass-card hero-product-card card-2">
                                         <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&h=200&fit=crop" alt="Jacket" />
                                         <h4>Designer Jacket</h4>
-                                        <p>$299</p>
+                                        <p>299 LE</p>
                                     </div>
                                 </div>
                                 <div className="grid-col right-col mt-4">
                                     <div className="glass-card hero-product-card card-3">
                                         <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&h=200&fit=crop" alt="Sofa" />
                                         <h4>Modern Sofa</h4>
-                                        <p>$1,299</p>
+                                        <p>1,299 LE</p>
                                     </div>
                                     <div className="glass-card hero-product-card card-4">
                                         <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop" alt="Shoes" />
                                         <h4>Running Shoes</h4>
-                                        <p>$159</p>
+                                        <p>159 LE</p>
                                     </div>
                                 </div>
                             </div>
