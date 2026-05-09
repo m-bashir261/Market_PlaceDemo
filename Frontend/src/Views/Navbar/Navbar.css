@@ -1,7 +1,7 @@
 /* Navbar.css – matches the old seller header style */
 
 /* Base navbar – same as .seller-header */
-.navbar {
+.seller-navbar {
 background-color: #23496e;
 color: white;
 padding: 12px 24px;
@@ -149,7 +149,7 @@ background-color: #dc2626;
 
 /* Responsive: stack on small screens */
 @media (max-width: 768px) {
-.navbar {
+.seller-navbar {
 flex-direction: column;
 align-items: stretch;
 gap: 12px;

@@ -54,7 +54,7 @@ const Navbar = () => {
             document.documentElement.classList.add('light');
             localStorage.setItem('theme', 'light');
         }
-    }, [[location]]);
+    }, [location]);
 
     const toggleDarkMode = () => {
         const newValue = !isDarkMode;
