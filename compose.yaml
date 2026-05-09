@@ -1,26 +1,22 @@
 services:
 
   # ── Ollama Sidecar ─────────────────────────────────────────────────────────
-  # Runs Llama 3.2 locally inside the Compose network.
-  # The model is downloaded once and cached in the `ollama-models` volume.
-  # Subsequent starts detect the cached files and skip the pull entirely.
   ollama:
     image: ollama/ollama:latest
     restart: unless-stopped
-    # Mount the custom entrypoint that handles first-time model pull
     volumes:
-      - ollama-models:/root/.ollama          # persistent model cache
+      - ollama-models:/root/.ollama
       - ./ollama-entrypoint.sh:/entrypoint.sh:ro
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
     environment:
       OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
     expose:
-      - "11434"                               # internal only — not exposed to host
+      - "11434"
     healthcheck:
       test: ["CMD", "ollama", "list"]
       interval: 10s
       timeout: 5s
-      retries: 12          # allows up to ~2 min for first-time model download
+      retries: 12
       start_period: 15s
 
   # ── Redis (BullMQ job queue backend) ───────────────────────────────────────
@@ -37,6 +33,24 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Meilisearch (Task 3) ───────────────────────────────────────────────────
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    restart: unless-stopped
+    ports:
+      - "7700:7700"                         # expose to host for dev dashboard
+    environment:
+      MEILI_MASTER_KEY: "${MEILI_MASTER_KEY:-masterKey}"
+      MEILI_ENV: "${MEILI_ENV:-development}"
+    volumes:
+      - meili-data:/meili_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   # ── Backend (Node.js / Express) ────────────────────────────────────────────
   backend:
     build:
@@ -49,18 +63,20 @@ services:
       - backend-deps:/app/node_modules
     env_file: .env
     environment:
-      MONGO_URI: "${MONGO_URI}"
-      MONGODB_URI: "${MONGODB_URI}"
-      # ── Point to the sidecar container, not localhost ──
-      OLLAMA_BASE_URL: "http://ollama:11434"
-      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
-      # ── Point to the Redis container ──
-      REDIS_HOST: "redis"
-      REDIS_PORT: "6379"
+      MONGO_URI:        "${MONGO_URI}"
+      MONGODB_URI:      "${MONGODB_URI}"
+      OLLAMA_BASE_URL:  "http://ollama:11434"
+      OLLAMA_MODEL:     "${OLLAMA_MODEL:-llama3.2}"
+      REDIS_HOST:       "redis"
+      REDIS_PORT:       "6379"
+      MEILI_HOST:       "http://meilisearch:7700"
+      MEILI_MASTER_KEY: "${MEILI_MASTER_KEY:-masterKey}"
     depends_on:
       ollama:
-        condition: service_healthy   # wait until Ollama + model are ready
+        condition: service_healthy
       redis:
+        condition: service_healthy
+      meilisearch:
         condition: service_healthy
     dns:
       - 8.8.8.8
@@ -86,5 +102,6 @@ services:
 volumes:
   backend-deps:
   frontend-deps:
-  ollama-models:    # persists the downloaded model across restarts
-  redis-data:       # persists Redis queue state across restarts
+  ollama-models:
+  redis-data:
+  meili-data:        # persists Meilisearch index data across restarts

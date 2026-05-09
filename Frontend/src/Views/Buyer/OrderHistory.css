@@ -403,3 +403,43 @@
     margin-top: 10px;
   }
 }
+
+/* ── Task 1: Cancel Order Button ── */
+.oh-order-header-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.oh-cancel-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #fca5a5;
+  background: #fff1f2;
+  color: #e11d48;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.oh-cancel-btn:hover {
+  background: #e11d48;
+  color: white;
+  border-color: #e11d48;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+  transform: translateY(-1px);
+}
+
+.dark .oh-cancel-btn {
+  background: rgba(225, 29, 72, 0.1);
+  border-color: rgba(225, 29, 72, 0.4);
+}
+
+.dark .oh-cancel-btn:hover {
+  background: #e11d48;
+  border-color: #e11d48;
+}

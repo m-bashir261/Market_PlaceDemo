@@ -5,6 +5,8 @@ import { useCart } from '../context/CartContext';
 import { useLocationContext } from '../context/LocationContext';
 import { toast } from 'react-toastify';
 import LocationPicker from './LocationPicker';
+import SearchBar from './SearchBar';
+import { useWishlist } from '../context/WishlistContext';
 import './Navbar.css';
 
 
@@ -21,8 +23,10 @@ const Navbar = () => {
     });
     const { cartItems } = useCart();
     const { location, updateLocation, clearLocation } = useLocationContext();
+    const { wishlistIds } = useWishlist();
 
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+    const wishlistCount = wishlistIds.size;
 
     const handleConfirmLocation = (location) => {
         setSavedLocation(location);
@@ -166,17 +170,7 @@ const Navbar = () => {
                     </div>
 
                     <div className="navbar-search hide-on-mobile md-up">
-                        <form onSubmit={handleSearch} className="search-form">
-                            <input
-                                type="text"
-                                placeholder="Search for products, brands, categories..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="search-input"
-                            />
-                            <Search size={20} className="search-icon-left" />
-                            <button type="submit" className="search-btn modern-btn">Search</button>
-                        </form>
+                        <SearchBar className="search-form" />
                     </div>
 
                     <div className="navbar-actions hide-on-mobile md-up">
@@ -194,9 +188,9 @@ const Navbar = () => {
                             <span className="badge badge-red">3</span>
                         </button>
 
-                        <button className="action-btn icon-only relative" title="Wishlist">
+                        <button className="action-btn icon-only relative" title="Wishlist" onClick={() => navigate('/wishlist')}>
                             <Heart size={20} className="action-icon" />
-                            <span className="badge badge-pink">7</span>
+                            {wishlistCount > 0 && <span className="badge badge-pink">{wishlistCount}</span>}
                         </button>
 
                         <button className="action-btn icon-only relative" title="Cart" onClick={() => navigate('/checkout')}>
@@ -240,16 +234,9 @@ const Navbar = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSearch} className="mobile-search-form mb-3">
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="search-input"
-                            />
-                            <Search size={20} className="search-icon-left" />
-                        </form>
+                        <div className="mobile-search-form mb-3">
+                            <SearchBar />
+                        </div>
 
                         <div className="mobile-grid">
                             <button className="grid-action-btn" onClick={() => navigate('/signup')}>
