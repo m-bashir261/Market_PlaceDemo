@@ -6,6 +6,17 @@ const session = require('express-session');
 const { startAISummaryWorker } = require('./workers/aiSummaryWorker');
 const { syncToMeilisearch } = require('./services/syncToMeilisearch');
 
+// Add this right after the imports (near the top of server.js)
+const fs = require('fs');
+console.log('=== CONTROLLERS DIRECTORY ===');
+try {
+  const files = fs.readdirSync('./controllers');
+  console.log(files);
+} catch (err) {
+  console.error('Could not read controllers folder:', err.message);
+}
+console.log('=============================');
+
 dotenv.config();
 
 const app = express();
