@@ -17,13 +17,16 @@ const ProductCatalog = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { seller: sellerParam } = useParams();
+  
+  const queryParams = new URLSearchParams(location.search);
+  const initialSearch = queryParams.get('search') || '';
   const initialCategory = location.state?.category || 'ALL';
 
   const [filters, setFilters] = useState({
     category: initialCategory,
     priceRange: 'ALL',
     minRating: 0,
-    search: '',
+    search: initialSearch,
     seller: sellerParam || 'ALL'
   });
 
@@ -58,6 +61,14 @@ const ProductCatalog = () => {
     }
   }
 }, [sellerParam]);
+
+  useEffect(() => {
+    const searchParam = new URLSearchParams(location.search).get('search') || '';
+    if (searchParam !== filters.search) {
+      setFilters(prev => ({ ...prev, search: searchParam }));
+      setPage(1);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const loadCategories = async () => {

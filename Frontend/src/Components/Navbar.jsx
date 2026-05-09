@@ -180,6 +180,10 @@ const Navbar = () => {
                             {isDarkMode ? <Sun size={20} className="action-icon theme-icon" /> : <Moon size={20} className="action-icon theme-icon" />}
                         </button>
 
+                        <button className="action-btn icon-only" title="Saved Addresses" onClick={() => navigate('/addresses')}>
+                            <MapPin size={20} className="action-icon" />
+                        </button>
+
                         <button className="action-btn icon-only relative" title="Wishlist" onClick={() => navigate('/wishlist')}>
                             <Heart size={20} className="action-icon" />
                             {wishlistCount > 0 && <span className="badge badge-pink">{wishlistCount}</span>}
@@ -238,6 +242,15 @@ const Navbar = () => {
                             <button className="grid-action-btn" onClick={toggleDarkMode}>
                                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                                 <span>Theme</span>
+                            </button>
+                            <button className="grid-action-btn relative" onClick={() => navigate('/wishlist')}>
+                                <Heart size={20} />
+                                {wishlistCount > 0 && <span className="badge badge-pink badge-mobile">{wishlistCount}</span>}
+                                <span>Wishlist</span>
+                            </button>
+                            <button className="grid-action-btn" onClick={() => navigate('/addresses')}>
+                                <MapPin size={20} />
+                                <span>Addresses</span>
                             </button>
                             <button className="grid-action-btn relative" onClick={() => navigate('/checkout')}>
                                 <ShoppingCart size={20} />

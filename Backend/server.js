@@ -24,6 +24,8 @@ app.use('/api/regions',    require('./routes/regions'));
 app.use('/api/ai-summary', require('./routes/aiSummaryRoutes'));
 app.use('/api/wishlist',   require('./routes/wishlistRoutes'));   // Task 2
 app.use('/api/search',     require('./routes/searchRoutes'));     // Task 3
+app.use('/api/addresses',  require('./routes/addressRoutes'));
+
 
 app.use(session({
   secret: 'NinjaSho',
