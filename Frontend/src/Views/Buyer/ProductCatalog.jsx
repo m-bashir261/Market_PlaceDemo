@@ -17,14 +17,18 @@ const ProductCatalog = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { seller: sellerParam } = useParams();
+  
+  const queryParams = new URLSearchParams(location.search);
+  const initialSearch = queryParams.get('search') || '';
   const initialCategory = location.state?.category || 'ALL';
 
   const [filters, setFilters] = useState({
     category: initialCategory,
     priceRange: 'ALL',
     minRating: 0,
-    search: '',
-    seller: sellerParam || 'ALL'
+    search: initialSearch,
+    seller: sellerParam || 'ALL',
+    inStock: false
   });
 
   const [localPrice, setLocalPrice] = useState([0, 2000]);
@@ -60,6 +64,14 @@ const ProductCatalog = () => {
 }, [sellerParam]);
 
   useEffect(() => {
+    const searchParam = new URLSearchParams(location.search).get('search') || '';
+    if (searchParam !== filters.search) {
+      setFilters(prev => ({ ...prev, search: searchParam }));
+      setPage(1);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
     const loadCategories = async () => {
       try {
         const cats = await getCategories();
@@ -76,6 +88,19 @@ const ProductCatalog = () => {
     loadCategories();
   }, []);
 
+  // Synchronize category name to ID if it came from Home page state
+  useEffect(() => {
+    if (categories.length > 0 && filters.category !== 'ALL') {
+      const isId = /^[0-9a-fA-F]{24}$/.test(filters.category);
+      if (!isId) {
+        const found = categories.find(c => c.name.toLowerCase() === filters.category.toLowerCase());
+        if (found) {
+          setFilters(prev => ({ ...prev, category: found._id }));
+        }
+      }
+    }
+  }, [categories, filters.category]);
+
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
@@ -87,7 +112,8 @@ const ProductCatalog = () => {
           priceRange: filters.priceRange,
           minRating: filters.minRating,
           search: filters.search,
-          seller: filters.seller
+          seller: filters.seller,
+          inStock: filters.inStock
         });
 
         if (Array.isArray(data)) {
@@ -219,6 +245,19 @@ const ProductCatalog = () => {
                 </div>
                 {filters.minRating > 0 && <span style={{fontSize: '0.8rem', color: 'var(--pc-text-muted)', marginTop: '8px', display: 'block'}}>{filters.minRating} Stars & Up (<span style={{textDecoration:'underline', cursor:'pointer'}} onClick={() => handleFilterChange('minRating', 0)}>Clear</span>)</span>}
               </div>
+
+              <div className="filter-group">
+                <h3>Availability</h3>
+                <label className="checkbox-label">
+                  <input 
+                      type="checkbox" 
+                      checked={filters.inStock}
+                      onChange={(e) => handleFilterChange('inStock', e.target.checked)}
+                  />
+                  <span className="custom-checkbox"></span>
+                  <span className="label-text">Only show in stock</span>
+                </label>
+              </div>
             </aside>
 
             <main className="products-wrapper">
@@ -236,7 +275,7 @@ const ProductCatalog = () => {
                   <button
                       className="modern-btn"
                       style={{ margin: '20px auto' }}
-                      onClick={() => setFilters({category: 'ALL', priceRange: 'ALL', minRating: 0, search: '', seller: 'ALL'})}
+                      onClick={() => setFilters({category: 'ALL', priceRange: 'ALL', minRating: 0, search: '', seller: 'ALL', inStock: false})}
                   >
                     Clear Filters
                   </button>

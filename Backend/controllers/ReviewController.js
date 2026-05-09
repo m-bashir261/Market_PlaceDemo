@@ -1,6 +1,27 @@
 const Review = require('../models/Review');
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
+const { aiSummaryQueue, JOB_NAMES } = require('../queues/aiSummaryQueue');
+
+/**
+ * Enqueues an AI summarization job for the given listing.
+ * Uses listing_id as the jobId so BullMQ deduplicates rapid
+ * submissions — if 5 reviews arrive in quick succession, only
+ * one job will be queued and processed.
+ * Fire-and-forget: does NOT block the HTTP response.
+ */
+async function enqueueAISummary(listing_id) {
+    try {
+        await aiSummaryQueue.add(
+            JOB_NAMES.SUMMARIZE,
+            { listing_id: listing_id.toString() },
+            { jobId: listing_id.toString() }   // deduplicate by listing
+        );
+    } catch (err) {
+        // Never let queue errors bubble up to the client
+        console.error('[ReviewController] Failed to enqueue AI summary job:', err.message);
+    }
+}
 
 // POST /api/reviews
 const submitReview = async (req, res) => {
@@ -33,6 +54,9 @@ const submitReview = async (req, res) => {
         const allReviews = await Review.find({ listing_id });
         const avgRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
         await Listing.findByIdAndUpdate(listing_id, { rating: avgRating.toFixed(1) });
+
+        // Trigger async AI summarization (fire-and-forget)
+        await enqueueAISummary(listing_id);
 
         res.status(201).json({ message: 'Review submitted successfully', review });
     } catch (error) {
@@ -70,6 +94,9 @@ const updateReview = async (req, res) => {
         const avg = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
         await Listing.findByIdAndUpdate(review.listing_id, { rating: avg.toFixed(1) });
 
+        // Re-trigger AI summarization after edit
+        await enqueueAISummary(review.listing_id);
+
         res.status(200).json({ message: 'Review updated', review });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -90,6 +117,9 @@ const deleteReview = async (req, res) => {
         const allReviews = await Review.find({ listing_id });
         const avg = allReviews.length > 0 ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length : 0;
         await Listing.findByIdAndUpdate(listing_id, { rating: avg.toFixed(1) });
+
+        // Re-trigger AI summarization after deletion
+        await enqueueAISummary(listing_id);
 
         res.status(200).json({ message: 'Review deleted' });
     } catch (error) {

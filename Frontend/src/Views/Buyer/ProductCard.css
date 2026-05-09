@@ -1,8 +1,45 @@
-/* Styling for the highlighted text */
+/* ── Search highlight ── */
 .search-highlight {
-  background-color: #fde047; /* Soft yellow */
-  color: #000;
+  background: rgba(255, 200, 0, 0.35);
+  border-radius: 3px;
   padding: 0 2px;
-  border-radius: 2px;
-  font-weight: bold;
+}
+
+/* ── Wishlist heart button (overlaid on image) ── */
+.wishlist-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  transition: background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.wishlist-btn:hover {
+  background: #fff1f2;
+  color: #e11d48;
+  border-color: #fca5a5;
+  transform: scale(1.12);
+}
+
+.wishlist-btn.wishlisted {
+  background: #fff1f2;
+  color: #e11d48;
+  border-color: #fca5a5;
+  box-shadow: 0 2px 12px rgba(225, 29, 72, 0.2);
+}
+
+.wishlist-btn.wishlisted:hover {
+  background: #ffe4e6;
 }

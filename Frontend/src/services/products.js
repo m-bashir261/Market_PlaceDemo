@@ -1,7 +1,7 @@
 import axios from "axios"
 const API_BASE_URL = "http://localhost:5000/api/products"
 
-export const getProducts = async ({page, category, limit, priceRange, minRating, search, seller}) => {
+export const getProducts = async ({page, category, limit, priceRange, minRating, search, seller, inStock}) => {
     const params = new URLSearchParams();
     if (page !== undefined) params.append('page', page);
     if (category !== undefined) params.append('category', category);
@@ -10,6 +10,7 @@ export const getProducts = async ({page, category, limit, priceRange, minRating,
     if (minRating !== undefined) params.append('minRating', minRating);
     if (search !== undefined) params.append('search', search);
     if (seller !== undefined && seller !== 'ALL' && seller !== '') params.append('seller', seller);
+    if (inStock !== undefined) params.append('inStock', inStock);
 
     const response = await axios.get(`${API_BASE_URL}?${params.toString()}`);
     return response.data;
@@ -48,5 +49,10 @@ export const replyToComment = async (productId, commentId, text, token) => {
     const response = await axios.post(`${API_BASE_URL}/${productId}/comments/${commentId}/reply`, { text }, {
         headers: { Authorization: `Bearer ${token}` }
     })
+    return response.data
+}
+
+export const getReviews = async (listingId) => {
+    const response = await axios.get(`http://localhost:5000/api/reviews/listing/${listingId}`)
     return response.data
 }

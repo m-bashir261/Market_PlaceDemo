@@ -30,21 +30,10 @@
     margin-bottom: 20px;
 }
 
-.footer-logo-icon {
-    width: 36px;
+.footer-logo-img {
     height: 36px;
-    background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.footer-logo-icon span {
-    color: white;
-    font-weight: 800;
-    font-size: 1.2rem;
-    font-family: var(--font-display);
+    width: auto;
+    object-fit: contain;
 }
 
 .footer-logo h3 {

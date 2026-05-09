@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+
+.wishlist-page {
+  min-height: 100vh;
+  background: var(--pc-bg);
+  color: var(--pc-text);
+  font-family: var(--font-body);
+}
+
+.wishlist-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* ── Header ── */
+.wishlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.wishlist-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.wishlist-header-icon {
+  color: #e11d48;
+  filter: drop-shadow(0 4px 12px rgba(225, 29, 72, 0.25));
+}
+
+.wishlist-header-left h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  color: var(--pc-text);
+}
+
+.wishlist-header-left p {
+  font-size: 0.9rem;
+  color: var(--pc-text-muted);
+  margin: 0;
+}
+
+.wl-clear-btn {
+  padding: 10px 20px;
+  border: 1.5px solid var(--pc-border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--pc-text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wl-clear-btn:hover {
+  border-color: #e11d48;
+  color: #e11d48;
+  background: #fff1f2;
+}
+
+/* ── Grid ── */
+.wl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* ── Card ── */
+.wl-card {
+  background: var(--pc-card-bg);
+  border-radius: var(--pc-radius);
+  border: 1.5px solid var(--pc-border);
+  overflow: hidden;
+  box-shadow: var(--pc-shadow-sm);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
+}
+
+.wl-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--pc-shadow);
+}
+
+.wl-card-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--pc-surface-2);
+}
+
+.wl-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s var(--ease-out);
+}
+
+.wl-card:hover .wl-card-image img {
+  transform: scale(1.06);
+}
+
+.wl-category-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--pc-glass);
+  backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--pc-text);
+  border: 1px solid var(--pc-glass-border);
+  z-index: 2;
+}
+
+/* ── Card body ── */
+.wl-card-body {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wl-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pc-text);
+  margin: 0;
+  cursor: pointer;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.wl-title:hover { color: var(--pc-primary); }
+
+.wl-desc {
+  font-size: 0.83rem;
+  color: var(--pc-text-muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.wl-footer {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1.5px solid var(--pc-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.wl-price {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--pc-text);
+}
+
+.wl-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.wl-cart-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pc-primary);
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.wl-cart-btn:hover:not(:disabled) {
+  background: var(--pc-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--pc-primary-glow);
+}
+
+.wl-cart-btn:disabled {
+  background: var(--pc-border);
+  color: var(--pc-text-muted);
+  cursor: not-allowed;
+}
+
+.wl-remove-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--pc-border);
+  background: transparent;
+  color: var(--pc-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.wl-remove-btn:hover {
+  border-color: #e11d48;
+  color: #e11d48;
+  background: #fff1f2;
+}
+
+/* ── Empty State ── */
+.wl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+  text-align: center;
+  gap: 16px;
+}
+
+.wl-empty-icon {
+  color: var(--pc-border);
+  opacity: 0.6;
+}
+
+.wl-empty h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--pc-text);
+  margin: 0;
+}
+
+.wl-empty p {
+  font-size: 0.95rem;
+  color: var(--pc-text-muted);
+  margin: 0;
+}
+
+.wl-browse-btn {
+  margin-top: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--pc-primary), #a855f7);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-spring);
+  box-shadow: 0 4px 14px var(--pc-primary-glow);
+}
+
+.wl-browse-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--pc-primary-glow);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .wl-grid { grid-template-columns: 1fr; }
+  .wishlist-header-left h1 { font-size: 1.5rem; }
+}

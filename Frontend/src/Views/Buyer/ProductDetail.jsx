@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import './ProductDetail.css';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
-import { getProductById, getComments, addComment, likeComment, replyToComment } from '../../services/products';
+import AIReviewSummary from '../../Components/AIReviewSummary';
+import { getProductById, getComments, addComment, likeComment, replyToComment, getReviews } from '../../services/products';
 import { useCart } from '../../context/CartContext';
 
 
@@ -40,6 +41,7 @@ function ProductDetail() {
   const { addToCart } = useCart();
 
   const [comments, setComments] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [newCommentText, setNewCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
@@ -69,7 +71,7 @@ function ProductDetail() {
           seller_id: data.seller_id?._id || data.seller_id,
           sellerRating: 4.5, // Default or calculate if available
           flags: data.seller_id?.flags || 0,
-          sellerSales: 120, // Default or fetch if available
+          sellerSales: data.seller_sales || 0,
           deliveryTime: data.delivery_days ? `${data.delivery_days} day(s)` : 'N/A',
           description: data.description,
           image: data.image_url || 'https://i.ibb.co/000000/default-image.jpg',
@@ -80,8 +82,12 @@ function ProductDetail() {
         
         setProduct(mappedProduct);
 
-        const commentsData = await getComments(id);
+        const [commentsData, reviewsData] = await Promise.all([
+          getComments(id),
+          getReviews(id)
+        ]);
         setComments(commentsData);
+        setReviews(reviewsData);
       } catch (err) {
         console.error("Error fetching product or comments:", err);
         setError("Failed to load product details.");
@@ -366,16 +372,51 @@ function ProductDetail() {
           </div>
         </section>
  
-        {/* ── Comments Section ── */}
+        {/* ── Reviews & Comments Section ── */}
         <section className="reviews-section">
-          <h2 className="section-title">Customer Comments</h2>
-          
+          <div className="section-header-tabs">
+             <h2 className="section-title">Customer Feedback</h2>
+          </div>
+
+          {/* ── AI Summary Card ── */}
+          <AIReviewSummary listingId={product.listing_id} />
+
+          {/* ── Real Reviews (from Review model) ── */}
+          <div className="reviews-list-container">
+            <h3 className="subsection-title">Recent Reviews</h3>
+            {reviews.length === 0 ? (
+              <p className="placeholder-text">No reviews yet for this product.</p>
+            ) : (
+              <div className="reviews-grid">
+                {reviews.map(review => (
+                  <div key={review._id} className="review-card glass-card">
+                    <div className="review-header">
+                      <div className="review-user">
+                        <div className="user-avatar">{review.buyer_id?.username?.charAt(0).toUpperCase() || 'U'}</div>
+                        <div>
+                          <span className="user-name">{review.buyer_id?.username || 'Verified Buyer'}</span>
+                          <span className="review-date">{new Date(review.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <StarRating rating={review.rating} />
+                    </div>
+                    <p className="review-comment">"{review.comment}"</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <hr className="section-divider" />
+
+          {/* ── Comments (from Comment model) ── */}
+          <h3 className="subsection-title" style={{marginTop: '40px'}}>General Comments</h3>
           <div className="add-comment-section">
             <form onSubmit={handleAddComment} className="comment-form">
               <textarea 
                 value={newCommentText}
                 onChange={(e) => setNewCommentText(e.target.value)}
-                placeholder="Write your comment here..."
+                placeholder="Ask a question or leave a comment..."
                 className="comment-input"
                 rows="3"
               />
@@ -385,10 +426,11 @@ function ProductDetail() {
 
           <div className="comments-list">
             {comments.length === 0 ? (
-              <p className="reviews-placeholder-title" style={{marginTop: '20px'}}>No comments yet. Be the first to comment!</p>
+              <p className="reviews-placeholder-title" style={{marginTop: '20px'}}>No comments yet. Be the first to ask a question!</p>
             ) : (
               comments.map(comment => (
                 <div key={comment._id} className="comment-card">
+                  {/* ... same comment card code ... */}
                   <div className="comment-top-row">
                     <div className="comment-avatar">
                       {(comment.user_id?.username || 'U').charAt(0).toUpperCase()}

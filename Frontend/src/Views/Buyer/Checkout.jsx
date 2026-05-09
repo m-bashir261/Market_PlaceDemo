@@ -6,6 +6,7 @@ import Footer from '../../Components/Footer';
 import { Store, ShoppingCart, Trash2, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getAddresses, addAddress } from '../../services/addressService';
 import './Checkout.css';
 
 
@@ -16,6 +17,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [formErrors, setFormErrors] = useState({});
   const [step, setStep] = useState(1); // Step 1: Cart, Step 2: Details, Step 3: Review
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [saveAddressForLater, setSaveAddressForLater] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
   const { location } = useLocationContext();
 
 
@@ -50,10 +54,45 @@ const Checkout = () => {
 
 
   useEffect(() => {
-      if (step === 2 && location && !shippingDetails.addressLine1 && !shippingDetails.city) {
-          applySavedLocation();
+      if (step === 2) {
+          if (location && !shippingDetails.addressLine1 && !shippingDetails.city) {
+              applySavedLocation();
+          }
+          fetchSavedAddresses();
       }
   }, [step]);
+
+  const fetchSavedAddresses = async () => {
+      try {
+          const data = await getAddresses();
+          setSavedAddresses(data);
+          // If user has a default address, auto-apply it
+          const defaultAddr = data.find(a => a.isDefault);
+          if (defaultAddr && !shippingDetails.firstName) {
+              applySavedAddress(defaultAddr);
+          }
+      } catch (err) {
+          console.error("Failed to fetch addresses", err);
+      }
+  };
+
+  const applySavedAddress = (addr) => {
+      setShippingDetails({
+          firstName: addr.firstName,
+          lastName: addr.lastName,
+          email: addr.email,
+          phone: addr.phone,
+          addressLine1: addr.addressLine1,
+          addressLine2: addr.addressLine2 || '',
+          building: addr.building || '',
+          floor: addr.floor || '',
+          apartment: addr.apartment || '',
+          city: addr.city,
+          state: addr.state,
+          postalCode: addr.postalCode || '',
+          country: addr.country || 'Egypt'
+      });
+  };
 
   // 1. Group items by seller
   const groupedItems = cartItems.reduce((acc, item) => {
@@ -147,6 +186,10 @@ const Checkout = () => {
 
   const handleContinueToReview = () => {
     if (validateForm()) {
+      if (saveAddressForLater) {
+          // Fire and forget
+          addAddress({ ...shippingDetails, title: `Address ${savedAddresses.length + 1}` }).catch(e => console.error(e));
+      }
       setStep(3);
       window.scrollTo(0, 0);
     }
@@ -308,21 +351,39 @@ const Checkout = () => {
                   <ChevronLeft size={20} /> Back
                 </button>
                 <h1 className="checkout-title">Delivery Address</h1>
-                {location && (
-                    <div style={{ marginBottom: '20px' }}>
+                
+                <div className="address-quick-actions" style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                    {location && (
                         <button
                             type="button"
-                            className="secondary-btn"   // reusing existing style
+                            className="secondary-btn"
                             onClick={applySavedLocation}
-                            style={{ maxWidth: '250px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--co-surface)', border: '1.5px solid var(--co-border)', borderRadius: '8px', cursor: 'pointer' }}
                         >
-                            📍 Use my map location
+                            📍 Use Map Location
                         </button>
-                        <small style={{ display: 'block', marginTop: '4px', color: 'var(--co-text-secondary)' }}>
-                            {location.address}
-                        </small>
-                    </div>
-                )}
+                    )}
+
+                    {savedAddresses.length > 0 && (
+                        <div className="saved-addresses-dropdown" style={{ position: 'relative' }}>
+                            <select 
+                                onChange={(e) => {
+                                    const addr = savedAddresses.find(a => a._id === e.target.value);
+                                    if (addr) applySavedAddress(addr);
+                                }}
+                                style={{ padding: '10px 16px', borderRadius: '8px', border: '1.5px solid var(--co-primary)', background: 'var(--co-surface)', color: 'var(--co-text)', fontWeight: '600' }}
+                            >
+                                <option value="">📋 Use a saved address</option>
+                                {savedAddresses.map(addr => (
+                                    <option key={addr._id} value={addr._id}>
+                                        {addr.title} - {addr.addressLine1}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                </div>
+
                 <p className="text-secondary">Enter your delivery details to continue.</p>
               </header>
 
@@ -508,6 +569,17 @@ const Checkout = () => {
                           onChange={handleInputChange}
                           placeholder="Egypt"
                         />
+                      </div>
+                      <div className="form-group full-width" style={{ marginTop: '10px' }}>
+                          <label className="checkbox-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--co-text-secondary)' }}>
+                              <input 
+                                  type="checkbox" 
+                                  checked={saveAddressForLater}
+                                  onChange={(e) => setSaveAddressForLater(e.target.checked)}
+                                  style={{ width: '18px', height: '18px' }}
+                              />
+                              Save this address for future purchases
+                          </label>
                       </div>
                     </div>
                   </div>

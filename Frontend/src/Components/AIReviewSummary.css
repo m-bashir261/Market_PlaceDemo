@@ -1,0 +1,624 @@
+/* ============================================================
+   AIReviewSummary.css
+   Glassmorphism AI summary card — matches the existing
+   ProductDetail design system (--pd-* / --pc-* tokens).
+   ============================================================ */
+
+/* ── CSS Custom Properties (AI-specific) ─────────────────── */
+:root {
+  --ai-blue-deep:      #0d1b3e;
+  --ai-blue-mid:       #1a3a6b;
+  --ai-blue-glow:      rgba(56, 139, 253, 0.55);
+  --ai-blue-glow-soft: rgba(56, 139, 253, 0.18);
+  --ai-accent:         #388bfd;
+  --ai-accent-bright:  #58a6ff;
+  --ai-gold:           #f0b429;
+  --ai-gold-glow:      rgba(240, 180, 41, 0.45);
+  --ai-text:           #e6edf3;
+  --ai-text-sub:       rgba(230, 237, 243, 0.65);
+  --ai-glass-bg:       rgba(13, 27, 62, 0.72);
+  --ai-glass-border:   rgba(56, 139, 253, 0.28);
+  --ai-radius:         20px;
+  --ai-radius-sm:      12px;
+  --ai-radius-xs:      8px;
+  --ai-transition:     0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Keyframe Animations ─────────────────────────────────── */
+
+@keyframes ai-border-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ai-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes ai-pulse-glow {
+  0%, 100% { box-shadow: 0 0 18px 2px var(--ai-blue-glow-soft); }
+  50%       { box-shadow: 0 0 36px 8px var(--ai-blue-glow); }
+}
+
+@keyframes ai-orb-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes ai-orb-spin-reverse {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+@keyframes ai-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ai-sparkle-pop {
+  0%, 100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+  50%       { transform: scale(1.35) rotate(20deg); opacity: 0.8; }
+}
+
+@keyframes ai-dots {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%            { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Main Card ───────────────────────────────────────────── */
+
+.ai-summary-card {
+  position: relative;
+  background: var(--ai-glass-bg);
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  border: 1px solid var(--ai-glass-border);
+  border-radius: var(--ai-radius);
+  padding: 28px 28px 22px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  animation: ai-fade-in 0.5s var(--ai-transition) both, ai-pulse-glow 4s ease-in-out infinite;
+  color: var(--ai-text);
+  /* Subtle inner light at the top */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 4px 32px rgba(13, 27, 62, 0.45),
+    0 0 0 1px var(--ai-glass-border);
+}
+
+/* Very subtle starfield texture overlay */
+.ai-summary-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 15%, rgba(255,255,255,0.10) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 60%, rgba(255,255,255,0.09) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Animated Gradient Border ────────────────────────────── */
+
+.ai-glow-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: calc(var(--ai-radius) + 1px);
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    transparent 0deg,
+    var(--ai-accent) 60deg,
+    #9c59ff 120deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  animation: ai-border-spin 6s linear infinite;
+  /* The trick: mask so only the 1px border is visible */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.5px;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* ── Header Row ──────────────────────────────────────────── */
+
+.ai-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ai-summary-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-sparkle {
+  font-size: 16px;
+  color: var(--ai-accent-bright);
+  animation: ai-sparkle-pop 2.5s ease-in-out infinite;
+  display: inline-block;
+  line-height: 1;
+}
+
+.ai-label-text {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ai-accent-bright);
+}
+
+.ai-mode-chip {
+  background: rgba(56, 139, 253, 0.18);
+  border: 1px solid rgba(56, 139, 253, 0.30);
+  color: var(--ai-accent-bright);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.ai-updated-date {
+  font-size: 11px;
+  color: var(--ai-text-sub);
+  font-style: italic;
+}
+
+/* ── Body: Badge + Content ───────────────────────────────── */
+
+.ai-summary-body {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* ── AI Rating Badge ─────────────────────────────────────── */
+
+.ai-rating-badge {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(145deg, #1a2f1a, #2a4a1a);
+  background: linear-gradient(145deg, rgba(240, 180, 41, 0.15), rgba(240, 180, 41, 0.06));
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  border-radius: var(--ai-radius-sm);
+  padding: 14px 16px;
+  min-width: 90px;
+  box-shadow:
+    0 0 18px rgba(240, 180, 41, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold glow bloom behind the badge */
+.ai-rating-badge::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle, var(--ai-gold-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ai-rating-score {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  position: relative;
+}
+
+.ai-rating-number {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ai-gold);
+  text-shadow: 0 0 12px var(--ai-gold-glow);
+}
+
+.ai-rating-max {
+  font-size: 14px;
+  color: var(--ai-text-sub);
+  font-weight: 500;
+}
+
+.ai-rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.ai-star {
+  width: 14px;
+  height: 14px;
+  color: rgba(240, 180, 41, 0.35); /* empty star */
+}
+
+.ai-star--filled {
+  color: var(--ai-gold);
+  filter: drop-shadow(0 0 3px var(--ai-gold-glow));
+}
+
+.ai-star--half {
+  color: var(--ai-gold);
+  filter: drop-shadow(0 0 2px var(--ai-gold-glow));
+}
+
+.ai-rating-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ai-text-sub);
+}
+
+/* ── Summary Content ─────────────────────────────────────── */
+
+.ai-summary-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-summary-text {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ai-text);
+  margin: 0 0 16px;
+  /* Subtle text gradient for premium feel */
+  background: linear-gradient(180deg, #e6edf3 0%, rgba(230, 237, 243, 0.85) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Metadata Footer Chips ───────────────────────────────── */
+
+.ai-summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ai-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 20px;
+  padding: 3px 10px 3px 7px;
+  font-size: 11px;
+  color: var(--ai-text-sub);
+  font-weight: 500;
+}
+
+.ai-meta-chip--desc {
+  background: rgba(56, 139, 253, 0.10);
+  border-color: rgba(56, 139, 253, 0.20);
+  color: var(--ai-accent-bright);
+}
+
+.ai-meta-chip--model {
+  background: rgba(156, 89, 255, 0.10);
+  border-color: rgba(156, 89, 255, 0.22);
+  color: #c084fc;
+}
+
+.ai-meta-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+/* ── Skeleton Loader ─────────────────────────────────────── */
+
+.ai-summary-card--skeleton {
+  animation: ai-pulse-glow 4s ease-in-out infinite;
+  /* override fade-in to not animate position during skeleton */
+  animation: ai-pulse-glow 4s ease-in-out infinite;
+}
+
+.ai-skeleton {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(56, 139, 253, 0.08) 0%,
+    rgba(56, 139, 253, 0.20) 40%,
+    rgba(56, 139, 253, 0.08) 80%
+  );
+  background-size: 400px 100%;
+  animation: ai-shimmer 1.5s linear infinite;
+}
+
+.ai-skeleton--label {
+  width: 180px;
+  height: 16px;
+}
+
+.ai-skeleton--badge {
+  flex-shrink: 0;
+  width: 90px;
+  height: 110px;
+  border-radius: var(--ai-radius-sm);
+}
+
+.ai-skeleton-text-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.ai-skeleton--line {
+  height: 14px;
+}
+
+/* ── Generating State ────────────────────────────────────── */
+
+.ai-summary-card--generating {
+  animation: ai-pulse-glow 2.5s ease-in-out infinite;
+  min-height: 90px;
+}
+
+.ai-generating-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ai-generating-orb {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--ai-accent);
+  border-right-color: rgba(56, 139, 253, 0.3);
+  animation: ai-orb-spin 1.2s linear infinite;
+}
+
+.ai-orb-ring--2 {
+  inset: 7px;
+  border-top-color: transparent;
+  border-bottom-color: #9c59ff;
+  border-left-color: rgba(156, 89, 255, 0.3);
+  animation: ai-orb-spin-reverse 1.8s linear infinite;
+}
+
+.ai-orb-icon {
+  font-size: 16px;
+  color: var(--ai-accent-bright);
+  position: relative;
+  z-index: 1;
+}
+
+.ai-generating-text {
+  flex: 1;
+}
+
+.ai-generating-title {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ai-text);
+  margin: 0 0 4px;
+}
+
+.ai-generating-sub {
+  font-size: 12px;
+  color: var(--ai-text-sub);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Error State ─────────────────────────────────────────── */
+
+.ai-summary-card--error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  min-height: unset;
+  animation: ai-fade-in 0.4s ease both;
+  background: rgba(255, 80, 80, 0.06);
+  border-color: rgba(255, 80, 80, 0.20);
+}
+
+.ai-error-icon {
+  font-size: 16px;
+}
+
+.ai-error-text {
+  font-size: 13px;
+  color: rgba(255, 150, 150, 0.85);
+}
+
+/* ── Pros / Cons ─────────────────────────────────────────── */
+
+.ai-procons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0 18px;
+}
+
+.ai-procons-section {
+  border-radius: var(--ai-radius-sm);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  animation: ai-fade-in 0.45s var(--ai-transition) both;
+}
+
+/* Animated shimmer stripe across the top */
+.ai-procons-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.07;
+}
+
+/* ── Pros (green) */
+.ai-procons-section--pros {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  box-shadow:
+    0 0 20px rgba(34, 197, 94, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  /* left accent stripe */
+  border-left: 3px solid rgba(34, 197, 94, 0.70);
+}
+
+.ai-procons-section--pros::before {
+  background: radial-gradient(ellipse at top left, rgba(34,197,94,0.25) 0%, transparent 70%);
+  opacity: 1;
+}
+
+/* ── Cons (red) */
+.ai-procons-section--cons {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  box-shadow:
+    0 0 20px rgba(239, 68, 68, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-left: 3px solid rgba(239, 68, 68, 0.70);
+}
+
+.ai-procons-section--cons::before {
+  background: radial-gradient(ellipse at top left, rgba(239,68,68,0.22) 0%, transparent 70%);
+  opacity: 1;
+}
+
+/* ── Heading row */
+.ai-procons-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.ai-procons-section--pros .ai-procons-heading { color: #4ade80; }
+.ai-procons-section--cons .ai-procons-heading { color: #f87171; }
+
+.ai-procons-icon {
+  font-size: 13px;
+  line-height: 1;
+  font-style: normal;
+}
+
+/* ── List */
+.ai-procons-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-procons-item {
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 5px 10px;
+  border-radius: 6px;
+  position: relative;
+  padding-left: 20px;
+}
+
+/* Dot bullet */
+.ai-procons-item::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.ai-procons-item--pro {
+  color: rgba(187, 247, 208, 0.92);
+  background: rgba(34, 197, 94, 0.07);
+}
+.ai-procons-item--pro::before { background: #4ade80; }
+
+.ai-procons-item--con {
+  color: rgba(254, 202, 202, 0.92);
+  background: rgba(239, 68, 68, 0.07);
+}
+.ai-procons-item--con::before { background: #f87171; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .ai-summary-card {
+    padding: 20px 16px 16px;
+  }
+
+  .ai-summary-body {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-rating-badge {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 12px 14px;
+  }
+
+  .ai-rating-label {
+    display: none;
+  }
+
+  .ai-rating-number {
+    font-size: 24px;
+  }
+
+  .ai-summary-text {
+    font-size: 14px;
+  }
+
+  .ai-procons-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,21 +1,88 @@
 services:
+
+  # ── Ollama Sidecar ─────────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama-models:/root/.ollama
+      - ./ollama-entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    environment:
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
+    expose:
+      - "11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  # ── Redis (BullMQ job queue backend) ───────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Meilisearch (Task 3) ───────────────────────────────────────────────────
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    restart: unless-stopped
+    ports:
+      - "7700:7700"                         # expose to host for dev dashboard
+    environment:
+      MEILI_MASTER_KEY: "${MEILI_MASTER_KEY:-masterKey}"
+      MEILI_ENV: "${MEILI_ENV:-development}"
+    volumes:
+      - meili-data:/meili_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Backend (Node.js / Express) ────────────────────────────────────────────
   backend:
     build:
       context: ./Backend
     restart: unless-stopped
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-5000}:${PORT:-5000}"
     volumes:
       - ./Backend:/app
       - backend-deps:/app/node_modules
     env_file: .env
     environment:
-      MONGO_URI: "mongodb://mariamramy1074_db_user:Shoyotastic@ac-fu0jurk-shard-00-00.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-01.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-02.wfwwjwa.mongodb.net:27017/marketplaceDB?ssl=true&replicaSet=atlas-ef3awd-shard-0&authSource=admin&appName=Cluster0"
-      MONGODB_URI: "mongodb://mariamramy1074_db_user:Shoyotastic@ac-fu0jurk-shard-00-00.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-01.wfwwjwa.mongodb.net:27017,ac-fu0jurk-shard-00-02.wfwwjwa.mongodb.net:27017/marketplaceDB?ssl=true&replicaSet=atlas-ef3awd-shard-0&authSource=admin&appName=Cluster0"
+      MONGO_URI:        "${MONGO_URI}"
+      MONGODB_URI:      "${MONGODB_URI}"
+      OLLAMA_BASE_URL:  "http://ollama:11434"
+      OLLAMA_MODEL:     "${OLLAMA_MODEL:-llama3.2}"
+      REDIS_HOST:       "redis"
+      REDIS_PORT:       "6379"
+      MEILI_HOST:       "http://meilisearch:7700"
+      MEILI_MASTER_KEY: "${MEILI_MASTER_KEY:-masterKey}"
+    depends_on:
+      ollama:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
     dns:
       - 8.8.8.8
       - 8.8.4.4
 
+  # ── Frontend (React) ───────────────────────────────────────────────────────
   frontend:
     build:
       context: ./Frontend
@@ -35,3 +102,6 @@ services:
 volumes:
   backend-deps:
   frontend-deps:
+  ollama-models:
+  redis-data:
+  meili-data:        # persists Meilisearch index data across restarts

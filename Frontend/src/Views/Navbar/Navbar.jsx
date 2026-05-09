@@ -26,7 +26,7 @@ const Navbar = ({ role = 'buyer' , name = '' }) => {
         navigate('/login');
     };
 return (
-<nav className="navbar">
+<nav className="seller-navbar">
     {/* Left side: logo + seller badge (only for sellers) */}
     <div className="nav-left">
     {/* <a href="/" className="logo-link">Marketplace</a> */}

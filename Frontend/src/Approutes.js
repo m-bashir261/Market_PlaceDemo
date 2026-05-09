@@ -10,7 +10,9 @@ import Checkout from './Views/Buyer/Checkout';
 import ProtectedRoute from './services/ProtectedRoute';
 import ProductCatalog from "./Views/Buyer/ProductCatalog";
 import SellerShop from './Views/Buyer/SellerShop';
+import Wishlist from './Views/Buyer/Wishlist';
 import Home from "./Views/Buyer/Home";
+import AddressBook from './Views/Buyer/AddressBook';
 import Signup from "./Views/Authentication/Signup";
 import Login from "./Views/Authentication/Login";
 import { Navigate } from 'react-router-dom';
@@ -30,6 +32,8 @@ function AppRoutes() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/orders" element={<ProtectedRoute allowedRole="buyer"><OrderHistory /></ProtectedRoute>} />
             <Route path="/checkout" element={<ProtectedRoute allowedRole="buyer"><Checkout /></ProtectedRoute>} />
+            <Route path="/wishlist" element={<ProtectedRoute allowedRole="buyer"><Wishlist /></ProtectedRoute>} />
+            <Route path="/addresses" element={<ProtectedRoute allowedRole="buyer"><AddressBook /></ProtectedRoute>} />
             <Route path="/buyer/product/:id" element={<ProductDetail />} />
             <Route path="/products" element={<ProductCatalog />} />
             <Route path="/shop/:username" element={<SellerShop />} />
