@@ -143,7 +143,7 @@ const Navbar = () => {
                 <div className="navbar-container">
                     <div className="navbar-logo-section">
                         <Link to="/home" className="navbar-logo-link">
-                            <img src="/Kemet.png" alt="Kemet Logo" className="navbar-logo-img" />
+                            <img src="/Kemet.png?v=1.1" alt="Kemet Logo" className="navbar-logo-img" />
                             <div className="logo-text">
                                 <h1>Kemet</h1>
                                 <p>Shop Local, Live Better</p>

@@ -27,7 +27,8 @@ const ProductCatalog = () => {
     priceRange: 'ALL',
     minRating: 0,
     search: initialSearch,
-    seller: sellerParam || 'ALL'
+    seller: sellerParam || 'ALL',
+    inStock: false
   });
 
   const [localPrice, setLocalPrice] = useState([0, 2000]);
@@ -111,7 +112,8 @@ const ProductCatalog = () => {
           priceRange: filters.priceRange,
           minRating: filters.minRating,
           search: filters.search,
-          seller: filters.seller
+          seller: filters.seller,
+          inStock: filters.inStock
         });
 
         if (Array.isArray(data)) {
@@ -243,6 +245,19 @@ const ProductCatalog = () => {
                 </div>
                 {filters.minRating > 0 && <span style={{fontSize: '0.8rem', color: 'var(--pc-text-muted)', marginTop: '8px', display: 'block'}}>{filters.minRating} Stars & Up (<span style={{textDecoration:'underline', cursor:'pointer'}} onClick={() => handleFilterChange('minRating', 0)}>Clear</span>)</span>}
               </div>
+
+              <div className="filter-group">
+                <h3>Availability</h3>
+                <label className="checkbox-container">
+                  <input 
+                      type="checkbox" 
+                      checked={filters.inStock}
+                      onChange={(e) => handleFilterChange('inStock', e.target.checked)}
+                  />
+                  <span className="custom-checkbox"></span>
+                  <span className="label-text">Only show in stock</span>
+                </label>
+              </div>
             </aside>
 
             <main className="products-wrapper">
@@ -260,7 +275,7 @@ const ProductCatalog = () => {
                   <button
                       className="modern-btn"
                       style={{ margin: '20px auto' }}
-                      onClick={() => setFilters({category: 'ALL', priceRange: 'ALL', minRating: 0, search: '', seller: 'ALL'})}
+                      onClick={() => setFilters({category: 'ALL', priceRange: 'ALL', minRating: 0, search: '', seller: 'ALL', inStock: false})}
                   >
                     Clear Filters
                   </button>

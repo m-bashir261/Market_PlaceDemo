@@ -11,7 +11,7 @@ const { protect } = require('../controllers/authController');
 router.get('/', async (req, res) => {
     try {
         // 1. Parse inputs
-        const { category, minRating, priceRange, search, seller } = req.query;
+        const { category, minRating, priceRange, search, seller, inStock } = req.query;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 12;
         const skip = (page - 1) * limit;
@@ -62,6 +62,11 @@ router.get('/', async (req, res) => {
                 { title: { $regex: search, $options: 'i' } },
                 { description: { $regex: search, $options: 'i' } }
             ];
+        }
+
+        // 5. In Stock filter
+        if (inStock === 'true') {
+            query.countInStock = { $gt: 0 };
         }
 
         // 5. Execute Query on the Listing model
