@@ -9,9 +9,7 @@ const Footer = () => {
                 <div className="footer-grid">
                     <div className="footer-brand-col">
                         <div className="footer-logo">
-                            <div className="footer-logo-icon">
-                                <span>L</span>
-                            </div>
+                            <img src="/Kemet.png" alt="Kemet Logo" className="footer-logo-img" />
                             <h3>Kemet</h3>
                         </div>
                         <p className="footer-desc">

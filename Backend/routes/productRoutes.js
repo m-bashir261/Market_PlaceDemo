@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Listing = require('../models/Listing');
 const ProductCategories = require('../models/ProductCategory');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
+const Order = require('../models/Order');
 const { protect } = require('../controllers/authController');
 
 router.get('/', async (req, res) => {
@@ -25,9 +27,22 @@ router.get('/', async (req, res) => {
             query.seller_id = sellerUser._id;
         }
 
-        // 2. Category Filter (using the ID from frontend)
+        // 2. Category Filter (resolving name to ID if needed)
         if (category && category !== "ALL") {
-            query.category_id = category;
+            if (mongoose.Types.ObjectId.isValid(category)) {
+                query.category_id = category;
+            } else {
+                const foundCat = await ProductCategories.findOne({ 
+                    name: { $regex: new RegExp(`^${category.trim()}$`, 'i') } 
+                }).select('_id');
+                
+                if (foundCat) {
+                    query.category_id = foundCat._id;
+                } else {
+                    // If category name doesn't exist, return empty list
+                    return res.status(200).json([]);
+                }
+            }
         }
 
         // 2. Minimum Rating Filter
@@ -95,10 +110,17 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
 
+        // Calculate actual seller sales (delivered orders)
+        const sellerSales = await Order.countDocuments({ 
+            seller_id: listing.seller_id._id, 
+            status: 'Delivered' 
+        });
+
         const formattedListing = {
             ...listing,
             category_name: listing.category_id ? listing.category_id.name : 'Uncategorized',
             category_id: listing.category_id ? listing.category_id._id : null,
+            seller_sales: sellerSales,
             image_url: listing.image_urls && listing.image_urls.length > 0 ? listing.image_urls[0] : "https://i.ibb.co/000000/default-image.jpg"
         };
 

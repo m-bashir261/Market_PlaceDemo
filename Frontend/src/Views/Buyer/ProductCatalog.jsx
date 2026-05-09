@@ -76,6 +76,19 @@ const ProductCatalog = () => {
     loadCategories();
   }, []);
 
+  // Synchronize category name to ID if it came from Home page state
+  useEffect(() => {
+    if (categories.length > 0 && filters.category !== 'ALL') {
+      const isId = /^[0-9a-fA-F]{24}$/.test(filters.category);
+      if (!isId) {
+        const found = categories.find(c => c.name.toLowerCase() === filters.category.toLowerCase());
+        if (found) {
+          setFilters(prev => ({ ...prev, category: found._id }));
+        }
+      }
+    }
+  }, [categories, filters.category]);
+
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);

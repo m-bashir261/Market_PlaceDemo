@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
 import ProductCard from './ProductCard';
-import { getProducts } from '../../services/products';
+import { getProducts, getCategories } from '../../services/products';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import './ProductCatalog.css';
@@ -47,7 +47,7 @@ const stats = [
     { icon: TrendingUp, value: '99.2%', label: 'Success Rate' }
 ];
 
-const categories = [
+const STATIC_CATEGORIES = [
     { name: 'Electronics', icon: '📱' },
     { name: 'Fashion', icon: '👕' },
     { name: 'Groceries', icon: '🥬' },
@@ -56,26 +56,63 @@ const categories = [
     { name: 'Sports', icon: '⚽' }
 ];
 
+const CATEGORY_ICONS = {
+    'Electronics': '📱',
+    'Fashion': '👕',
+    'Groceries': '🥬',
+    'Beauty': '✨',
+    'Home & Garden': '🏠',
+    'Sports': '⚽',
+    'Default': '📦'
+};
+
 const Home = () => {
     const navigate = useNavigate();
     const [topProducts, setTopProducts] = useState([]);
+    const [categories, setCategories] = useState(STATIC_CATEGORIES);
     const [loadingProducts, setLoadingProducts] = useState(true);
+    const [loadingCats, setLoadingCats] = useState(true);
 
     useEffect(() => {
-        const getTopProducts = async () => {
+        const loadData = async () => {
             try {
-                const data = await getProducts({ limit: 20 });
-                if (Array.isArray(data)) {
-                    const sorted = [...data].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 6);
+                // Fetch products and categories in parallel
+                const [productData, catData] = await Promise.all([
+                    getProducts({ limit: 20 }),
+                    getCategories()
+                ]);
+
+                if (Array.isArray(productData)) {
+                    const sorted = [...productData]
+                        .filter(p => (p.rating || 0) > 0)
+                        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                        .slice(0, 6);
                     setTopProducts(sorted);
                 }
+
+                if (Array.isArray(catData)) {
+                    // Merge static categories with backend data to prevent them from disappearing
+                    const merged = [...STATIC_CATEGORIES];
+                    catData.forEach(backendCat => {
+                        const existingIdx = merged.findIndex(c => c.name.toLowerCase() === backendCat.name.toLowerCase());
+                        if (existingIdx !== -1) {
+                            // Update existing static entry with backend details (like _id)
+                            merged[existingIdx] = { ...merged[existingIdx], ...backendCat };
+                        } else {
+                            // Add new category from backend if not in static list
+                            merged.push(backendCat);
+                        }
+                    });
+                    setCategories(merged);
+                }
             } catch (err) {
-                console.error("Failed to load products for preview", err);
+                console.error("Failed to load home page data", err);
             } finally {
                 setLoadingProducts(false);
+                setLoadingCats(false);
             }
         };
-        getTopProducts();
+        loadData();
     }, []);
 
     return (
@@ -205,12 +242,20 @@ const Home = () => {
                     </div>
 
                     <div className="categories-grid">
-                        {categories.map((cat, i) => (
-                            <div key={i} className="glass-card category-card" onClick={() => navigate('/products', { state: { category: cat.name } })}>
-                                <div className="cat-icon">{cat.icon}</div>
-                                <h4>{cat.name}</h4>
-                            </div>
-                        ))}
+                        {categories.length > 0 ? (
+                            categories.map((cat, i) => (
+                                <div key={i} className="glass-card category-card" onClick={() => navigate('/products', { state: { category: cat.name } })}>
+                                    <div className="cat-icon">{cat.icon || CATEGORY_ICONS[cat.name] || CATEGORY_ICONS['Default']}</div>
+                                    <h4>{cat.name}</h4>
+                                </div>
+                            ))
+                        ) : loadingCats ? (
+                            [1,2,3,4,5,6].map(i => (
+                                <div key={i} className="glass-card category-card skeleton" style={{height: '100px'}}></div>
+                            ))
+                        ) : (
+                            <p style={{ color: 'var(--pc-text-muted)', gridColumn: '1/-1', textAlign: 'center' }}>No categories available.</p>
+                        )}
                     </div>
                 </section>
 
@@ -241,17 +286,7 @@ const Home = () => {
                     </div>
                 </section>
 
-                {/* Newsletter Section */}
-                <section className="newsletter-section">
-                    <div className="glass-card newsletter-card">
-                        <h3>Stay Updated with Kemet</h3>
-                        <p>Get exclusive deals, new shop alerts, and be the first to know about exciting offers in your area.</p>
-                        <form className="newsletter-form">
-                            <input type="email" placeholder="Enter your email address" />
-                            <button type="button" className="modern-btn">Subscribe</button>
-                        </form>
-                    </div>
-                </section>
+
             </main>
 
             <Footer />

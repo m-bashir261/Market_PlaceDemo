@@ -8,7 +8,7 @@
 /* ── Wishlist heart button (overlaid on image) ── */
 .wishlist-btn {
   position: absolute;
-  top: 12px;
+  bottom: 12px;
   right: 12px;
   width: 34px;
   height: 34px;

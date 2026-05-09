@@ -50,3 +50,8 @@ export const replyToComment = async (productId, commentId, text, token) => {
     })
     return response.data
 }
+
+export const getReviews = async (listingId) => {
+    const response = await axios.get(`http://localhost:5000/api/reviews/listing/${listingId}`)
+    return response.data
+}

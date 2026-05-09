@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Bell, Heart, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, MapPin, Sun, Moon, Store, Heart, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useLocationContext } from '../context/LocationContext';
@@ -143,10 +143,7 @@ const Navbar = () => {
                 <div className="navbar-container">
                     <div className="navbar-logo-section">
                         <Link to="/home" className="navbar-logo-link">
-                            <div className="logo-icon">
-                                <span>L</span>
-                                <div className="pulse-dot"></div>
-                            </div>
+                            <img src="/Kemet.png" alt="Kemet Logo" className="navbar-logo-img" />
                             <div className="logo-text">
                                 <h1>Kemet</h1>
                                 <p>Shop Local, Live Better</p>
@@ -181,11 +178,6 @@ const Navbar = () => {
 
                         <button className="action-btn" onClick={toggleDarkMode} title="Toggle Theme">
                             {isDarkMode ? <Sun size={20} className="action-icon theme-icon" /> : <Moon size={20} className="action-icon theme-icon" />}
-                        </button>
-
-                        <button className="action-btn icon-only relative" title="Notifications">
-                            <Bell size={20} className="action-icon" />
-                            <span className="badge badge-red">3</span>
                         </button>
 
                         <button className="action-btn icon-only relative" title="Wishlist" onClick={() => navigate('/wishlist')}>
