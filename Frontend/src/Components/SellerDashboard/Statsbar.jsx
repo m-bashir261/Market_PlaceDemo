@@ -82,6 +82,13 @@ const StatsBar = () => {
                     color="amber"
                     isLoading={loading}
                 />
+                    <StatCard
+                        icon="💰"
+                        label="Total Revenue"
+                        value={`${stats.totalRevenue.toLocaleString()} EGP`}
+                        color="yellow"
+                        isLoading={loading}
+                    />
             </div>
         </div>
     );
