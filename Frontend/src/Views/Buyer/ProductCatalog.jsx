@@ -248,7 +248,7 @@ const ProductCatalog = () => {
 
               <div className="filter-group">
                 <h3>Availability</h3>
-                <label className="checkbox-container">
+                <label className="checkbox-label">
                   <input 
                       type="checkbox" 
                       checked={filters.inStock}

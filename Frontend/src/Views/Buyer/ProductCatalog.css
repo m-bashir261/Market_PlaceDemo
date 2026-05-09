@@ -243,7 +243,7 @@ input[type="radio"] {
   display: none;
 }
 
-input[type="checkbox"]:checked + .checkbox-label .custom-checkbox,
+input[type="checkbox"]:checked + .custom-checkbox,
 input[type="radio"]:checked + .custom-checkbox {
   background: var(--pc-primary);
   border-color: var(--pc-primary);
@@ -261,7 +261,7 @@ input[type="radio"]:checked + .custom-checkbox {
   transition: opacity 0.15s;
 }
 
-input[type="checkbox"]:checked + .checkbox-label .custom-checkbox::after,
+input[type="checkbox"]:checked + .custom-checkbox::after,
 input[type="radio"]:checked + .custom-checkbox::after {
   opacity: 1;
 }
