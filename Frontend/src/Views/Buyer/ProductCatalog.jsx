@@ -130,7 +130,7 @@ const ProductCatalog = () => {
     };
 
     loadProducts();
-  }, [filters.category, filters.priceRange, filters.minRating, filters.search, filters.seller, page]);
+  }, [filters.category, filters.priceRange, filters.minRating, filters.search, filters.seller, filters.inStock, page]);
 
   useEffect(() => {
     if (sellerParam && sellerParam !== filters.seller) {
