@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/Navbar";
 import { getSellerListings, deleteListing } from "../../Apis/Seller";
-import { getMe } from '../../Apis/authApi'; // New API call to fetch user info
+import { getMe } from '../../Apis/authApi';
 import LoadingScreen from "../Loading";
 import "./Seller.css";
+import Sidebar from "../../Components/SellerDashboard/Sidebar";
 
 export default function Listings() {
     const [listings, setListings] = useState([]);
@@ -17,6 +17,25 @@ export default function Listings() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const tokenExpired =  async () => {
+            try {
+                await getMe();
+                return true;
+            } catch (error) {
+                console.error("i am in token expired catch block");
+                if (error.status === 401) {
+                navigate('/login');
+                toast("Session expired. Please log in again.");
+                return false; // Token expired, stop execution
+                } else {
+                    setError({
+                    message: "An error occurred while verifying your session.",
+                    details: error.message
+                });
+                return false; // Other error, stop execution
+                }
+            }
+        };
         const fetchUser = async () => {
             try{
                 const user = await getMe();
@@ -28,16 +47,23 @@ export default function Listings() {
                 });
             }
         };
-        fetchUser();
-        getSellerListings()
-            .then((data) => {
-                setListings(data);
-            })
-            .catch((error) => {
-                console.error("Error fetching listings:", error);
-                setError({ message: error.message });
-            })
-            .finally(() => setLoading(false));
+        const initialize = async () => {
+            const isTokenValid = await tokenExpired();
+            if (isTokenValid) {
+                await fetchUser();
+                await getSellerListings()
+                    .then((data) => {
+                        setListings(data);
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching listings:", error);
+                        setError({ message: error.message });
+                    })
+                    .finally(() => setLoading(false));
+            }
+        };
+        initialize();
+        
     }, []);
 
     const handleDeleteClick = (id) => {
@@ -67,11 +93,11 @@ export default function Listings() {
     );
 
     return (
-        <div className="seller-dashboard">
-            <Navbar role="seller" name={sellerName} />
+        <div className="order-view-container">
+            <Sidebar username={sellerName} />
 
-            <div className="dashboard-content">
-                <div className="dashboard-header">
+            <div className="order-view-container-content">
+                <div className="order-view-container-header">
                     <div className="header-left">
                         <h1>My Listings</h1>
                         <p className="subtitle">{listings.length} listing{listings.length !== 1 ? 's' : ''} found</p>

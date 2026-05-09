@@ -6,7 +6,7 @@ import { getMe } from '../../Apis/authApi';
 import { toast } from 'react-toastify';
 import '../../Components/Flagging.css';
 import LoadingScreen from '../Loading';
-import Navbar from '../Navbar/Navbar';
+import Sidebar from '../../Components/SellerDashboard/Sidebar';
 
 export default function OrderView() {
     const [orders, setOrders] = useState([]);
@@ -174,11 +174,11 @@ export default function OrderView() {
                 <button onClick={() => window.location.reload()}>Retry</button>
             </div>
         ) : (
-            <div className="seller-dashboard">
-                <Navbar role="seller" name={sellerName} />
+            <div className="order-view-container">
+                <Sidebar username={sellerName} />
 
-                <div className="dashboard-content">
-                    <div className="dashboard-header">
+                <div className="order-view-container-content">
+                    <div className="order-view-container-header">
                         <div className="header-left">
                             <h1>Your Sales Orders</h1>
                             <p className="subtitle">Track and manage all incoming orders</p>

@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getSingleListing, updateListing } from "../../Apis/Seller";
 import { getCategories } from "../../services/products";
-import { getMe } from '../../Apis/authApi'; // New API call to fetch user info
-import Navbar from "../Navbar/Navbar";
+import { getMe } from '../../Apis/authApi';
 import LoadingScreen from "../Loading";
 import "./Seller.css";
+import Sidebar from "../../Components/SellerDashboard/Sidebar";
 
 export default function ListingDetail() {
     const { id } = useParams();
@@ -33,6 +33,25 @@ export default function ListingDetail() {
     }, []);
 
     useEffect(() => {
+        const tokenExpired =  async () => {
+            try {
+                await getMe();
+                return true;
+            } catch (error) {
+                console.error("i am in token expired catch block");
+                if (error.status === 401) {
+                navigate('/login');
+                toast.error("Session expired. Please log in again.");
+                return false; // Token expired, stop execution
+                } else {
+                    setError({
+                    message: "An error occurred while verifying your session.",
+                    details: error.message
+                });
+                return false; // Other error, stop execution
+                }
+            }
+        };
         const fetchUser = async () => {
             try{
                 const user = await getMe();
@@ -68,8 +87,14 @@ export default function ListingDetail() {
                 setLoading(false);
             }
         };
-        fetchData();
-        fetchUser();
+        const initialize = async () => {
+            const isTokenValid = await tokenExpired();
+            if (isTokenValid) {
+                await fetchUser();
+                await fetchData();
+            }
+        };
+        initialize();
     }, [id]);
 
     const handleChange = (e) => {
@@ -96,7 +121,7 @@ export default function ListingDetail() {
         setTimeout(() => setToast(null), 3000);
     };
 
-    if (loading) return <LoadingScreen />;
+    // if (loading) return <LoadingScreen />;
     if (error) return (
         <div className="error-message full-page">
             <h2>{error.message}</h2>
@@ -128,12 +153,11 @@ export default function ListingDetail() {
     };
 
     return (
-        <div className="seller-dashboard">
-            <Navbar role="seller" name={sellerName} />
-
-            <div className="dashboard-content">
+        <div className="order-view-container">
+            <Sidebar username={sellerName}/>
+            <div className="order-view-container-content">
                 {/* Header */}
-                <div className="dashboard-header">
+                <div className="order-view-container-header">
                     <div className="header-left">
                         <button className="back-btn" onClick={() => navigate('/seller/listings')}>
                             ← Back to Listings
