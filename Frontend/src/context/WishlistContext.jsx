@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const WishlistContext = createContext();
-const API = 'http://localhost:5000/api/wishlist';
+const API = `${process.env.REACT_APP_API_URL}/api/wishlist`;
 
 export function WishlistProvider({ children }) {
   const [wishlistIds, setWishlistIds] = useState(new Set());

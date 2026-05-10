@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const BASE_URL = process.env.REACT_APP_API_URL;
 const POLL_INTERVAL_MS = 5000; // poll every 5s while status is pending/processing
 
 export function useAISummary(listingId) {

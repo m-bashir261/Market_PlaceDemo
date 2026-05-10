@@ -112,7 +112,7 @@ export default function CreateListing() {
         };
     fetchUser();
     // Fetch the reference table data
-    fetch('http://localhost:5000/api/regions')
+    fetch(`${process.env.REACT_APP_API_URL}/api/regions`)
       .then(res => res.json())
       .then(data => setAllRegions(data));
   }, []);
@@ -174,7 +174,7 @@ const removeFile = (index) => {
       const imageUrls = await Promise.all(imageFiles.map(uploadToCloudinary))
       setUploading(false)
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:5000/api/listings', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/listings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -31,8 +31,8 @@ const ReviewModal = ({ isOpen, onClose, listingId, orderId, onSuccess, showToast
         
         // Determine if we are POSTing a new review or PUTting an edit
         const url = existingReview 
-            ? `http://localhost:5000/api/reviews/${existingReview._id}` 
-            : 'http://localhost:5000/api/reviews';
+            ? `${process.env.REACT_APP_API_URL}/api/reviews/${existingReview._id}` 
+            : `${process.env.REACT_APP_API_URL}/api/reviews`;
         
         const method = existingReview ? 'PUT' : 'POST';
 
@@ -79,7 +79,7 @@ const ReviewModal = ({ isOpen, onClose, listingId, orderId, onSuccess, showToast
         setIsDeleting(true);
         try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/reviews/${existingReview._id}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/reviews/${existingReview._id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });

@@ -8,7 +8,7 @@ import Navbar from '../../Components/Navbar';
 import Footer from '../../Components/Footer';
 import './Wishlist.css';
 
-const API = 'http://localhost:5000/api/wishlist';
+const API = `${process.env.REACT_APP_API_URL}/api/wishlist`;
 
 export default function Wishlist() {
   const navigate = useNavigate();

@@ -55,7 +55,7 @@ function OrderHistory() {
       const token = localStorage.getItem('token');
       if (!token) { setLoading(false); return; }
 
-      const res = await fetch('http://localhost:5000/api/orders/buyer/my-orders', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/orders/buyer/my-orders`, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
 
@@ -103,7 +103,7 @@ function OrderHistory() {
     setCancelling(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/orders/${cancelTarget._id}/cancel`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/orders/${cancelTarget._id}/cancel`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       });

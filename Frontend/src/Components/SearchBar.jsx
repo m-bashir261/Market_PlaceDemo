@@ -3,7 +3,7 @@ import { Search, X, Tag, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './SearchBar.css';
 
-const API = 'http://localhost:5000/api/search';
+const API = `${process.env.REACT_APP_API_URL}/api/search`;
 
 function useDebounce(value, delay) {
   const [debounced, setDebounced] = useState(value);

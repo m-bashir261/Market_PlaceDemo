@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Set your base URL. Adjust the port if your backend runs on something other than 5000.
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = `${process.env.REACT_APP_API_URL}/api`;
 
 export const flagBuyer = async (orderNumber) => {
     try {

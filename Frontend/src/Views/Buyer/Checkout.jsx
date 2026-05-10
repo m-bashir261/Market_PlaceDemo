@@ -226,7 +226,7 @@ const Checkout = () => {
         console.log('Sending order for seller:', group.seller);
         console.log('Order payload:', orderPayload);
 
-        const response = await fetch('http://localhost:5000/api/orders', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

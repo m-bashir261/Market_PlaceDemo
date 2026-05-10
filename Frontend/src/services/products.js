@@ -1,5 +1,5 @@
 import axios from "axios"
-const API_BASE_URL = "http://localhost:5000/api/products"
+const API_BASE_URL = `${process.env.REACT_APP_API_URL}/api/products`
 
 export const getProducts = async ({page, category, limit, priceRange, minRating, search, seller, inStock}) => {
     const params = new URLSearchParams();
@@ -53,6 +53,6 @@ export const replyToComment = async (productId, commentId, text, token) => {
 }
 
 export const getReviews = async (listingId) => {
-    const response = await axios.get(`http://localhost:5000/api/reviews/listing/${listingId}`)
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/reviews/listing/${listingId}`)
     return response.data
 }

@@ -23,7 +23,7 @@ export default function ListingDetail() {
 
     useEffect(() => {
     // Fetch the reference table data so the grid actually has regions to show
-        fetch('http://localhost:5000/api/regions')
+        fetch(`${process.env.REACT_APP_API_URL}/api/regions`)
         .then(res => res.json())
         .then(data => {
             // Since your backend returns names like ["Cairo", "Giza"], set them here
